@@ -1,0 +1,171 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:49
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\init_ADC.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW8094.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\init_ADC.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\init_ADC.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\init_ADC.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\init_ADC.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x700
+   \   union <unnamed> _A_ADCCTL0_L
+   \                     _A_ADCCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x702
+   \   union <unnamed> _A_ADCCTL1_L
+   \                     _A_ADCCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x704
+   \   union <unnamed> _A_ADCCTL2_L
+   \                     _A_ADCCTL2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x70a
+   \   union <unnamed> _A_ADCMCTL0_L
+   \                     _A_ADCMCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x71a
+   \   union <unnamed> _A_ADCIE_L
+   \                     _A_ADCIE_L:
+   \   000000                DS8 2
+      3          #include <string.h>
+      4          #include "macros.h"
+      5          #include <math.h>
+      6          
+
+   \                                 In  segment CODE, align 2
+      7          void Init_ADC (void){
+   \                     Init_ADC:
+      8            //
+      9            // V_DETECT_L (0x04) // Pin 2 A2    ADCINCH_2
+     10            // V_DETECT_R (0x08) // Pin 3 A3    ADCINCH_3
+     11            // V_THUMB (0x20) // Pin 5 A5    ADCINCH_5
+     12            //
+     13          
+     14            // ADCCTL0 Register
+     15            ADCCTL0 = 0; // Reset
+   \   000000   82430007     MOV.W   #0x0, &0x700
+     16            ADCCTL0 |= ADCSHT_2; // 16 ADC clocks
+   \   000004   B2D000020007 BIS.W   #0x200, &0x700
+     17            ADCCTL0 |= ADCMSC; // MSC
+   \   00000A   B2D080000007 BIS.W   #0x80, &0x700
+     18            ADCCTL0 |= ADCON; // ADC ON
+   \   000010   B2D010000007 BIS.W   #0x10, &0x700
+     19          
+     20            // ADCCTL1 Register
+     21            ADCCTL2 = 0; // Reset
+   \   000016   82430407     MOV.W   #0x0, &0x704
+     22            ADCCTL1 |= ADCSHS_0; // 00b = ADCSC bit
+   \   00001A   924202070207 MOV.W   &0x702, &0x702
+     23            ADCCTL1 |= ADCSHP; // ADC sample and hold SAMPCON signal from sampling timer.
+   \   000020   B2D000020207 BIS.W   #0x200, &0x702
+     24            ADCCTL1 &= ~ADCISSH; // ADC invert signal sample and hold.
+   \   000026   B2C000010207 BIC.W   #0x100, &0x702
+     25            ADCCTL1 |= ADCDIV_0; // ADC clock divider 000b = Divide by 1
+   \   00002C   924202070207 MOV.W   &0x702, &0x702
+     26            ADCCTL1 |= ADCSSEL_0; // ADC clock MODCLK
+   \   000032   924202070207 MOV.W   &0x702, &0x702
+     27            ADCCTL1 |= ADCCONSEQ_0; // ADC conversion sequence 00b = Single channel single conversion
+   \   000038   924202070207 MOV.W   &0x702, &0x702
+     28            // ADCCTL1 & ADCBUSY identifies a conversion is in process
+     29          
+     30            // ADCCTL2 Register
+     31            ADCCTL2 = 0; // Reset
+   \   00003E   82430407     MOV.W   #0x0, &0x704
+     32            ADCCTL2 |= ADCPDIV0; // ADC predivider 00b = Pre divide by 1
+   \   000042   B2D000010407 BIS.W   #0x100, &0x704
+     33            ADCCTL2 |= ADCRES_1; // ADC resolution 10b  // OLD carlson notes: = 12 bit (14 clock cycle conversion time)
+   \   000048   B2D010000407 BIS.W   #0x10, &0x704
+     34          
+     35            // TODO: change above to 10 bit instead of 12, and remove >>2 in ISR
+     36           //audio lecture 3/11 when do I get a stable reading??
+     37          
+     38            ADCCTL2 &= ~ADCDF; // ADC data read back format 0b = Binary unsigned.
+   \   00004E   B2C20407     BIC.W   #0x8, &0x704
+     39            ADCCTL2 &= ~ADCSR; // ADC sampling rate 0b = ADC buffer supports up to 200 ksps
+   \   000052   A2C20407     BIC.W   #0x4, &0x704
+     40          
+     41            // ADCMCTL0 Register
+     42            ADCMCTL0 |= ADCSREF_0; // VREF 000b = {VR+ = AVCC and VR ––= AVSS
+   \   000056   92420A070A07 MOV.W   &0x70a, &0x70a
+     43            ADCMCTL0 |= ADCINCH_2; // // start with left detect,  pin 2 A2  // previously V_THUMB (0x20) Pin 5 A5
+   \   00005C   A2D30A07     BIS.W   #0x2, &0x70a
+     44          
+     45            //V_DETECT_L (0x04) // Pin 2 A2    ADCINCH_2
+     46            // V_DETECT_R (0x08) // Pin 3 A3    ADCINCH_3
+     47            // Line above is which external input we're reading
+     48          
+     49            ADCIE |= ADCIE0; // Enable ADC conv complete interrupt
+   \   000060   92D31A07     BIS.W   #0x1, &0x71a
+     50            ADC_CONVERSION_DISABLE();
+   \   000064   A2C30007     BIC.W   #0x2, &0x700
+     51          //  ADCCTL0 |= ADCENC; // ADC enable conversion.
+     52            ADC_CONVERSION_START();
+   \   000068   92D30007     BIS.W   #0x1, &0x700
+     53          //  ADCCTL0 |= ADCSC; // ADC start conversion.
+     54          }
+   \   00006C   1001         RETA
+   \   00006E                REQUIRE _A_ADCCTL0_L
+   \   00006E                REQUIRE _A_ADCCTL2_L
+   \   00006E                REQUIRE _A_ADCCTL1_L
+   \   00006E                REQUIRE _A_ADCMCTL0_L
+   \   00006E                REQUIRE _A_ADCIE_L
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Init_ADC
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+     110  Init_ADC
+       2  _A_ADCCTL0_L
+       2  _A_ADCCTL1_L
+       2  _A_ADCCTL2_L
+       2  _A_ADCIE_L
+       2  _A_ADCMCTL0_L
+
+ 
+ 110 bytes in segment CODE
+  10 bytes in segment DATA16_AN
+ 
+ 110 bytes of CODE memory
+   0 bytes of DATA memory (+ 10 bytes shared)
+
+Errors: none
+Warnings: none

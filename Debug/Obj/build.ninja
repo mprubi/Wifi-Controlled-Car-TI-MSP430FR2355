@@ -1,0 +1,46 @@
+#Generating source browse information for project MSP430FR2355_IoT_IR_car
+
+
+#Abbreviations
+cc = C$:\Program$ Files$ (x86)\IAR$ Systems\Embedded$ Workbench$ 8.4\common\bin\SourceIndexer.exe
+ll = C$:\Program$ Files$ (x86)\IAR$ Systems\Embedded$ Workbench$ 8.4\common\bin\PbdLink.exe
+bd = C$:\Program$ Files$ (x86)\IAR$ Systems\Embedded$ Workbench$ 8.4\common\bin\makeBrowseData.exe
+
+
+
+#Rules
+rule index
+  depfile = $out.dep
+  command = $cc -out=$out -f $in
+rule link
+  command = $ll -M $out $in
+rule browsedata
+  command = $bd $in -output  $out
+
+
+
+#Build steps
+build init_ADC.pbi : index init_ADC.xcl
+build init_clocks.pbi : index init_clocks.xcl
+build init_display.pbi : index init_display.xcl
+build init_ports.pbi : index init_ports.xcl
+build init_serial.pbi : index init_serial.xcl
+build init_system.pbi : index init_system.xcl
+build init_timers.pbi : index init_timers.xcl
+build interrupt_ADC.pbi : index interrupt_ADC.xcl
+build interrupt_rs232.pbi : index interrupt_rs232.xcl
+build interrupt_switches.pbi : index interrupt_switches.xcl
+build interrupt_timers.pbi : index interrupt_timers.xcl
+build main.pbi : index main.xcl
+build notes.pbi : index notes.xcl
+build operation_display_menu.pbi : index operation_display_menu.xcl
+build operation_motor_control.pbi : index operation_motor_control.xcl
+build operation_PID_controler.pbi : index operation_PID_controler.xcl
+build MSP430FR2355_IoT_IR_car_part0.pbi : link init_ADC.pbi init_clocks.pbi init_display.pbi init_ports.pbi
+build MSP430FR2355_IoT_IR_car_part1.pbi : link init_serial.pbi init_system.pbi init_timers.pbi interrupt_ADC.pbi
+build MSP430FR2355_IoT_IR_car_part2.pbi : link interrupt_rs232.pbi interrupt_switches.pbi interrupt_timers.pbi main.pbi
+build MSP430FR2355_IoT_IR_car_part3.pbi : link notes.pbi operation_display_menu.pbi operation_motor_control.pbi operation_PID_controler.pbi
+build MSP430FR2355_IoT_IR_car.pbd : link MSP430FR2355_IoT_IR_car_part0.pbi MSP430FR2355_IoT_IR_car_part1.pbi MSP430FR2355_IoT_IR_car_part2.pbi MSP430FR2355_IoT_IR_car_part3.pbi
+build MSP430FR2355_IoT_IR_car.pbw : browsedata MSP430FR2355_IoT_IR_car.pbd
+
+

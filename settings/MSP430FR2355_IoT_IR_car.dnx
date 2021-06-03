@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<settings>
+    <Stack>
+        <FillEnabled>0</FillEnabled>
+        <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
+        <WarningThreshold>90</WarningThreshold>
+        <SpWarningsEnabled>1</SpWarningsEnabled>
+        <WarnLogOnly>1</WarnLogOnly>
+        <UseTrigger>1</UseTrigger>
+        <TriggerName>main</TriggerName>
+        <LimitSize>0</LimitSize>
+        <ByteLimit>50</ByteLimit>
+    </Stack>
+    <EEM_State_Storage>
+        <Buffer>010000000000000000000000</Buffer>
+    </EEM_State_Storage>
+    <EEM_Sequencer>
+        <Buffer>000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</Buffer>
+    </EEM_Sequencer>
+    <EEM_Cycle_Counter_0>
+        <Counter0>0000000000000000000000000000000000000000000000000000000000000000</Counter0>
+    </EEM_Cycle_Counter_0>
+    <EEM_Cycle_Counter_1>
+        <Counter1>0000000000000000000000000000000000000000000000000000000000000000</Counter1>
+    </EEM_Cycle_Counter_1>
+    <DebugChecksum>
+        <Checksum>1685297078</Checksum>
+    </DebugChecksum>
+    <CallStack>
+        <ShowArgs>0</ShowArgs>
+    </CallStack>
+    <Disassembly>
+        <MixedMode>1</MixedMode>
+    </Disassembly>
+    <watch_formats>
+        <Fmt0>{W}1:IR_LED	1	0</Fmt0>
+        <Fmt1>{W}1:P2DIR	1	0</Fmt1>
+        <Fmt2>{W}1:P2OUT	1	0</Fmt2>
+        <Fmt3>{W}1:P2SEL0	1	0</Fmt3>
+        <Fmt4>{W}1:P2SEL1	1	0</Fmt4>
+        <Fmt5>{W}1:UCA0RXBUF	5	0</Fmt5>
+        <Fmt6>{W}1:UCA1RXBUF	5	0</Fmt6>
+        <Fmt7>{W}1:UCA1TXBUF	5	0</Fmt7>
+        <Fmt8>{W}1:UCA1_loop_back	5	0</Fmt8>
+        <Fmt9>{W}1:black_line_edge_threshold	3	0</Fmt9>
+        <Fmt10>{W}1:speed_L_component	3	0</Fmt10>
+    </watch_formats>
+    <PowerLog>
+        <Title_0>Energy</Title_0>
+        <Symbol_0>0 4 0</Symbol_0>
+        <Title_1>Voltage</Title_1>
+        <Symbol_1>0 4 0</Symbol_1>
+        <Title_2>Current</Title_2>
+        <Symbol_2>0 4 0</Symbol_2>
+        <LogEnabled>0</LogEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <LiveEnabled>0</LiveEnabled>
+        <LiveFile>PowerLogLive.log</LiveFile>
+    </PowerLog>
+    <Breakpoints>
+        <Bp0>_ "STD_CODE" "{$PROJ_DIR$\motor_control.c}.28.3" 0 0 0 0 "" 0 ""</Bp0>
+        <Bp1>_ "STD_CODE" "{$PROJ_DIR$\interfaces.c}.44.10" 0 0 0 0 "" 0 ""</Bp1>
+        <Bp2>_ "STD_CODE" "{$PROJ_DIR$\init.c}.51.1" 0 0 0 0 "" 0 ""</Bp2>
+        <Bp3>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp3>
+        <Bp4>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp4>
+        <Bp5>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp5>
+        <Bp6>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp6>
+        <Bp7>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp7>
+        <Bp8>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp8>
+        <Bp9>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp9>
+        <Bp10>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp10>
+        <Bp11>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp11>
+        <Bp12>_ "STD_CODE" "{$PROJ_DIR$\init_serial.c}.0.1" 0 0 0 0 "" 0 ""</Bp12>
+        <Count>13</Count>
+    </Breakpoints>
+    <FET>
+        <Clock_mode>46</Clock_mode>
+        <Extended_Clock_mode>253</Extended_Clock_mode>
+        <Secure_Password />
+        <Extended_Clock_Control_Enable>1</Extended_Clock_Control_Enable>
+        <Advanced_Extended_Clock_Control>0</Advanced_Extended_Clock_Control>
+        <Emulation_mode>0</Emulation_mode>
+        <Free_running>0</Free_running>
+        <Shutting_Down>3</Shutting_Down>
+    </FET>
+    <Memory_Dump>
+        <Start_address />
+        <Lenghth />
+        <Address_info>0</Address_info>
+        <Format>0</Format>
+        <Dump_registers>0</Dump_registers>
+        <PC>0</PC>
+        <SP>0</SP>
+        <SR>0</SR>
+        <all_registers>0</all_registers>
+        <File_name />
+    </Memory_Dump>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
+    <Aliases>
+        <A0>_ "D:\Google Drive - NCSU\ECE306\Current\Homework\HW1\Homework 01 Simple\LCD.c" ""</A0>
+        <Count>1</Count>
+        <SuppressDialog>1</SuppressDialog>
+    </Aliases>
+    <PowerProbe>
+        <Frequency>10000</Frequency>
+        <Probe0>Current</Probe0>
+        <ProbeSetup0>0 1 1 2 0 0</ProbeSetup0>
+        <Probe1>Voltage</Probe1>
+        <ProbeSetup1>1 1 1 4 0 0</ProbeSetup1>
+        <Probe2>Energy</Probe2>
+        <ProbeSetup2>4 1 1 10 0 0</ProbeSetup2>
+    </PowerProbe>
+</settings>

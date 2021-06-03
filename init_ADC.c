@@ -47,6 +47,8 @@ void Init_ADC (void){
   // Line above is which external input we're reading
 
   ADCIE |= ADCIE0; // Enable ADC conv complete interrupt
-  ADCCTL0 |= ADCENC; // ADC enable conversion.
-  ADCCTL0 |= ADCSC; // ADC start conversion.
+  ADC_CONVERSION_DISABLE();
+//  ADCCTL0 |= ADCENC; // ADC enable conversion.
+  ADC_CONVERSION_START();
+//  ADCCTL0 |= ADCSC; // ADC start conversion.
 }

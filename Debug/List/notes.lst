@@ -1,0 +1,725 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:52
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\notes.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW8B9B.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\notes.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\notes.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\notes.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\notes.c
+      1          //____________________
+      2          
+      3          
+      4          /*  //This is my first code to start and stop the motor for predefined time, defined in MAIN
+      5              my_timer++;
+      6              if(my_timer > 0xC350) { //about one second of time
+      7                stop_flag = 1;
+      8                my_timer = RESET_STATE;
+      9              }
+     10              if((my_timer < 0xC350) && (stop_flag == 0)){
+     11                turn_on++;  //move forward/motor power
+     12                  if(turn_on == 75){
+     13                    //GREEN_LED_ON();
+     14                    R_FORWARD_ON();
+     15                    L_FORWARD_ON();
+     16                  }
+     17                  if(turn_on == 150){
+     18                    //GREEN_LED_OFF()
+     19                    R_FORWARD_OFF();
+     20                    L_FORWARD_OFF();
+     21                    turn_on = RESET_STATE;
+     22                  }
+     23              }
+     24              if(stop_flag == 1){
+     25                //GREEN_LED_OFF();
+     26                    R_FORWARD_OFF();
+     27                    L_FORWARD_OFF();
+     28                    //my_timer = ZERO;
+     29               }
+     30          
+     31          */
+     32          
+     33          /*
+     34          //Carlsons example code for project 3, getting car to briefly move, no need to use this. Just keeping to look back
+     35          
+     36              if(Time_Sequence > 250){
+     37                Time_Sequence = ZERO;
+     38          
+     39                if(my_start_moving == 1){
+     40                  my_moving++;
+     41                }
+     42                if(my_start_moving >= 2){
+     43                  forward();
+     44                }
+     45                if(my_start_moving >= 4){
+     46                  stop();
+     47                  my_moving = ZERO;
+     48                  my_start_moving = ZERO;
+     49                }
+     50              }
+     51          
+     52          
+     53            }
+     54          
+     55          
+     56          
+     57          //------------------------------------------------------------------------------
+     58          }
+     59          
+     60          */
+     61          
+     62              //--------------------------------------------------------------
+     63              /*code for basic bare bones custom timing derived from Time_sequence
+     64                  the importance of this code is to be able to use timing without access
+     65                  to advanced clock tools (like the constraint imposed by an arduino)
+     66                */
+     67              /*
+     68          
+     69                extern unsigned int old_time_sequence = 0;
+     70                extern unsigned int my_time;
+     71                extern unsigned int period_count = 0;
+     72          
+     73                if(Time_Sequence != old_time_sequence){ // if timer moved forward
+     74                my_time++;                            // derive new timing variable
+     75                old_time_sequence = Time_Sequence;    // reset timer for new reference
+     76                period_count++;  // "poor man's" PWM
+     77                time_changed = 1;
+     78              }
+     79              //----------------------------------------------------------------
+     80          */
+     81          
+     82          
+     83          /*
+     84          void wheels_straight_control(void){
+     85          switch(operation){ //switch control should determine whether this operation is true
+     86              case IDLE:  //does nothing but stay in this state until button is pressed
+     87          //will have to check everything in idle every time, but other cases need a
+     88          //one_time varible, polling for wait state
+     89          
+     90              case WAIT:  // just for moving away from button, NOT for switch debouncing
+     91          // use timing to wait until safe to check button state
+     92          // wait for a portion of the period (a few count cycles)
+     93          // commence counting of some count values using myTime
+     94          //myTime = 0;
+     95          //if(myTime == some value ){swich to next case, no break statement}
+     96          
+     97              case OFF:
+     98          //turn wheels off;
+     99          break;
+    100              case ON:
+    101          if(period_count >= DEFINED_PERIOD){
+    102          period_count = 0;
+    103          //turn both wheels on
+    104                }
+    105          if(period_count >= TOO_FAST){
+    106          //turn fast wheel off
+    107                }
+    108          break;
+    109          default: break;
+    110            }
+    111          }
+    112          
+    113          */
+    114          
+    115          /*
+    116          switch(STRAIGHT){
+    117                  case IDLE:
+    118          break;
+    119                  case WAIT:
+    120          //count some time off your my_time value
+    121          break;
+    122                  case START:
+    123          //this is where you place your wheel control
+    124          break;
+    125                  case END:
+    126          break;
+    127          default: break;
+    128                }
+    129          
+    130          switch(figure8_state){
+    131                  case IDLE:
+    132          break;
+    133                  case WAIT:
+    134          //count some time off your my_time value
+    135          break;
+    136                  case START:
+    137          //this is where you place your wheel control
+    138          break;
+    139                  case END:
+    140          break;
+    141          default: break;
+    142                }
+    143          
+    144          */
+    145          /*
+    146          //my countdown timer code
+    147          
+    148          if(this_timer != my_time){
+    149                wait_count++;
+    150                this_timer = my_time;
+    151                GREEN_LED_OFF();
+    152                RED_LED_TOGGLE();
+    153              }
+    154              if(wait_count == WAIT_THIS_LONG) {
+    155                motion_state = START;
+    156                wait_count = RESET_STATE;
+    157              }
+    158          */
+    159          
+    160          /*
+    161          
+    162          A few things to remember this week.
+    163          There is a set of Slides under Lecture Slides that discuss button configuration.
+    164          You can use your time to get that to work. A good test is to comment out the LED
+    165          control for the Switch Statement in Main and use a switch to turn on an Led and
+    166          Turn off an LED.
+    167          We covered extern and globals in class, but I am sure that likely is one of those
+    168          discussions that did not get fully absorbed.
+    169          
+    170          In one of your files where you first require a variable, you will define a global
+    171          [unless it is a variable only needed in a specific function]. Defining that global
+    172          will be in the form of:
+    173          
+    174          unsigned int period_count;
+    175          
+    176          Since it is not assigned an initial value, it will be placed in the .bss section
+    177          [This is more to help with your first test].
+    178          
+    179          As you continue coding and you discover you need to use that same global in another
+    180          file, then you will identify to that file that it has already been defined by giving
+    181          it the global definition in the firm:
+    182          
+    183          extern unsigned int period_count;
+    184          
+    185          */
+    186          //ctrl A, ctrl T  re-does indentation as configured in settings
+    187          
+    188          
+    189          /*
+    190          //NOTE: This code given to me does not work
+    191            //BASIC FET BOARD TEST: To make sure forward and reverse are not on simultaneously
+    192            // place this in main before while loop
+    193            if(((P6OUT | R_FORWARD) + (P6OUT | R_REVERSE)) == (R_FORWARD+R_REVERSE)){
+    194              int oops=1;
+    195            }
+    196            if(((P6OUT | L_FORWARD)+(P6OUT | L_REVERSE)) == (L_FORWARD+L_REVERSE)){
+    197              int oops=1;
+    198            }
+    199          
+    200          */
+    201          
+    202          //    // This is the "poor man's" timer when you need a timer in pinch
+    203          //    if(Time_Sequence != old_time_sequence){ // if timer moved forward
+    204          //      old_time_sequence = Time_Sequence;    // reset timer for new reference
+    205          //      time_changed = 1;
+    206          //      my_time++;
+    207          //      cycle_time++;
+    208          //    }
+    209          
+    210          
+    211          
+    212          /*  Code for project 6 (hitting blck line and pivoting)
+    213          //    if(current_start_process != start_process){
+    214          //
+    215          //      switch(proj_6_state){
+    216          //      case 0:
+    217          //        if(ADC_Left_Sensor < 1020){
+    218          //          if(one_time){
+    219          //            start_counting = time_seconds + 1;
+    220          //            one_time = 0;
+    221          //          }
+    222          //          if(start_counting == time_seconds){
+    223          //            GREEN_LED_ON();
+    224          //            forward(MEDIUM);
+    225          //          }
+    226          //        }else if(ADC_Left_Sensor > 1020){
+    227          //          proj_6_state = 1;
+    228          //          one_time = 1;
+    229          //          GREEN_LED_OFF();
+    230          //        }
+    231          //        break;
+    232          //      case 1:
+    233          //        stop_car();
+    234          //
+    235          //        if(one_time){
+    236          //          start_counting = time_seconds + 1;
+    237          //          one_time = 0;
+    238          //          GREEN_LED_ON();
+    239          //        }
+    240          //        if(start_counting == time_seconds){
+    241          //          GREEN_LED_OFF();
+    242          //          proj_6_state = 2;
+    243          //          one_time = 1;
+    244          //        }
+    245          //        break;
+    246          //      case 2:
+    247          //        if(one_time){
+    248          //          start_counting = time_half_seconds + 1;
+    249          //          one_time = 0;
+    250          //          GREEN_LED_ON();
+    251          //
+    252          //          LEFT_FORWARD_SPEED = FAST;
+    253          //          RIGHT_REVERSE_SPEED = FAST;
+    254          //        }
+    255          //        if(start_counting == time_half_seconds){
+    256          //          stop_car();
+    257          //          proj_6_state = 0;
+    258          //          one_time = 1;
+    259          //          current_start_process = start_process;
+    260          //
+    261          //        }
+    262          //
+    263          //      break;
+    264          //    }
+    265          //  }
+    266          */
+    267          
+    268          /*
+    269            9,600 Baud Rate
+    270            1. Calculate N = fBRCLK / Baudrate
+    271            N = SMCLK / 9,600 => 8,000,000 / 9,600 = 833.3333333
+    272            if N > 16 continue with step 3, otherwise with step 2
+    273          
+    274            2. OS16 = 0, UCBRx = INT(N)
+    275          
+    276            continue with step 4
+    277          
+    278            3. OS16 = 1,
+    279                UCx           = INT(N/16)
+    280                              = INT(N/16)
+    281                              = 833.333/16
+    282                              => 52 = 52.08333333
+    283                UCFx          = INT([(N/16) - INT(N/16)] ×16)
+    284                              = ([833.333/16 - INT(833.333/16)]*16)
+    285                              = (52.08333333 - 52)*16
+    286                              = INT(0.083*16) = INT(1.328)
+    287                              => 1
+    288          
+    289            4. UCSx is found by looking up the fractional part of N (= N INT(N)) in table Table 18-4
+    290                Decimal of SMCLK / 8,000,000 / 9,600 = 833.3333333 => 0.333 yields 0x49 [Table]
+    291            5. If OS16 = 0 was chosen, a detailed error calculation is recommended to be performed
+    292          
+    293                              TX error (%) RX error (%)
+    294          
+    295            BRCLK   Baudrate UCOS16 UCBRx UCFx UCSx  neg  pos  neg  pos
+    296            8000000  9600       1     52    1  0x49 0.08 0.04 0.10 0.14
+    297          
+    298            */
+    299          
+    300          /*
+    301          115,200 Baud Rate
+    302            1. Calculate N = fBRCLK / Baudrate
+    303            N = SMCLK / 115,200 => 8,000,000 / 115,200 = 69.444444
+    304            if N > 16 continue with step 3, otherwise with step 2
+    305          
+    306            2. OS16 = 0, UCBRx = INT(N)
+    307          
+    308            continue with step 4
+    309          
+    310            3. OS16 = 1,
+    311                UCx           = INT(N/16)
+    312                              = INT(N/16)
+    313                              = 69.444444/16
+    314                              => 5
+    315                UCFx          = INT([(N/16) - INT(N/16)] ×16)
+    316                              = ([69.444444/16 - INT(69.444444/16)]*16)
+    317                              = (4.340275 - 4)*16
+    318                              = 0.340275*16 = 5.4444
+    319                              => 5
+    320          
+    321            4. UCSx is found by looking up the fractional part of N (= N INT(N)) in table Table 18-4
+    322                Decimal of SMCLK / 8,000,000 / 115,200 = 69.444444 => 0.444444 yields 0x55 [Table]
+    323            5. If OS16 = 0 was chosen, a detailed error calculation is recommended to be performed
+    324          
+    325                              TX error (%) RX error (%)
+    326          
+    327            BRCLK   Baudrate UCOS16 UCBRx UCFx UCSx  neg  pos  neg  pos
+    328            8000000  115,200   1     5     5  0x55  0.08 0.04 0.10 0.14
+    329          */
+    330          
+    331          /////////////////////////////////////////
+    332          /*  -- Wifi Module initial configuration log --
+    333          ^AT
+    334          AT
+    335          
+    336          OK
+    337          ^AT+RESET=2
+    338          AT+RESET=2
+    339          
+    340          APP Reset-APP SW Reset
+    341          
+    342          ---MEM-DUMP-START:
+    343          
+    344          
+    345          APP-ERROR-CODE:0 0 0 0
+    346          
+    347          APP-ERROR-PARAM:
+    348          R[ 0]:00000000
+    349          R[ 1]:00000000
+    350          R[ 2]:00000000
+    351          R[ 3]:00000000
+    352          R[ 4]:00000000
+    353          R[ 5]:00000000
+    354          R[ 6]:00000000
+    355          R[ 7]:00000000
+    356          R[ 8]:00000000
+    357          R[ 9]:00000000
+    358          R[10]:00000000
+    359          R[11]:00000000
+    360          R[12]:00000000
+    361          R[13]:00000000
+    362          R[14]:00000000
+    363          R[15]:00000000
+    364          
+    365          
+    366          ---MEM-DUMP-END:
+    367          Hard reset
+    368          Hard reset
+    369          Factory reset
+    370          Factory reset
+    371          ^AT&F
+    372          AT&F
+    373          
+    374          OK
+    375          step 39
+    376          step 39
+    377          save P0
+    378          save P0
+    379          ^AT&W0
+    380          AT&W0
+    381          
+    382          OK
+    383          save P1
+    384          save P1
+    385          ^AT&W1
+    386          AT&W1
+    387          
+    388          OK
+    389          boot to P1
+    390          boot to P1
+    391          ^AT&Y1
+    392          AT&Y1
+    393          
+    394          OK
+    395          establish clean conf
+    396          establish clean conf
+    397          ^AT&W1
+    398          AT&W1
+    399          
+    400          OK
+    401          soft reset
+    402          soft reset
+    403          ^AT+RESET=1
+    404          AT+RESET=1
+    405          
+    406          Serial2WiFi APP
+    407          42 now in stable state
+    408          42 now in stable state
+    409          next config net settings
+    410          next config net settings
+    411          AT+RESET=1
+    412          ^AT
+    413          AT
+    414          
+    415          OK
+    416          query net con manag
+    417          query net con manag
+    418          ^AT+NCMAUTO=?
+    419          AT+NCMAUTO=?
+    420          
+    421          NCM STARTED:7
+    422          
+    423          OK
+    424          stop NCM
+    425          stop NCM
+    426          ^AT+NCMAUTO=0,0,0
+    427          AT+NCMAUTO=0,0,0
+    428          
+    429          OK
+    430          was already stopped
+    431          was already stopped
+    432          reboot P1
+    433          reboot P1
+    434          ^AT&Y1
+    435          AT&Y1
+    436          
+    437          OK
+    438          save to P1
+    439          save to P1
+    440          ^AT&W1
+    441          AT&W1
+    442          
+    443          OK
+    444          set Log lvl 2
+    445          set Log lvl 2
+    446          ^AT+LOGLVL=2
+    447          AT+LOGLVL=2
+    448          
+    449          OK
+    450          set radio always ON
+    451          set radio always ON
+    452          ^AT+WRXACTIVE=1
+    453          AT+WRXACTIVE=1
+    454          
+    455          OK
+    456          enable DHCP client
+    457          enable DHCP client
+    458          ^AT+NDHCP=1
+    459          AT+NDHCP=1
+    460          
+    461          OK
+    462          set wireless mode
+    463          set wireless mode
+    464          0 is WiFi station mode
+    465          0 is WiFi station mode
+    466          ^AT+WM=0
+    467          AT+WM=0
+    468          
+    469          OK
+    470          52 initiate auto con mode
+    471          52
+    472          ^AT+WAUTO=0,"IGiveUp"
+    473          AT+WAUTO=0,"IGiveUp"
+    474          
+    475          OK
+    476          dd was a finger slip
+    477          d was a finger slip
+    478          set pass
+    479          set pass
+    480          ^AT+WAUTO="rubyloving"
+    481          AT+WAUTO="rubyloving"
+    482          
+    483          ERROR: INVALID INPUT
+    484          ^AT
+    485          AT
+    486          
+    487          OK
+    488          ^AT+WWPA="rubyloving"
+    489          AT+WWPA="rubyloving"
+    490          
+    491          OK
+    492          save to P1
+    493          save to P1
+    494          ^AT&W1
+    495          AT&W1
+    496          
+    497          OK
+    498          start NCM
+    499          start NCM
+    500          ^AT+NCMAUTO=0,1,0
+    501          AT+NCMAUTO=0,1,0
+    502          
+    503          OK
+    504          
+    505              IP              SubNet         Gateway
+    506           192.168.0.20:255.255.255.0:192.168.0.1
+    507          NWCONN-SUCCESS
+    508          save to P1
+    509          save to P1
+    510          ^AT&W1
+    511          AT&W1
+    512          
+    513          OK
+    514          reboot IoT
+    515          reboot IoT
+    516          ^AT&Y1
+    517          AT&Y1
+    518          
+    519          OK
+    520          query NCM state
+    521          query NCM state
+    522          ^AT+NCMAUTO=??
+    523          AT+NCMAUTO=??
+    524          
+    525          ACTIVE CLIENT PROFILE
+    526          +NDHCP=1 +NSET=192.168.1.99,255.255.255.0,192.168.1.1
+    527          +DNS1=0.0.0.0, +DNS2=0.0.0.0
+    528          +WM=0 +WAUTO=0,"IGiveUp",,
+    529          +NAUTO=1,1,192.168.1.99,8888
+    530          +WAUTH=0 +WWPA="rubyloving"+PSK-valid=1 +SSID=IGiveUp
+    531          +WWEP1=1234567890 +WWEP2=
+    532          +WWEP3= +WWEP4=
+    533          
+    534          ACTIVE LIMITED-AP PROFILE
+    535          +NSET=192.168.240.1,255.255.255.0,192.168.240.1
+    536          +WAUTO=2,"GainSpanProv",1
+    537          +STATIONS=8  +REGDOMAIN=0  +BEACONINTRL=100
+    538          +DHCPSRVR=1  +DHCPCLIENTS=16  +DHCPLEASE=86400
+    539          +DNSSRVR=1  +DNSDOMAIN=config.gainspan
+    540          OK
+    541          check net status
+    542          check net status
+    543          ^AT+NSTAT=?
+    544          AT+NSTAT=?
+    545          MAC=00:21:7e:2f:5c:79
+    546          WSTATE=CONNECTED     MODE=STA
+    547          BSSID=d8:0f:99:a8:ea:de   SSID="IGiveUp" CHANNEL=1   SECURITY=WPA2-PERSONAL
+    548          RSSI=-50
+    549          IP addr=192.168.0.20   SubNet=255.255.255.0  Gateway=192.168.0.1
+    550          DNS1=209.18.47.61       DNS2=209.18.47.62
+    551          Rx Count=246     Tx Count=5
+    552          
+    553          OK
+    554          reset
+    555          reset
+    556          ^AT+RESET=1
+    557          AT+RESET=1
+    558          
+    559          Serial2WiFi APP
+    560          
+    561              IP              SubNet         Gateway
+    562           192.168.0.20:255.255.255.0:192.168.0.1
+    563          NWCONN-SUCCESS
+    564          open port for comms
+    565          open port for comms
+    566          ^AT+NSTCP=<Port>,1
+    567          AT+NSTCP=<Port>,1
+    568          
+    569          ERROR: INVALID INPUT
+    570          ^AT+NSTCP=<Port>,1030
+    571          AT+NSTCP=<Port>,1030
+    572          
+    573          ERROR: INVALID INPUT
+    574          ^AT+NSTCP=<Port>1030
+    575          AT+NSTCP=<Port>1030
+    576          
+    577          ERROR: INVALID INPUT
+    578          ^AT+NSTAT=?
+    579          AT+NSTAT=?
+    580          MAC=00:21:7e:2f:5c:79
+    581          WSTATE=CONNECTED     MODE=STA
+    582          BSSID=d8:0f:99:a8:ea:de   SSID="IGiveUp" CHANNEL=1   SECURITY=WPA2-PERSONAL
+    583          RSSI=-55
+    584          IP addr=192.168.0.20   SubNet=255.255.255.0  Gateway=192.168.0.1
+    585          DNS1=209.18.47.61       DNS2=209.18.47.62
+    586          Rx Count=780     Tx Count=6
+    587          
+    588          OK
+    589          ^AT+NSTCP=<1030>1
+    590          AT+NSTCP=<1030>1
+    591          
+    592          ERROR: INVALID INPUT
+    593          ^AT+NSTCP=<Port>,1
+    594          AT+NSTCP=<Port>,1
+    595          
+    596          ERROR: INVALID INPUT
+    597          ^AT+NSTCP=<Port>,1
+    598          ^AT+NSTCP=<Port>,1,1030
+    599          ^AT
+    600          AT+NSTCP=<Port>,1
+    601          
+    602          ERROR: INVALID INPUT
+    603          [00]^AT
+    604          AT
+    605          
+    606          ERROR: INVALID INPUT
+    607          ^AT
+    608          AT
+    609          
+    610          OK
+    611          ^AT+NSTCP=<Port>,15,1030
+    612          AT+NSTCP=<Port>,15,1030
+    613          
+    614          ERROR: INVALID INPUT
+    615          ^AT+NSTCP=<Port>,1
+    616          AT+NSTCP=<Port>,1
+    617          
+    618          ERROR: INVALID INPUT
+    619          ^AT+NSTCP=1030,1
+    620          AT+NSTCP=1030,1
+    621          
+    622          CONNECT 0
+    623          
+    624          OK
+    625          the above WORKED!
+    626          the above WORKED!
+    627          
+    628          CONNECT 0 1 192.168.0.27 54110
+    629          the above came from
+    630          the above came from
+    631          java TCP client
+    632          java TCP client
+    633          */
+    634          
+    635          
+    636          
+    637          
+    638          
+    639          
+    640          
+    641          
+    642          
+    643          
+    644          //if(usb_rx_ring_rd != usb_rx_ring_wr){//new character ready from ring buffer
+    645          //
+    646          //    //grab the character, and null the ring buffer
+    647          //    USB_Process_Buff[P_BUFF_1][usb_process_buff_wr++] = USB_Rx_Ring_Buff[usb_rx_ring_rd];
+    648          //    USB_Rx_Ring_Buff[usb_rx_ring_rd++] = NULL_CHAR;
+    649          //
+    650          //  }else if (usb_rx_ring_rd == usb_rx_ring_wr){ //
+    651          //    USB_Process_Buff[P_BUFF_1][usb_process_buff_wr] = USB_Rx_Ring_Buff[usb_rx_ring_rd];
+    652          //    USB_Rx_Ring_Buff[usb_rx_ring_rd] = NULL_CHAR;
+    653          //    usb_process_buff_wr = RESET;
+    654          //
+    655          //    //COPY to BUFF 2 once at the end
+    656          //    for(int i = 0; i<P_BUFF_SIZE_32; i++){
+    657          //      USB_Process_Buff[P_BUFF_2][i] = USB_Process_Buff[P_BUFF_1][i];  //copying EVERYTHING to TWO buffers
+    658          //      //USB_Process_Buff[P_BUFF_1][i] = NULL_CHAR; //
+    659          //    }
+    660          //
+    661          //    ring_to_process_buffer_complete = TRUE;
+    662          //  }
+    663          //  //            check boundaries of ring and process rd ptrs
+    664          //  //       NOT checking if wr wrapped around already
+    665          //  if (usb_rx_ring_rd >= (sizeof(USB_Rx_Ring_Buff))){
+    666          //    usb_rx_ring_rd = RESET;
+    667          //  }
+    668          //  //by the end of this function, expect P_BUFF_1 to be cleared
+    669          //// decide if what I have is meant for IoT or PC
+    670          //  if(ring_to_process_buffer_complete){
+    671          //    ring_to_process_buffer_complete = FALSE;
+    672          //    if(USB_Process_Buff[P_BUFF_1][0] == '^'){ //incomming command for IoT
+    673          //      strip_carat_before_IoT();
+    674          //      load_TX_Out_buff_clr_P_Buff_1_and_kick_off(UCA0_TX); // send to IoT
+    675          //      clear_process_buffer(UCA1_TX, P_BUFF_1, P_BUFF_SIZE_32); //still clearing the USB process buffer here before msg reaches IoT
+    676          //    }else{ // passthrough PC
+    677          //
+    678          //      load_TX_Out_buff_clr_P_Buff_1_and_kick_off(UCA1_TX); // loop back around to PC
+    679          //      clear_process_buffer(UCA1_TX, P_BUFF_1, P_BUFF_SIZE_32);
+    680          //    }
+    681          
+    682          
+
+
+ 
+
+ 
+
+
+Errors: none
+Warnings: none

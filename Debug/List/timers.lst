@@ -1,0 +1,554 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:17
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\timers.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EWA44D.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\timers.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\timers.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\timers.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\timers.c
+      1          //This file is for timer configurations
+      2          
+      3          // TimerB0 initialization sets up both B0_0 , B0_1 B0_2 and overflow
+      4          #include  "functions.h"
+      5          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x380
+   \   union <unnamed> _A_TB0CTL_L
+   \                     _A_TB0CTL_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x382
+   \   union <unnamed> _A_TB0CCTL0_L
+   \                     _A_TB0CCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x384
+   \   union <unnamed> _A_TB0CCTL1_L
+   \                     _A_TB0CCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x386
+   \   union <unnamed> _A_TB0CCTL2_L
+   \                     _A_TB0CCTL2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x392
+   \   union <unnamed> _A_TB0CCR0_L
+   \                     _A_TB0CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x394
+   \   union <unnamed> _A_TB0CCR1_L
+   \                     _A_TB0CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x396
+   \   union <unnamed> _A_TB0CCR2_L
+   \                     _A_TB0CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3a0
+   \   union <unnamed> _A_TB0EX0_L
+   \                     _A_TB0EX0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3c0
+   \   union <unnamed> _A_TB1CTL_L
+   \                     _A_TB1CTL_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3c2
+   \   union <unnamed> _A_TB1CCTL0_L
+   \                     _A_TB1CCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3c4
+   \   union <unnamed> _A_TB1CCTL1_L
+   \                     _A_TB1CCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3c6
+   \   union <unnamed> _A_TB1CCTL2_L
+   \                     _A_TB1CCTL2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3d2
+   \   union <unnamed> _A_TB1CCR0_L
+   \                     _A_TB1CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3d4
+   \   union <unnamed> _A_TB1CCR1_L
+   \                     _A_TB1CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3d6
+   \   union <unnamed> _A_TB1CCR2_L
+   \                     _A_TB1CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3e0
+   \   union <unnamed> _A_TB1EX0_L
+   \                     _A_TB1EX0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x400
+   \   union <unnamed> _A_TB2CTL_L
+   \                     _A_TB2CTL_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x402
+   \   union <unnamed> _A_TB2CCTL0_L
+   \                     _A_TB2CCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x404
+   \   union <unnamed> _A_TB2CCTL1_L
+   \                     _A_TB2CCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x406
+   \   union <unnamed> _A_TB2CCTL2_L
+   \                     _A_TB2CCTL2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x412
+   \   union <unnamed> _A_TB2CCR0_L
+   \                     _A_TB2CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x414
+   \   union <unnamed> _A_TB2CCR1_L
+   \                     _A_TB2CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x416
+   \   union <unnamed> _A_TB2CCR2_L
+   \                     _A_TB2CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x420
+   \   union <unnamed> _A_TB2EX0_L
+   \                     _A_TB2EX0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x440
+   \   union <unnamed> _A_TB3CTL_L
+   \                     _A_TB3CTL_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x444
+   \   union <unnamed> _A_TB3CCTL1_L
+   \                     _A_TB3CCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x446
+   \   union <unnamed> _A_TB3CCTL2_L
+   \                     _A_TB3CCTL2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x448
+   \   union <unnamed> _A_TB3CCTL3_L
+   \                     _A_TB3CCTL3_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x44a
+   \   union <unnamed> _A_TB3CCTL4_L
+   \                     _A_TB3CCTL4_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x452
+   \   union <unnamed> _A_TB3CCR0_L
+   \                     _A_TB3CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x454
+   \   union <unnamed> _A_TB3CCR1_L
+   \                     _A_TB3CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x456
+   \   union <unnamed> _A_TB3CCR2_L
+   \                     _A_TB3CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x458
+   \   union <unnamed> _A_TB3CCR3_L
+   \                     _A_TB3CCR3_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x45a
+   \   union <unnamed> _A_TB3CCR4_L
+   \                     _A_TB3CCR4_L:
+   \   000000                DS8 2
+      6          #include <string.h>
+      7          #include "macros.h"
+      8          
+
+   \                                 In  segment CODE, align 2
+      9          void Init_Timers(void){
+   \                     Init_Timers:
+     10            Init_Timer_B0();
+   \   000000   ........     CALLA   #Init_Timer_B0
+     11            Init_Timer_B1();
+   \   000004   ........     CALLA   #Init_Timer_B1
+     12            Init_Timer_B2();
+   \   000008   ........     CALLA   #Init_Timer_B2
+     13            Init_Timer_B3();
+   \   00000C   ........     CALLA   #Init_Timer_B3
+     14          }
+   \   000010   1001         RETA
+     15          
+     16          // If using ACLCK as src, then there are no ID aor TxyEX0 dividers
+     17          
+     18          //Timer uses:
+     19          //TB0_CCR0 - update display (order of 200 mSec)
+     20          //TB0_CCR1 - SW1 debounce
+     21          //TB0_CCR2 - SW2 debounce
+     22          
+
+   \                                 In  segment CODE, align 2
+     23          void Init_Timer_B0(void){
+   \                     Init_Timer_B0:
+     24            TB0CTL = TBSSEL__SMCLK; // set TimerB0 register control to use SMCLK source, ACLK could have been another source
+   \   000000   B24000028003 MOV.W   #0x200, &0x380
+     25          
+     26            TB0CTL |= TBCLR ; // Resets TB0R , clock divider, count direction
+   \   000006   A2D28003     BIS.W   #0x4, &0x380
+     27                            // clears the counter
+     28            TB0CTL |= MC__CONTINOUS; // Continuous up
+   \   00000A   B2D020008003 BIS.W   #0x20, &0x380
+     29            // counter counts from 0x0000 to 0xFFFF (0 to 65535), then starts over at zero
+     30            // This generates a saw tooth wave
+     31          
+     32            TB0CTL |= ID__2; // Divide clock by 2
+   \   000010   B2D040008003 BIS.W   #0x40, &0x380
+     33            // ID_1 would be a divide by two also (2^1 power)
+     34          
+     35            TB0EX0 = TBIDEX__8; // EX ("Extra" divider)Divide clock by an additional 8
+   \   000016   B2400700A003 MOV.W   #0x7, &0x3a0
+     36            // or TBIDEX_7 would also be a divide by 8
+     37            //at this point, the timer would be at 500kHz
+     38          
+     39            TB0CCR0 = CCR0_16_MSEC_INTERVAL; // CCR0: this is the value up the saw tooth ramp
+   \   00001C   B240401F9203 MOV.W   #0x1f40, &0x392
+     40             // at which you want to trigger an interrupt and then add back in the ISR
+     41             // this value is the interval that you want to add (when in the ISR) back to
+     42            //continue to progress
+     43          
+     44            TB0CCTL0 &= ~CCIFG; //clear any possible pending interrupt flags
+   \   000022   92C38203     BIC.W   #0x1, &0x382
+     45            TB0CCTL0 |= CCIE; // CCR0 enable interrupt
+   \   000026   B2D010008203 BIS.W   #0x10, &0x382
+     46          
+     47          /*
+     48             CTL:  "Capture Control"
+     49             CCR: "Capture Compare Register"
+     50             There are SEVEN usable Timers, and UP TO SEVEN usable Capture Compare Registers
+     51             When the TB0R = TB0CCR# (when the preset point on the saw tooth wave arrives),
+     52              a hardware generated interrupt happens,
+     53                the CCIFG (Interrupt Flag)
+     54          */
+     55            // CCR1 will be utilized for the debounce timer for SW1
+     56            TB0CCR1 = TB0_SEC_0_100; // CCR1
+   \   00002C   B24050C39403 MOV.W   #0xc350, &0x394
+     57            TB0CCTL1 &= ~CCIFG;  //clear any possible pending interrupt flags
+   \   000032   92C38403     BIC.W   #0x1, &0x384
+     58            TB0CCTL1 |= CCIE; // CCR1 enable interrupt
+   \   000036   B2D010008403 BIS.W   #0x10, &0x384
+     59          
+     60            // CCR2 will be utilized for the debounce timer for SW2
+     61            TB0CCR2 = TB0_SEC_0_100; // CCR2
+   \   00003C   B24050C39603 MOV.W   #0xc350, &0x396
+     62            TB0CCTL2 &= ~CCIFG;  //clear any possible pending interrupt flags
+   \   000042   92C38603     BIC.W   #0x1, &0x386
+     63            TB0CCTL2 |= CCIE; // CCR2 enable interrupt
+   \   000046   B2D010008603 BIS.W   #0x10, &0x386
+     64          
+     65            TB0CTL &= ~TBIE ; // Disable Overflow Interrupt
+   \   00004C   A2C38003     BIC.W   #0x2, &0x380
+     66            TB0CTL &= ~TBIFG ; // Clear Overflow Interrupt flag
+   \   000050   92C38003     BIC.W   #0x1, &0x380
+     67            //When the TB0R = TB0CCR# rolls over from 65535 to 0,
+     68            // a hardware generated interrupt happens, the TBIFG (Timer B0 Overflow Interrupt Flag)
+     69          }
+   \   000054   1001         RETA
+   \   000056                REQUIRE _A_TB0CTL_L
+   \   000056                REQUIRE _A_TB0EX0_L
+   \   000056                REQUIRE _A_TB0CCR0_L
+   \   000056                REQUIRE _A_TB0CCTL0_L
+   \   000056                REQUIRE _A_TB0CCR1_L
+   \   000056                REQUIRE _A_TB0CCTL1_L
+   \   000056                REQUIRE _A_TB0CCR2_L
+   \   000056                REQUIRE _A_TB0CCTL2_L
+     70          //
+     71          
+     72          //Timer uses: SMCLK
+     73          //TB1_CCR0 - HextoBCD conversions and displaying ADC values
+     74          //TB1_CCR1 - ADC measurements
+     75          //TB1_CCR2 -
+
+   \                                 In  segment CODE, align 2
+     76          void Init_Timer_B1(void){
+   \                     Init_Timer_B1:
+     77          
+     78            // SMCLK -> 8mHz / 8 / 8 / (1 / desired time)
+     79            TB1CTL = TBSSEL__SMCLK;
+   \   000000   B2400002C003 MOV.W   #0x200, &0x3c0
+     80          
+     81            TB1CTL |= TBCLR ; // Resets TB0R , clock divider, count direction
+   \   000006   A2D2C003     BIS.W   #0x4, &0x3c0
+     82          
+     83            TB1CTL |= MC__CONTINOUS;
+   \   00000A   B2D02000C003 BIS.W   #0x20, &0x3c0
+     84          
+     85            TB1CTL |= ID__8;
+   \   000010   B2D0C000C003 BIS.W   #0xc0, &0x3c0
+     86          
+     87            TB1EX0 = TBIDEX__8;
+   \   000016   B2400700E003 MOV.W   #0x7, &0x3e0
+     88          
+     89            TB1CCR0 = TB1_SEC_0_200; // 200 msec
+   \   00001C   B240A861D203 MOV.W   #0x61a8, &0x3d2
+     90            TB1CCTL0 &= ~CCIFG;
+   \   000022   92C3C203     BIC.W   #0x1, &0x3c2
+     91            TB1CCTL0 |= CCIE;
+   \   000026   B2D01000C203 BIS.W   #0x10, &0x3c2
+     92          
+     93            TB1CCR1 = TB1_SEC_0_030; // 30 msec
+   \   00002C   B240A60ED403 MOV.W   #0xea6, &0x3d4
+     94            TB1CCTL1 &= ~CCIFG;
+   \   000032   92C3C403     BIC.W   #0x1, &0x3c4
+     95            TB1CCTL1 |= CCIE;
+   \   000036   B2D01000C403 BIS.W   #0x10, &0x3c4
+     96          
+     97            TB1CCR2 = TB1_SEC_0_050;   // 50 msec
+   \   00003C   B2406A18D603 MOV.W   #0x186a, &0x3d6
+     98            TB1CCTL2 &= ~CCIFG;
+   \   000042   92C3C603     BIC.W   #0x1, &0x3c6
+     99            TB1CCTL2 |= CCIE;
+   \   000046   B2D01000C603 BIS.W   #0x10, &0x3c6
+    100          
+    101            TB1CTL &= ~TBIE ;
+   \   00004C   A2C3C003     BIC.W   #0x2, &0x3c0
+    102            TB1CTL &= ~TBIFG ;
+   \   000050   92C3C003     BIC.W   #0x1, &0x3c0
+    103          
+    104          }
+   \   000054   1001         RETA
+   \   000056                REQUIRE _A_TB1CTL_L
+   \   000056                REQUIRE _A_TB1EX0_L
+   \   000056                REQUIRE _A_TB1CCR0_L
+   \   000056                REQUIRE _A_TB1CCTL0_L
+   \   000056                REQUIRE _A_TB1CCR1_L
+   \   000056                REQUIRE _A_TB1CCTL1_L
+   \   000056                REQUIRE _A_TB1CCR2_L
+   \   000056                REQUIRE _A_TB1CCTL2_L
+    105          
+    106          //Timer uses: (ACLK, to obtain seconds and greater)
+    107          //TB2_CCR0 -
+    108          //TB2_CCR1 -
+    109          //TB2_CCR2 -
+
+   \                                 In  segment CODE, align 2
+    110          void Init_Timer_B2(void){
+   \                     Init_Timer_B2:
+    111          
+    112            // ACLK -> 32,768 kHz
+    113            TB2CTL = TBSSEL__ACLK;
+   \   000000   B24000010004 MOV.W   #0x100, &0x400
+    114          
+    115            TB2CTL |= TBCLR ; // Resets TB2R , clock divider, count direction
+   \   000006   A2D20004     BIS.W   #0x4, &0x400
+    116          
+    117            TB2CTL |= MC__CONTINOUS;
+   \   00000A   B2D020000004 BIS.W   #0x20, &0x400
+    118          
+    119            TB2CTL |= ID__8;
+   \   000010   B2D0C0000004 BIS.W   #0xc0, &0x400
+    120          
+    121            TB2EX0 = TBIDEX__8;
+   \   000016   B24007002004 MOV.W   #0x7, &0x420
+    122          
+    123            TB2CCR0 = TB2_MIN_0_005; // Half second
+   \   00001C   B24000011204 MOV.W   #0x100, &0x412
+    124            TB2CCTL0 &= ~CCIFG;
+   \   000022   92C30204     BIC.W   #0x1, &0x402
+    125            TB2CCTL0 |= CCIE;
+   \   000026   B2D010000204 BIS.W   #0x10, &0x402
+    126          
+    127            TB2CCR1 = 512; // one second
+   \   00002C   B24000021404 MOV.W   #0x200, &0x414
+    128            TB2CCTL1 &= ~CCIFG;
+   \   000032   92C30404     BIC.W   #0x1, &0x404
+    129            TB2CCTL1 |= CCIE; // explicitly disable by &= ~
+   \   000036   B2D010000404 BIS.W   #0x10, &0x404
+    130          
+    131            TB2CCR2 = TB2_MIN_1_000;   // Minute
+   \   00003C   B24000781604 MOV.W   #0x7800, &0x416
+    132            TB2CCTL2 &= ~CCIFG;
+   \   000042   92C30604     BIC.W   #0x1, &0x406
+    133            TB2CCTL2 &= ~CCIE;
+   \   000046   B2C010000604 BIC.W   #0x10, &0x406
+    134          
+    135            TB2CTL &= ~TBIE ;
+   \   00004C   A2C30004     BIC.W   #0x2, &0x400
+    136            TB2CTL &= ~TBIFG ;
+   \   000050   92C30004     BIC.W   #0x1, &0x400
+    137          }
+   \   000054   1001         RETA
+   \   000056                REQUIRE _A_TB2CTL_L
+   \   000056                REQUIRE _A_TB2EX0_L
+   \   000056                REQUIRE _A_TB2CCR0_L
+   \   000056                REQUIRE _A_TB2CCTL0_L
+   \   000056                REQUIRE _A_TB2CCR1_L
+   \   000056                REQUIRE _A_TB2CCTL1_L
+   \   000056                REQUIRE _A_TB2CCR2_L
+   \   000056                REQUIRE _A_TB2CCTL2_L
+    138          
+    139          // TimerB3 will be for PWM
+    140          // CCR0 will be the wheel period to work with (about 50,000) (slow might be 30K)
+
+   \                                 In  segment CODE, align 2
+    141          void Init_Timer_B3(void){
+   \                     Init_Timer_B3:
+    142            //------------------------------------------------------------------------------
+    143            // SMCLK source, up count mode, PWM Right Side
+    144            // TB3.1 P6.0 R_FORWARD
+    145            // TB3.2 P6.1 L_FORWARD
+    146            // TB3.3 P6.2 R_REVERSE
+    147            // TB3.4 P6.3 L_REVERSE
+    148            //------------------------------------------------------------------------------
+    149            TB3CTL = TBSSEL__SMCLK; // SMCLK
+   \   000000   B24000024004 MOV.W   #0x200, &0x440
+    150            TB3CTL |= MC__UP; // Up Mode
+   \   000006   B2D010004004 BIS.W   #0x10, &0x440
+    151            TB3CTL |= TBCLR; // Clear TAR
+   \   00000C   A2D24004     BIS.W   #0x4, &0x440
+    152            TB3CCR0 = WHEEL_PERIOD; // PWM Period
+   \   000010   B24050C35204 MOV.W   #0xc350, &0x452
+    153            TB3CCTL1 = OUTMOD_7; // CCR1 reset/set
+   \   000016   B240E0004404 MOV.W   #0xe0, &0x444
+    154            RIGHT_FORWARD_SPEED = WHEEL_OFF; // P6.0 Right Forward PWM duty cycle
+   \   00001C   82435404     MOV.W   #0x0, &0x454
+    155            TB3CCTL2 = OUTMOD_7; // CCR2 reset/set
+   \   000020   B240E0004604 MOV.W   #0xe0, &0x446
+    156            LEFT_FORWARD_SPEED = WHEEL_OFF; // P6.1 Left Forward PWM duty cycle
+   \   000026   82435604     MOV.W   #0x0, &0x456
+    157            TB3CCTL3 = OUTMOD_7; // CCR3 reset/set
+   \   00002A   B240E0004804 MOV.W   #0xe0, &0x448
+    158            RIGHT_REVERSE_SPEED = WHEEL_OFF; // P6.2 Right Reverse PWM duty cycle
+   \   000030   82435804     MOV.W   #0x0, &0x458
+    159            TB3CCTL4 = OUTMOD_7; // CCR4 reset/set
+   \   000034   B240E0004A04 MOV.W   #0xe0, &0x44a
+    160            LEFT_REVERSE_SPEED = WHEEL_OFF; // P6.3 Left Reverse PWM duty cycle
+   \   00003A   82435A04     MOV.W   #0x0, &0x45a
+    161            //------------------------------------------------------------------------------
+    162          
+    163          }//QUESTION: where do the ports actually change?
+   \   00003E   1001         RETA
+   \   000040                REQUIRE _A_TB3CTL_L
+   \   000040                REQUIRE _A_TB3CCR0_L
+   \   000040                REQUIRE _A_TB3CCTL1_L
+   \   000040                REQUIRE _A_TB3CCR1_L
+   \   000040                REQUIRE _A_TB3CCTL2_L
+   \   000040                REQUIRE _A_TB3CCR2_L
+   \   000040                REQUIRE _A_TB3CCTL3_L
+   \   000040                REQUIRE _A_TB3CCR3_L
+   \   000040                REQUIRE _A_TB3CCTL4_L
+   \   000040                REQUIRE _A_TB3CCR4_L
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Init_Timer_B0
+      4   Init_Timer_B1
+      4   Init_Timer_B2
+      4   Init_Timer_B3
+      4   Init_Timers
+        4   -> Init_Timer_B0
+        4   -> Init_Timer_B1
+        4   -> Init_Timer_B2
+        4   -> Init_Timer_B3
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      86  Init_Timer_B0
+      86  Init_Timer_B1
+      86  Init_Timer_B2
+      64  Init_Timer_B3
+      18  Init_Timers
+       2  _A_TB0CCR0_L
+       2  _A_TB0CCR1_L
+       2  _A_TB0CCR2_L
+       2  _A_TB0CCTL0_L
+       2  _A_TB0CCTL1_L
+       2  _A_TB0CCTL2_L
+       2  _A_TB0CTL_L
+       2  _A_TB0EX0_L
+       2  _A_TB1CCR0_L
+       2  _A_TB1CCR1_L
+       2  _A_TB1CCR2_L
+       2  _A_TB1CCTL0_L
+       2  _A_TB1CCTL1_L
+       2  _A_TB1CCTL2_L
+       2  _A_TB1CTL_L
+       2  _A_TB1EX0_L
+       2  _A_TB2CCR0_L
+       2  _A_TB2CCR1_L
+       2  _A_TB2CCR2_L
+       2  _A_TB2CCTL0_L
+       2  _A_TB2CCTL1_L
+       2  _A_TB2CCTL2_L
+       2  _A_TB2CTL_L
+       2  _A_TB2EX0_L
+       2  _A_TB3CCR0_L
+       2  _A_TB3CCR1_L
+       2  _A_TB3CCR2_L
+       2  _A_TB3CCR3_L
+       2  _A_TB3CCR4_L
+       2  _A_TB3CCTL1_L
+       2  _A_TB3CCTL2_L
+       2  _A_TB3CCTL3_L
+       2  _A_TB3CCTL4_L
+       2  _A_TB3CTL_L
+
+ 
+ 340 bytes in segment CODE
+  68 bytes in segment DATA16_AN
+ 
+ 340 bytes of CODE memory
+   0 bytes of DATA memory (+ 68 bytes shared)
+
+Errors: none
+Warnings: none

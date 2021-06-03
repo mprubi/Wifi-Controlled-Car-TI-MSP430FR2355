@@ -1,0 +1,415 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:52
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\main.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW8ABF.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\main.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\main.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\main.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\main.c
+      1          //------------------------------------------------------------------------------
+      2          //
+      3          //  Description: This file contains the Main Routine - "While" Operating System
+      4          //
+      5          //
+      6          //  Mark Rubianes
+      7          //  Jan 2021
+      8          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+      9          //------------------------------------------------------------------------------
+     10          
+     11          //------------------------------------------------------------------------------
+     12          #include  "functions.h"
+     13          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x130
+   \   union <unnamed> _A_PM5CTL0_L
+   \                     _A_PM5CTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x454
+   \   union <unnamed> _A_TB3CCR1_L
+   \                     _A_TB3CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x456
+   \   union <unnamed> _A_TB3CCR2_L
+   \                     _A_TB3CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x458
+   \   union <unnamed> _A_TB3CCR3_L
+   \                     _A_TB3CCR3_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x45a
+   \   union <unnamed> _A_TB3CCR4_L
+   \                     _A_TB3CCR4_L:
+   \   000000                DS8 2
+     14          #include <string.h>
+     15          #include <stdio.h>
+     16          #include <stdlib.h>
+     17          #include "macros.h"
+     18          
+     19          //a variable that is to be used both in main and in an interrupt service routine
+     20          //must be volatile: assigns the variable to a register, to be accessed quicker
+     21          //than if assigned to a memory location
+     22          
+     23          extern char display_line[4][11];
+     24          extern char *display[4];
+     25          extern unsigned char display_mode;
+     26          extern volatile unsigned char display_changed;
+     27          extern volatile unsigned char update_display;
+     28          extern volatile unsigned long ADC_Left_Sensor;
+     29          //extern volatile unsigned char start_process;
+     30          //extern volatile unsigned char current_start_process = 0;
+     31          //extern volatile int time_seconds,
+     32          //                    time_half_seconds;
+     33          //int start_counting = 0;
+     34          //char one_time = 1;
+     35          extern volatile char msg_recieved_from_IoT,
+     36                               msg_recieved_from_PC,
+     37                               activate_open_TCP_port_timer;
+     38          extern char ok_to_parse_recieved_iot_commands;
+     39          extern volatile char bang;
+     40          extern volatile char PID_control_enabled;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     41          int oops = 0;
+   \                     oops:
+   \   000000                DS8 2
+     42          
+     43          extern volatile char SW2_Pressed;
+     44          extern volatile char SW1_Pressed;
+     45          
+     46          
+
+   \                                 In  segment CODE, align 2
+     47          void main(void){
+   \                     main:
+     48          //------------------------------------------------------------------------------
+     49          // Main Programs
+     50          // This is the main routine for the program. Execution of code starts here.
+     51          // The operating system is Back Ground Fore Ground.
+     52          //
+     53          //------------------------------------------------------------------------------
+     54          // Disable the GPIO power-on default high-impedance mode to activate
+     55          // previously configured port settings
+     56          
+     57            PM5CTL0 &= ~LOCKLPM5;
+   \   000000   92C33001     BIC.W   #0x1, &0x130
+     58          
+     59            Init_Ports();                        // Initialize Ports  Note: switched with init_clocks because of endless loop
+   \   000004   ........     CALLA   #Init_Ports
+     60            Init_Clocks();                       // Initialize Clock System
+   \   000008   ........     CALLA   #Init_Clocks
+     61            Init_Display();                      // Initialize Variables and Initial Conditions
+   \   00000C   ........     CALLA   #Init_Display
+     62            Init_Timers();                       // Initialize Timers
+   \   000010   ........     CALLA   #Init_Timers
+     63            Init_LCD();                          // Initialize LCD
+   \   000014   ........     CALLA   #Init_LCD
+     64            Init_ADC();                          //Initialize ADC
+   \   000018   ........     CALLA   #Init_ADC
+     65            Init_Serial_UCA1(BAUD_115200);                  // Initialize Serial Port for USB
+   \   00001C   2C43         MOV.W   #0x2, R12
+   \   00001E   ........     CALLA   #Init_Serial_UCA1
+     66            Init_Serial_UCA0(BAUD_115200);
+   \   000022   2C43         MOV.W   #0x2, R12
+   \   000024   ........     CALLA   #Init_Serial_UCA0
+     67            Init_Interrupts(); // Interrupts are disabled by default, enable them.
+   \   000028   ........     CALLA   #Init_Interrupts
+     68          
+     69            display_changed = 1; //refresh LCD module
+   \   00002C   D243....     MOV.B   #0x1, &display_changed
+     70          
+     71            activate_open_TCP_port_timer = TRUE;
+   \   000030   D243....     MOV.B   #0x1, &activate_open_TCP_port_timer
+     72          
+     73          //------------------------------------------------------------------------------
+     74          // Begining of Operating System
+     75          //------------------------------------------------------------------------------
+     76            while(ALWAYS) {
+     77              
+     78          //    if(!oops){
+     79                    
+     80                update_display = 1;
+   \                     ??main_0:
+   \   000034   D243....     MOV.B   #0x1, &update_display
+     81                display_changed = 1;
+   \   000038   D243....     MOV.B   #0x1, &display_changed
+     82                //clear_display();
+     83                if(msg_recieved_from_IoT){
+   \   00003C   C293....     CMP.B   #0x0, &msg_recieved_from_IoT
+   \   000040   0224         JEQ     ??main_1
+     84                  RX_IoT_Process_Buff();
+   \   000042   ........     CALLA   #RX_IoT_Process_Buff
+     85                }
+     86                if(ok_to_parse_recieved_iot_commands){
+   \                     ??main_1:
+   \   000046   C293....     CMP.B   #0x0, &ok_to_parse_recieved_iot_commands
+   \   00004A   0224         JEQ     ??main_2
+     87                  parse_commands_from_IoT();
+   \   00004C   ........     CALLA   #parse_commands_from_IoT
+     88                }
+     89                if(msg_recieved_from_PC){
+   \                     ??main_2:
+   \   000050   C293....     CMP.B   #0x0, &msg_recieved_from_PC
+   \   000054   0224         JEQ     ??main_3
+     90                  RX_USB_Process_Buff();
+   \   000056   ........     CALLA   #RX_USB_Process_Buff
+     91                }
+     92                if(bang == TRUE){
+   \                     ??main_3:
+   \   00005A   D293....     CMP.B   #0x1, &bang
+   \   00005E   0220         JNE     ??main_4
+     93                  follow_black_line_bang();
+                         ^
+Warning[Pe223]: function "follow_black_line_bang" declared implicitly
+   \   000060   ........     CALLA   #follow_black_line_bang
+     94                }
+     95                if(PID_control_enabled == TRUE){
+   \                     ??main_4:
+   \   000064   D293....     CMP.B   #0x1, &PID_control_enabled
+   \   000068   0220         JNE     ??main_5
+     96                  follow_black_line();
+   \   00006A   ........     CALLA   #follow_black_line
+     97                }
+     98                
+     99                if(SW2_Pressed){
+   \                     ??main_5:
+   \   00006E   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   000072   0624         JEQ     ??main_6
+    100                  forward(SLOW, STRAIGHT, 0);
+   \   000074   4E43         MOV.B   #0x0, R14
+   \   000076   4D43         MOV.B   #0x0, R13
+   \   000078   3C40E02E     MOV.W   #0x2ee0, R12
+   \   00007C   ........     CALLA   #forward
+    101                }
+    102                if(SW1_Pressed){
+   \                     ??main_6:
+   \   000080   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   000084   0224         JEQ     ??main_7
+    103                  stop_car();
+   \   000086   ........     CALLA   #stop_car
+    104                }
+    105                
+    106                
+    107                //    #define TRAVELING
+    108                //    #define INTERCEPTED_8
+    109                //    #define PIVOT_RIGHT_INTERCEPT
+    110                //    #define FORWARD_AGAIN
+    111                //    #define FORWARD_UNTIL_INTERCEPTED
+    112                //    char start_intercept, intercept_state, blck_line_state;
+    113                //
+    114                //    if(start_intercept){
+    115                //      switch(intercept_state){
+    116                //      case TRAVELING:
+    117                //        forward(MEDIUM);
+    118                //        blck_line_state = determine_current_state();
+    119                //        if(blck_line_state == ON_LINE){
+    120                //          stop_car();
+    121                //          intercept_state = INTERCEPTED_8
+    122                //        }
+    123                //        break;
+    124                //      case INTERCEPTED_8:
+    125                //        forward(SLOW);
+    126                //        // kick off timer, stop and change state
+    127                //        break;
+    128                //      case PIVOT_RIGHT_INTERCEPT:
+    129                //        pivot(RIGHT_PIVOT, 13000)}
+    130                //        intercept_state = FORWARD_AGAIN;
+    131                //        break;
+    132                //      case FORWARD_AGAIN:
+    133                //        forward(MEDIUM);
+    134                //        //kick off timer for longer time, stop, change state
+    135                //        break;
+    136                //      case FORWARD_UNTIL_INTERCEPTED:
+    137                //      }
+    138                //    }
+    139                
+    140                //    follow_black_line();
+    141                
+    142                strcpy(display_line[0], "FJDNFIEJGN");
+   \                     ??main_7:
+   \   00008A   3D40....     MOV.W   #`?<Constant "FJDNFIEJGN">`, R13
+   \   00008E   3C40....     MOV.W   #display_line, R12
+   \   000092   ........     CALLA   #strcpy
+    143                update_string(display_line[0], 0);
+   \   000096   0D43         MOV.W   #0x0, R13
+   \   000098   ........     CALLA   #update_string
+    144                strcpy(display_line[1], "KFOIROTKGJ");
+   \   00009C   3D40....     MOV.W   #`?<Constant "KFOIROTKGJ">`, R13
+   \   0000A0   3C40....     MOV.W   #display_line + 11, R12
+   \   0000A4   ........     CALLA   #strcpy
+    145                update_string(display_line[1], 1);
+   \   0000A8   1D43         MOV.W   #0x1, R13
+   \   0000AA   3C40....     MOV.W   #display_line + 11, R12
+   \   0000AE   ........     CALLA   #update_string
+    146                strcpy(display_line[2], "LLLLLLLLLL");
+   \   0000B2   3D40....     MOV.W   #`?<Constant "LLLLLLLLLL">`, R13
+   \   0000B6   3C40....     MOV.W   #display_line + 22, R12
+   \   0000BA   ........     CALLA   #strcpy
+    147                update_string(display_line[2], 2);
+   \   0000BE   2D43         MOV.W   #0x2, R13
+   \   0000C0   3C40....     MOV.W   #display_line + 22, R12
+   \   0000C4   ........     CALLA   #update_string
+    148                strcpy(display_line[3], "FFFFFFFFFF");
+   \   0000C8   3D40....     MOV.W   #`?<Constant "FFFFFFFFFF">`, R13
+   \   0000CC   3C40....     MOV.W   #display_line + 33, R12
+   \   0000D0   ........     CALLA   #strcpy
+    149                update_string(display_line[3], 3);
+   \   0000D4   3D400300     MOV.W   #0x3, R13
+   \   0000D8   3C40....     MOV.W   #display_line + 33, R12
+   \   0000DC   ........     CALLA   #update_string
+    150                
+    151                display_changed = 1;
+   \   0000E0   D243....     MOV.B   #0x1, &display_changed
+    152                
+    153                display_menu_state_process();
+   \   0000E4   ........     CALLA   #display_menu_state_process
+    154                update_display = 1;
+   \   0000E8   D243....     MOV.B   #0x1, &update_display
+    155                Display_Process();  // carlson's compiled code
+   \   0000EC   ........     CALLA   #Display_Process
+    156                
+    157                
+    158                
+    159                //TODO: implement backlight power on based on ambient light detection from photo resistor
+    160                // and turn completely off, with display refresh turned off/on on command
+    161                
+    162                //TODO: consider slowing down the display_update refresh rate to conserve energy
+    163                
+    164                //TODO: Display ADC values on LCD screen in more organized fashion
+    165                if((LEFT_REVERSE_SPEED && LEFT_FORWARD_SPEED) || (RIGHT_REVERSE_SPEED && RIGHT_FORWARD_SPEED)){
+   \   0000F0   82935A04     CMP.W   #0x0, &0x45a
+   \   0000F4   0324         JEQ     ??main_8
+   \   0000F6   82935604     CMP.W   #0x0, &0x456
+   \   0000FA   0620         JNE     ??main_9
+   \                     ??main_8:
+   \   0000FC   82935804     CMP.W   #0x0, &0x458
+   \   000100   9927         JEQ     ??main_0
+   \   000102   82935404     CMP.W   #0x0, &0x454
+   \   000106   9627         JEQ     ??main_0
+    166                  oops=1;
+   \                     ??main_9:
+   \   000108   9243....     MOV.W   #0x1, &oops
+   \   00010C   933F         JMP     ??main_0
+   \   00010E   0343         NOP
+   \   000110                REQUIRE _A_PM5CTL0_L
+   \   000110                REQUIRE _A_TB3CCR4_L
+   \   000110                REQUIRE _A_TB3CCR2_L
+   \   000110                REQUIRE _A_TB3CCR3_L
+   \   000110                REQUIRE _A_TB3CCR1_L
+    167                }
+    168          //    }else if(oops){
+    169          //      stop_car();
+    170          //      P6DIR &= ~LCD_BACKLITE;
+    171          //      GREEN_LED_ON();
+    172          //      RED_LED_ON();
+    173          //    }
+    174            }
+    175           }
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "FJDNFIEJGN">`:
+   \   000000   464A444E4649 DC8 "FJDNFIEJGN"
+   \            454A474E00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "KFOIROTKGJ">`:
+   \   000000   4B464F49524F DC8 "KFOIROTKGJ"
+   \            544B474A00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "LLLLLLLLLL">`:
+   \   000000   4C4C4C4C4C4C DC8 "LLLLLLLLLL"
+   \            4C4C4C4C00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "FFFFFFFFFF">`:
+   \   000000   464646464646 DC8 "FFFFFFFFFF"
+   \            4646464600  
+    176          
+    177          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   main
+        4   -> Display_Process
+        4   -> Init_ADC
+        4   -> Init_Clocks
+        4   -> Init_Display
+        4   -> Init_Interrupts
+        4   -> Init_LCD
+        4   -> Init_Ports
+        4   -> Init_Serial_UCA0
+        4   -> Init_Serial_UCA1
+        4   -> Init_Timers
+        4   -> RX_IoT_Process_Buff
+        4   -> RX_USB_Process_Buff
+        4   -> display_menu_state_process
+        4   -> follow_black_line
+        4   -> follow_black_line_bang
+        4   -> forward
+        4   -> parse_commands_from_IoT
+        4   -> stop_car
+        4   -> strcpy
+        4   -> update_string
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      11  ?<Constant "FFFFFFFFFF">
+      11  ?<Constant "FJDNFIEJGN">
+      11  ?<Constant "KFOIROTKGJ">
+      11  ?<Constant "LLLLLLLLLL">
+       2  _A_PM5CTL0_L
+       2  _A_TB3CCR1_L
+       2  _A_TB3CCR2_L
+       2  _A_TB3CCR3_L
+       2  _A_TB3CCR4_L
+     272  main
+       2  oops
+
+ 
+ 272 bytes in segment CODE
+  10 bytes in segment DATA16_AN
+  44 bytes in segment DATA16_C
+   2 bytes in segment DATA16_Z
+ 
+ 272 bytes of CODE  memory
+  44 bytes of CONST memory
+   2 bytes of DATA  memory (+ 10 bytes shared)
+
+Errors: none
+Warnings: 1

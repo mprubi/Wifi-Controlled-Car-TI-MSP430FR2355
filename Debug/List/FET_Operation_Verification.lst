@@ -1,0 +1,154 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:14
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\FET_Operation_Verification.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW9635.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\FET_Operation_Verification.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\FET_Operation_Verification.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\FET_Operation_Verification.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\FET_Operation_Verification.c
+      1          //#include  "functions.h"
+      2          //#include  "msp430.h"
+      3          //#include <string.h>
+      4          //#include "macros.h"
+      5          //
+      6          //char motor_test_state = 0;
+      7          //char activate_fet_test = 0;
+      8          //extern char display_line[4][11];
+      9          //char perform_statement_once = 0;
+     10          //
+     11          //void fet_test_state_select(void){
+     12          //
+     13          //  motor_test_state++;
+     14          //  if(motor_test_state > RGHT_REV_ON) motor_test_state = ALL_OFF;
+     15          //
+     16          //  switch(motor_test_state){
+     17          //  case ALL_OFF:
+     18          //    strcpy(display_line[0], "ALL OFF   ");
+     19          //    perform_statement_once = 1;
+     20          //    break;
+     21          //  case LFT_FRD_ON:
+     22          //    strcpy(display_line[0], "LT_FRD_ON ");
+     23          //    perform_statement_once = 1;
+     24          //    break;
+     25          //  case RGHT_FRD_ON:
+     26          //    strcpy(display_line[0], "RT_FRD_ON ");
+     27          //    perform_statement_once = 1;
+     28          //    break;
+     29          //  case LFT_REV_ON:
+     30          //    strcpy(display_line[0], "LT_REV_ON ");
+     31          //    perform_statement_once = 1;
+     32          //    break;
+     33          //  case RGHT_REV_ON:
+     34          //    strcpy(display_line[0], "RT_REV_ON ");
+     35          //    perform_statement_once = 1;
+     36          //    break;
+     37          //  }
+     38          //  all_motors_OFF();
+     39          //}
+     40          //
+     41          //void fet_test_activate(void){
+     42          //  activate_fet_test++;
+     43          //  if(activate_fet_test > 1) activate_fet_test = 0;
+     44          //
+     45          //}
+     46          //
+     47          //void fet_test(void){
+     48          ////1) Write functions to turn all movement off, and then individual functions to
+     49          ////turn on specific forward movement and specific reverse movement. Before
+     50          ////issuing a movement command make a call to the movement off function.
+     51          //
+     52          //  if(activate_fet_test == 1){
+     53          //    switch(motor_test_state){
+     54          //    case ALL_OFF:
+     55          //      all_motors_OFF();
+     56          //      break;
+     57          //    case LFT_FRD_ON:
+     58          //      //4) With Battery on, Check Test points TP5 and TP7. With L_FORWARD off, TP5 and TP7
+     59          //      //should equal battery voltage. With L_FORWARD on, TP5 should be half of the
+     60          //      //battery voltage or less and TP7 should be about at ground potential.
+     61          //
+     62          //      if(perform_statement_once){
+     63          //        all_motors_OFF();
+     64          //        L_FORWARD_ON();
+     65          //        perform_statement_once = 0;
+     66          //      }
+     67          //      break;
+     68          //    case RGHT_FRD_ON:
+     69          //      //2) With Battery on, Check Test points TP1 and TP3. With R_FORWARD off, TP1 and TP3
+     70          //      //should equal battery voltage. With R_FORWARD on, TP1 should be half of the
+     71          //      //battery voltage or less and TP3 should be about at ground potential.
+     72          //
+     73          //      if(perform_statement_once){
+     74          //        all_motors_OFF();
+     75          //        R_FORWARD_ON();
+     76          //        perform_statement_once = 0;
+     77          //      }
+     78          //      break;
+     79          //    case LFT_REV_ON:
+     80          //      //5) With Battery on, Check Test points TP6 and TP8. With L_REVERSE off, TP6 and TP8
+     81          //      //should equal battery voltage. With L_REVERSE on, TP6 should be half of the
+     82          //      //battery voltage or less and TP8 should be about at ground potential.
+     83          //      if(perform_statement_once){
+     84          //        all_motors_OFF();
+     85          //        L_REVERSE_ON();
+     86          //        perform_statement_once = 0;
+     87          //      }
+     88          //      break;
+     89          //    case RGHT_REV_ON:
+     90          //      //3) With Battery on, Check Test points TP2 and TP4. With R_REVERSE off, TP2 and TP4
+     91          //      //should equal battery voltage. With R_REVERSE on, TP2 should be half of the
+     92          //      //battery voltage or less and TP4 should be about at ground potential.
+     93          //
+     94          //      if(perform_statement_once){
+     95          //        all_motors_OFF();
+     96          //        R_REVERSE_ON();
+     97          //        perform_statement_once = 0;
+     98          //      }
+     99          //      break;
+    100          //    default:
+    101          //      all_motors_OFF();
+    102          //    }
+    103          //  }else{
+    104          //    all_motors_OFF();
+    105          //  }
+    106          //}
+
+
+ 
+
+ 
+
+
+Errors: none
+Warnings: none

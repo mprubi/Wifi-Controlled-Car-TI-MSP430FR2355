@@ -17,9 +17,9 @@
 #include <string.h>
 #include "macros.h"
 
-extern volatile unsigned char display_changed;
-extern volatile unsigned char SW1_debug_counter = 0;
-volatile int speed;
+//extern volatile unsigned char display_changed;
+//extern volatile unsigned char SW1_debug_counter = 0;
+//volatile int speed;
 volatile char SW2_Pressed;
 volatile char SW1_Pressed;
 
@@ -110,6 +110,8 @@ __interrupt void switchP4_interrupt(void){
     // actionable code goes here
     SW1_Pressed = TRUE;
     //GREEN_LED_TOGGLE();
+    
+    //IR_LED_TOGGLE();
 
     /* Code to validate SW debouncing is working correctly
     //    SW1_debug_counter++;

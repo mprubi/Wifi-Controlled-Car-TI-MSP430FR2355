@@ -4,32 +4,75 @@
 #include <string.h>
 #include "macros.h"
 
-extern volatile int HW6_10_Count = 0;
-extern volatile int Time_Seq_Reset_Count = 0;
-extern volatile unsigned char update_display;
+//extern volatile int Time_Seq_Reset_Count = 0;
+//extern volatile unsigned char update_display;
 //extern volatile unsigned char update_display_timer = 0;
-extern volatile unsigned int Time_Sequence = 0;
+//extern volatile unsigned int Time_Sequence = 0;
 
 //proving my adc setup
-extern volatile unsigned int ADC_Thumb;
-extern volatile unsigned int ADC_Left_Sensor;
-extern volatile unsigned int ADC_Right_Sensor;
-extern volatile unsigned int left_sensor_mov_average, right_sensor_mov_average;
+extern volatile unsigned int ADC_Thumb,
+                             ADC_Left_Sensor,
+                             ADC_Right_Sensor,
+                             left_sensor_mov_average,
+                             right_sensor_mov_average;
 extern char display_line[4][11];
 extern char *display[4];
-extern unsigned char display_mode;
+//extern unsigned char display_mode;
 extern volatile unsigned char display_changed;
-extern volatile char adc_char[4];
-extern char proj_6_state;
-extern volatile unsigned char start_process = 0;
-extern volatile int time_half_seconds = 0;
-volatile char from_forward;
-volatile char from_reverse;
+extern volatile char adc_char[12],
+                     bang;
+//extern volatile unsigned char start_process = 0;
+extern unsigned int speed_global,
+                    travel_time_seconds;
+volatile char from_forward,
+              from_reverse,
+              activate_travel_time = FALSE,
+              activate_adc_readings = FALSE;
+
+extern int black_line_edge_threshold ;
 extern unsigned int speed_global;
-volatile char one_second_from_fifty_msec_count = 0;
-volatile char one_second_delay = FALSE;
-volatile int time_seconds = 0;
-extern volatile int FET_delay_timer;
+
+extern unsigned int speed_correction;
+
+
+//volatile char one_second_from_fifty_msec_count = 0;
+//volatile char one_second_delay = FALSE;
+volatile char time_seconds = 0,
+             time_half_seconds = 0,
+//             Tx_message_timer = 0,
+             FET_delay_timer = 0,
+//             PID_enable_timer = 0,
+             open_TCP_port_timer = 0,
+             travel_time_inrementer = 0,
+             activate_open_TCP_port_timer = FALSE,
+             activate_pivot_timer = FALSE,
+             pivot_timer = 0,
+             IoT_reset_timer = 0;
+extern volatile char observe_control_system;
+volatile char PID_control_enabled = FALSE;
+extern char current_state,
+            previous_state;
+extern volatile char startup_okay_to_TX;
+volatile extern char USB_Tx_Outgoing_Buff[LARGE_RING_SIZE_32];
+
+//extern long debug_follow_black_line_counter, 
+//      debug_observe_control_system_counter,
+//      debug_control_signal_calc_counter;
+
+
+extern int debug_L_BLACK[DEBUG_ARR_SIZE],
+           debug_R_BLACK[DEBUG_ARR_SIZE],
+           debug_L_SPEED[DEBUG_ARR_SIZE],
+           debug_R_SPEED[DEBUG_ARR_SIZE],
+           debug_Control[DEBUG_ARR_SIZE];
+extern int debug_scroller;
+extern volatile char UCA1_index;
+
+//extern const char *Tx_queue_USB[6],
+//                  *Tx_queue_IoT[6];
+//extern char usb_msg_queue_incrementer,
+//            iot_msg_queue_incrementer;
+
 
 /* Various Timer related notes
 Two interrupt vectors are associated with the 16 bit
@@ -118,6 +161,8 @@ __interrupt void TIMER_B0_CCR_1_2_OVFL_ISR(void){
 
     break;
   case 14: // overflow
+    P3OUT |= IOT_RESET;  // Set IOT_RESET Inactive [high]  (release IOT module from reset mode on startup)
+    //TB0CTL &= ~TBIE;      // Timer B0 overflow interrupt disable
     break;
   default:
     break;
@@ -131,29 +176,62 @@ __interrupt void TIMER_B1_CCR_0_ISR(void){
 
   TB1CCR0 += TB1_SEC_0_200; // Add Offset to TBCCR0
 
+  IoT_reset_timer++;
   //BACKLIGHT_TOGGLE();  //debug
 
-  // update display with hex values from ADC
-  //ADCCTL0 |= ADCENC;
+
+ // IoT Reset
+  if(IoT_reset_timer > 2){
+    P3OUT |= IOT_RESET;
+  }
+
+  if(activate_pivot_timer == TRUE){
+      pivot_timer++;
+      if(pivot_timer == 2){
+        pivot_timer  = 0;
+        activate_pivot_timer = FALSE;
+        stop_car();
+      }
+    }
+
+  if(activate_adc_readings == TRUE){
+    GREEN_LED_TOGGLE();
+    // update display with hex values from ADC
+    //ADCCTL0 |= ADCENC;
+    //  HEXtoBCD(ADC_Left_Sensor);
+//    HEXtoBCD(left_sensor_mov_average);
+//    adc_line(0,6);
+//
+//    //  HEXtoBCD(ADC_Right_Sensor);
+//    HEXtoBCD(right_sensor_mov_average);
+//    adc_line(0,0);
+//
+////  HEXtoBCD(black_line_edge_threshold);
+//    HEXtoBCD(black_line_edge_threshold);
+//    adc_line(1,0);
+////  HEXtoBCD(speed_global);
+//    HEXtoBCD(speed_global);
+//    adc_line(2,0);
+////  HEXtoBCD(speed_correction);
+//    HEXtoBCD(speed_correction);
+//    adc_line(3,0);
+    
+    // --------------------------
+    //Lost display functionality, writing values to terminal instead
+    
+//    HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
+//    
+//    TX_message_USB_UCA1(adc_char);
 
 
+//    HEXtoBCD(ADC_Thumb);
+//    adc_line(2,6);
+//
+//    strcpy(display_line[3], "Thumb:");
+//    update_string(display_line[2], 3);
 
-//  HEXtoBCD(ADC_Left_Sensor);
-  HEXtoBCD(left_sensor_mov_average);
-  adc_line(2,0);
-
-//  HEXtoBCD(ADC_Right_Sensor);
-  HEXtoBCD(right_sensor_mov_average);
-  adc_line(2,6);
-
-  HEXtoBCD(ADC_Thumb);
-  adc_line(3,6);
-
-//  strcpy(display_line[3], "Thumb:");
-//  update_string(display_line[3], 3);
-
-  display_changed = 1;
-
+    display_changed = 1;
+  }
 }
 
 #pragma vector = TIMER_B1_CCR_1_2_OVFL_VECTOR
@@ -163,18 +241,36 @@ __interrupt void TIMER_B1_CCR_1_2_OVFL_ISR(void){
     break; // No interrupt
   case 2:
     //30 msec timer here (for ADC measurements)
-    TB1CCR1 += TB1_SEC_0_030;
-    RED_LED_TOGGLE();
+    TB1CCR1 += TB1_SEC_0_040;
+    //RED_LED_TOGGLE();
 
-      //BACKLIGHT_TOGGLE();  //debug
-
-    ADCCTL0 |= ADCENC;
+    //BACKLIGHT_TOGGLE();  //debug
+    
+//    if (debug_scroller++ > DEBUG_ARR_SIZE){
+//      debug_scroller = 0;
+//    }
+//    
+//    
+//    debug_L_BLACK[debug_scroller] = ;
+//    debug_R_BLACK[debug_scroller] = ;
+//    debug_L_SPEED[debug_scroller] = ;
+//    debug_R_SPEED[debug_scroller] = ;
+//    debug_Control[debug_scroller] = ;
+//    
+//  
+          
+    if(activate_adc_readings == TRUE){
+      ADC_CONVERSION_ENABLE();
+//      ADCCTL0 |= ADCENC;
+      observe_control_system = TRUE;
+      RED_LED_TOGGLE();
+    }
 
     break;
   case 4:
     //50 msec timer here
     TB1CCR1 += TB1_SEC_0_050;
-    GREEN_LED_TOGGLE();
+    //GREEN_LED_TOGGLE();
 
     break;
   case 14: // overflow
@@ -189,11 +285,27 @@ __interrupt void TIMER_B2_CCR_0_ISR(void){
   // TimerB2 0 Interrupt handler
 
   TB2CCR0 += TB2_MIN_0_005; // Half second offset
-
   time_half_seconds++;
+  
+  HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
+  
+  UCA1_index = 0;
+  
+  for(int i = 0; i < sizeof(adc_char); i++){
+    USB_Tx_Outgoing_Buff[i] = adc_char[i];
+  }
+  
+  for(int i = sizeof(adc_char); i < sizeof(USB_Tx_Outgoing_Buff); i++){
+    USB_Tx_Outgoing_Buff[i] = NULL_CHAR;
+  }
+  
+  //    strncpy(USB_Tx_Outgoing_Buff, message, 10);
+  UCA1IE |= UCTXIE; // enable the Tx interupt
+  UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
+  
+  //  TX_message_USB_UCA1(adc_char);
 
   //RED_LED_TOGGLE();
-
 }
 
 #pragma vector = TIMER_B2_CCR_1_2_OVFL_VECTOR
@@ -207,30 +319,88 @@ __interrupt void TIMER_B2_CCR_1_2_OVFL_ISR(void){
     //TB2CCTL1 &= ~CCIE; // disable timer until I need it again
     //(inside a counter for multiple seconds)
 
-    //MISTAKE: TB2CCR2 in case 4 was incorrectly named TB2CCR1,
+    //NOTE: MISTAKE: TB2CCR2 in case 4 was incorrectly named TB2CCR1,
     //and set to different interval, effectively halting CCR1 interrupt periodically
     time_seconds++;
     FET_delay_timer++;
+//    PID_enable_timer++;
+
+//    Tx_message_timer++;
     //RED_LED_TOGGLE();
 
+    // this timer is to delay switching of wheel directions
     if(time_seconds != FET_delay_timer){ // Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
 
-      if(from_forward){
+      if(from_forward == TRUE){
         FET_delay_timer = time_seconds; //turn timer back off
         from_forward = FALSE;
-        forward(speed_global);
+        forward(speed_global, STRAIGHT, 0);
       }
-      if(from_reverse){
+      if(from_reverse == TRUE){
         FET_delay_timer = time_seconds; //turn timer back off
         from_reverse = FALSE;
         reverse(speed_global);
+      }
+    }
+
+    // timer to start PID selection
+//    if(PID_enable_timer != time_seconds){
+//      PID_enable_timer = time_seconds; // reset counter after 1 second
+//      if(PID_control_enabled){
+//        PID_control_enabled = FALSE;
+//        stop_car();
+//
+//      }else PID_control_enabled = TRUE;
+//    }
+
+    //this timer is to send a message queue periodically
+//    if(Tx_message_timer == time_seconds){
+//      Tx_message_timer = time_seconds + 2;
+//      TX_message_USB_UCA1(Tx_queue_USB[usb_msg_queue_incrementer++]);
+//
+//      if(usb_msg_queue_incrementer > 5){
+//        usb_msg_queue_incrementer  = 0;
+//      }
+//    }
+
+    //this timer is to open a TCP port after Wifi module has connected
+    if(activate_open_TCP_port_timer == TRUE){
+      open_TCP_port_timer++;
+      GREEN_LED_TOGGLE();
+      if(open_TCP_port_timer == 4){
+        startup_okay_to_TX = TRUE;
+      }
+      if(open_TCP_port_timer == 10){
+        BACKLIGHT_TOGGLE();
+        TX_message_IoT_UCA0("AT+NSTCP=3167,1\r"); // open port 1030
+      }
+      if(open_TCP_port_timer == 14){
+        BACKLIGHT_TOGGLE();
+        open_TCP_port_timer  = 0;
+        activate_open_TCP_port_timer = FALSE;
+        TX_message_IoT_UCA0("AT+WSYNCINTRL=65535\r");
+      }// when idle, keep TCP port open for as long as possible
+    }
+
+    //this timer is for motor travel for a specified amount of time
+    if(activate_travel_time == TRUE){
+      travel_time_inrementer++;
+      if(travel_time_inrementer == travel_time_seconds){
+        travel_time_inrementer  = 0;
+        travel_time_seconds = 0;
+        activate_travel_time = FALSE;
+        stop_car();
       }
     }
     break;
   case 4: //CCR2
     TB2CCR2 += TB2_MIN_1_000; // one minute
 
-    //unused
+// periodically ping google to force use of ncsu network before they kick me off for inactivity
+    //BACKLIGHT_TOGGLE();
+    if(time_seconds >= 15){
+    //TX_message_IoT_UCA0("AT+PING=www.google.com,2\r");  // Home network does not require ping
+    }
 
     break;
   case 14: // overflow
@@ -239,7 +409,6 @@ __interrupt void TIMER_B2_CCR_1_2_OVFL_ISR(void){
     break;
   }
 }
-
 
 //Prcessor won't see this ISR because TB3 is a special purpose timer for PWM
 // which operates on sepparate hardware, therefore, main won't even see the ISR

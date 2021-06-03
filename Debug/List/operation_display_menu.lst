@@ -1,0 +1,823 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:52
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\operation_display_menu.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW8C58.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\operation_display_menu.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\operation_display_menu.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\operation_display_menu.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\operation_display_menu.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+      3          #include <string.h>
+      4          #include "macros.h"
+      5          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      6          char display_menu_cycle_through;
+   \                     display_menu_cycle_through:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      7          char display_menu_state = 0; //currently 0 through 13
+   \                     display_menu_state:
+   \   000000                DS8 1
+      8          extern volatile char SW1_Pressed;
+      9          extern volatile char SW2_Pressed;
+     10          extern unsigned int speed_global;
+     11          extern char display_line[4][11],
+     12                      wifi_connected;
+     13          extern volatile unsigned char display_changed;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     14          char default_menu_toggle,
+   \                     default_menu_toggle:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     15               default_menu_select = DEFAULT_MENU_SERIAL;
+   \                     default_menu_select:
+   \   000000                DS8 1
+     16          extern volatile char PID_enable_timer;
+     17          extern volatile int time_seconds,
+     18                              time_half_seconds;
+     19          
+     20          extern volatile char USB_Rx_Ring_Buff[LARGE_RING_SIZE],
+     21                               IoT_Rx_Ring_Buff[LARGE_RING_SIZE];
+     22          extern char USB_Tx_Outgoing_Buff[LARGE_RING_SIZE],
+     23                      IoT_Tx_Outgoing_Buff[LARGE_RING_SIZE];
+     24          
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     25          char baud_toggle = BAUD_9600,
+   \                     baud_toggle:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for baud_toggle>`
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     26               UCA_toggle = MENU_SEL_IoT;
+   \                     UCA_toggle:
+   \   000000                DS8 1
+     27          
+     28          extern volatile char activate_adc_readings;//
+     29          
+     30          //const char *Tx_queue_USB[6] = {"UCA1_1\r\n",
+     31          //                               "UCA1_2\r\n",
+     32          //                               "UCA1_3\r\n",
+     33          //                               "UCA1_4\r\n",
+     34          //                               "UCA1_5\r\n",
+     35          //                               "UCA1_6\r\n"};
+     36          //const char *Tx_queue_IoT[6] = {"IoT_1\r\n",
+     37          //                               "IoT_2\r\n",
+     38          //                               "IoT_3\r\n",
+     39          //                               "IoT_4\r\n",
+     40          //                               "IoT_5\r\n",
+     41          //                               "IoT_6\r\n"};
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     42          char usb_msg_queue_incrementer = 0,
+   \                     usb_msg_queue_incrementer:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     43                iot_msg_queue_incrementer = 0;
+   \                     iot_msg_queue_incrementer:
+   \   000000                DS8 1
+     44          
+     45          extern char USB_Process_Buff[3][32];
+     46          extern char IoT_Process_Buff[3][32];
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     47          int display_scroll,
+   \                     display_scroll:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     48              display_scroll_timer;
+   \                     display_scroll_timer:
+   \   000000                DS8 2
+     49          
+
+   \                                 In  segment CODE, align 2
+     50          void display_menu_state_process(void){
+   \                     display_menu_state_process:
+     51          
+     52            if((display_menu_state == DISPLAY_DEFAULT) && SW1_Pressed){
+   \   000000   C293....     CMP.B   #0x0, &display_menu_state
+   \   000004   0720         JNE     ??display_menu_state_process_2
+   \   000006   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   00000A   0424         JEQ     ??display_menu_state_process_2
+     53              display_menu_state = DISPLAY_MENU_DIRECTION;
+   \   00000C   E243....     MOV.B   #0x2, &display_menu_state
+     54              SW1_Pressed = FALSE;
+   \   000010   C243....     MOV.B   #0x0, &SW1_Pressed
+     55            }
+     56            /*
+     57            //  switch(display_menu_state){
+     58            ////  case DISPLAY_MAIN:
+     59            ////    break;
+     60            //  case DISPLAY_MENU_DIRECTION: //2
+     61            //    //code for displaying
+     62            //    {
+     63            //      const char* line_1 = DISPLAY_MENU_LINE_1_ARROW;
+     64            //      const char* line_2 = DISPLAY_MENU_LINE_2;
+     65            //      const char* line_3 = DISPLAY_MENU_LINE_3;
+     66            //      const char* line_4 = DISPLAY_MENU_LINE_4;
+     67            //      my_display_process(line_1, line_2, line_3, line_4);
+     68            //
+     69            //      if(SW1_Pressed){
+     70            //        display_menu_state = DISPLAY_MENU_SPEED;
+     71            //        SW1_Pressed = FALSE;
+     72            //      }
+     73            //      if(SW2_Pressed){
+     74            //        display_menu_state = DISPLAY_MENU_DIRECTION_FORWARD;
+     75            //        SW2_Pressed = FALSE;
+     76            //      }
+     77            //    }
+     78            //    break;
+     79            //  case DISPLAY_MENU_SPEED: //3
+     80            //    {
+     81            //      const char* line_1 = DISPLAY_MENU_LINE_1;
+     82            //      const char* line_2 = DISPLAY_MENU_LINE_2_ARROW;
+     83            //      const char* line_3 = DISPLAY_MENU_LINE_3;
+     84            //      const char* line_4 = DISPLAY_MENU_LINE_4;
+     85            //      my_display_process(line_1, line_2, line_3, line_4);
+     86            //
+     87            //      if(SW1_Pressed){
+     88            //        display_menu_state = DISPLAY_MENU_BACKLIGHT;
+     89            //        SW1_Pressed = FALSE;
+     90            //      }
+     91            //      if(SW2_Pressed){
+     92            //        display_menu_state = DISPLAY_MENU_SPEED_SLOW;
+     93            //        SW2_Pressed = FALSE;
+     94            //      }
+     95            //    }
+     96            //    break;
+     97            //  case DISPLAY_MENU_BACKLIGHT: //4
+     98            //    {
+     99            //      const char* line_1 = DISPLAY_MENU_LINE_1;
+    100            //      const char* line_2 = DISPLAY_MENU_LINE_2;
+    101            //      const char* line_3 = DISPLAY_MENU_LINE_3_ARROW;
+    102            //      const char* line_4 = DISPLAY_MENU_LINE_4;
+    103            //      my_display_process(line_1, line_2, line_3, line_4);
+    104            //
+    105            //      if(SW1_Pressed){
+    106            //        display_menu_state = DISPLAY_MENU_SERIAL_COMS;
+    107            //        SW1_Pressed = FALSE;
+    108            //      }
+    109            //      if(SW2_Pressed){
+    110            //        BACKLIGHT_TOGGLE();
+    111            //        display_menu_state = DISPLAY_DEFAULT;
+    112            //        SW2_Pressed = FALSE;
+    113            //      }
+    114            //    }
+    115            //    break;
+    116            //  case DISPLAY_MENU_SERIAL_COMS: //5
+    117            //    {
+    118            //      const char* line_1 = DISPLAY_MENU_LINE_1;
+    119            //      const char* line_2 = DISPLAY_MENU_LINE_2;
+    120            //      const char* line_3 = DISPLAY_MENU_LINE_3;
+    121            //      const char* line_4 = DISPLAY_MENU_LINE_4_ARROW;
+    122            //      my_display_process(line_1, line_2, line_3, line_4);
+    123            //
+    124            //      if(SW1_Pressed){
+    125            //        display_menu_state = DISPLAY_MENU_DIRECTION;  //cycle back to first menu item
+    126            //        SW1_Pressed = FALSE;
+    127            //      }
+    128            //      if(SW2_Pressed){
+    129            //        display_menu_state = DISPLAY_MENU_SERIAL_COMS_BAUD_SEL; //proceed to sub menu item
+    130            //        SW2_Pressed = FALSE;
+    131            //      }
+    132            //    }
+    133            //    break;
+    134            //  case DISPLAY_MENU_DIRECTION_FORWARD: //6
+    135            //    //code to display
+    136            //    {
+    137            //      const char* line_1 = "> FORWARD ";
+    138            //      const char* line_2 = "  STOP    ";
+    139            //      const char* line_3 = "  REVERSE ";
+    140            //      const char* line_4 = "  PID Togl";
+    141            //      my_display_process(line_1, line_2, line_3, line_4);
+    142            //
+    143            //      if(SW1_Pressed){
+    144            //        display_menu_state = DISPLAY_MENU_DIRECTION_STOP;
+    145            //        SW1_Pressed = FALSE;
+    146            //      }
+    147            //      if(SW2_Pressed){
+    148            //        display_menu_state = DISPLAY_DEFAULT;
+    149            //        SW2_Pressed = FALSE;
+    150            //        speed_global = SLOW;
+    151            //        forward(speed_global, SOFT_LEFT_TURN, 0);
+    152            //      }
+    153            //    }
+    154            //    break;
+    155            //  case DISPLAY_MENU_DIRECTION_STOP: //7
+    156            //    {
+    157            //      const char* line_1 = "  FORWARD ";
+    158            //      const char* line_2 = "> STOP    ";
+    159            //      const char* line_3 = "  REVERSE ";
+    160            //      const char* line_4 = "  PID Togl";
+    161            //      my_display_process(line_1, line_2, line_3, line_4);
+    162            //
+    163            //      if(SW1_Pressed){
+    164            //        display_menu_state = DISPLAY_MENU_DIRECTION_REVERSE;
+    165            //        SW1_Pressed = FALSE;
+    166            //      }
+    167            //      if(SW2_Pressed){
+    168            //        display_menu_state = DISPLAY_DEFAULT;
+    169            //        SW2_Pressed = FALSE;
+    170            //        speed_global = WHEEL_OFF;
+    171            //        stop_car();
+    172            //      }
+    173            //    }
+    174            //    break;
+    175            //  case DISPLAY_MENU_DIRECTION_REVERSE: //8
+    176            //    {
+    177            //      const char* line_1 = "  FORWARD ";
+    178            //      const char* line_2 = "  STOP    ";
+    179            //      const char* line_3 = "> REVERSE ";
+    180            //      const char* line_4 = "  PID Togl";
+    181            //      my_display_process(line_1, line_2, line_3, line_4);
+    182            //
+    183            //      if(SW1_Pressed){
+    184            //        display_menu_state = DISPLAY_MENU_DIRECTION_PID;
+    185            //        SW1_Pressed = FALSE;
+    186            //      }
+    187            //      if(SW2_Pressed){
+    188            //        display_menu_state = DISPLAY_DEFAULT;
+    189            //        SW2_Pressed = FALSE;
+    190            //        speed_global = SLOW;
+    191            //        reverse(speed_global);
+    192            //      }
+    193            //    }
+    194            //    break;
+    195            //  case DISPLAY_MENU_DIRECTION_PID: //9
+    196            //    {
+    197            //      const char* line_1 = "  FORWARD ";
+    198            //      const char* line_2 = "  STOP    ";
+    199            //      const char* line_3 = "  REVERSE ";
+    200            //      const char* line_4 = "> PID Togl";
+    201            //      my_display_process(line_1, line_2, line_3, line_4);
+    202            //
+    203            //      if(SW1_Pressed){
+    204            //        display_menu_state = DISPLAY_MENU_DIRECTION_FORWARD;
+    205            //        SW1_Pressed = FALSE;
+    206            //      }
+    207            //      if(SW2_Pressed){
+    208            //        display_menu_state = DISPLAY_DEFAULT;
+    209            //        SW2_Pressed = FALSE;
+    210            //        speed_global = SLOW;
+    211            //
+    212            //        // start one second timer before toggling the PID_control_enabled
+    213            //        PID_enable_timer += time_seconds;
+    214            //      }
+    215            //    }
+    216            //    break;
+    217            //  case DISPLAY_MENU_SPEED_SLOW: //10
+    218            //    {
+    219            //      const char* line_1 = "> SLOW    ";
+    220            //      const char* line_2 = "  MEDIUM  ";
+    221            //      const char* line_3 = "  FAST    ";
+    222            //      const char* line_4 = "  TURBO   ";
+    223            //      my_display_process(line_1, line_2, line_3, line_4);
+    224            //
+    225            //      if(SW1_Pressed){
+    226            //        display_menu_state = DISPLAY_MENU_SPEED_MEDIUM;
+    227            //        SW1_Pressed = FALSE;
+    228            //      }
+    229            //      if(SW2_Pressed){
+    230            //        display_menu_state = DISPLAY_DEFAULT;
+    231            //        SW2_Pressed = FALSE;
+    232            //        speed_global = SLOW;
+    233            //        forward(speed_global, STRAIGHT, 0);
+    234            //      }
+    235            //    }
+    236            //    break;
+    237            //  case DISPLAY_MENU_SPEED_MEDIUM: //11
+    238            //    {
+    239            //      const char* line_1 = "  SLOW    ";
+    240            //      const char* line_2 = "> MEDIUM  ";
+    241            //      const char* line_3 = "  FAST    ";
+    242            //      const char* line_4 = "  TURBO   ";
+    243            //      my_display_process(line_1, line_2, line_3, line_4);
+    244            //
+    245            //      if(SW1_Pressed){
+    246            //        display_menu_state = DISPLAY_MENU_SPEED_FAST;
+    247            //        SW1_Pressed = FALSE;
+    248            //      }
+    249            //      if(SW2_Pressed){
+    250            //        display_menu_state = DISPLAY_DEFAULT;
+    251            //        SW2_Pressed = FALSE;
+    252            //        speed_global = FAST;
+    253            //        forward(speed_global, STRAIGHT, 0);
+    254            //      }
+    255            //    }
+    256            //    break;
+    257            //  case DISPLAY_MENU_SPEED_FAST: //12
+    258            //    {
+    259            //      const char* line_1 = "  SLOW    ";
+    260            //      const char* line_2 = "  MEDIUM  ";
+    261            //      const char* line_3 = "> FAST    ";
+    262            //      const char* line_4 = "  TURBO   ";
+    263            //      my_display_process(line_1, line_2, line_3, line_4);
+    264            //
+    265            //      if(SW1_Pressed){
+    266            //        display_menu_state = DISPLAY_MENU_SPEED_TURBO;
+    267            //        SW1_Pressed = FALSE;
+    268            //      }
+    269            //      if(SW2_Pressed){
+    270            //        display_menu_state = DISPLAY_DEFAULT;
+    271            //        SW2_Pressed = FALSE;
+    272            //        speed_global = FAST;
+    273            //        forward(speed_global, STRAIGHT, 0);
+    274            //      }
+    275            //    }
+    276            //    break;
+    277            //  case DISPLAY_MENU_SPEED_TURBO: //13
+    278            //    {
+    279            //      const char* line_1 = "  SLOW    ";
+    280            //      const char* line_2 = "  MEDIUM  ";
+    281            //      const char* line_3 = "  FAST    ";
+    282            //      const char* line_4 = "> TURBO   ";
+    283            //      my_display_process(line_1, line_2, line_3, line_4);
+    284            //
+    285            //      if(SW1_Pressed){
+    286            //        display_menu_state = DISPLAY_MENU_SPEED_SLOW;
+    287            //        SW1_Pressed = FALSE;
+    288            //      }
+    289            //      if(SW2_Pressed){
+    290            //        display_menu_state = DISPLAY_DEFAULT;
+    291            //        SW2_Pressed = FALSE;
+    292            //        speed_global = TURBO;
+    293            //        forward(speed_global, STRAIGHT, 0);
+    294            //      }
+    295            //    }
+    296            //    break;
+    297            //  case DISPLAY_MENU_SERIAL_COMS_BAUD_SEL: //13
+    298            //    {
+    299            //      const char* line_1 = DISPLAY_MENU_SERIAL_LINE_1_ARROW;
+    300            //      const char* line_2 = DISPLAY_MENU_SERIAL_LINE_2;
+    301            //      const char* line_3 = DISPLAY_MENU_SERIAL_LINE_3;
+    302            //      const char* line_4 = DISPLAY_MENU_SERIAL_LINE_4;
+    303            //      my_display_process(line_1, line_2, line_3, line_4);
+    304            //
+    305            //      if(SW1_Pressed){
+    306            //        display_menu_state = DISPLAY_MENU_SERIAL_COMS_UCA_SEL;
+    307            //        SW1_Pressed = FALSE;
+    308            //      }
+    309            //      if(SW2_Pressed){
+    310            //        display_menu_state = DISPLAY_DEFAULT;
+    311            //        SW2_Pressed = FALSE;
+    312            //        //actuating code
+    313            //        if(baud_toggle == BAUD_9600){
+    314            //          Init_Serial_UCA1(BAUD_115200);
+    315            //          Init_Serial_UCA0(BAUD_115200);
+    316            //          baud_toggle = BAUD_115200;
+    317            //        }else if(baud_toggle == BAUD_115200){
+    318            //          Init_Serial_UCA1(BAUD_9600);
+    319            //          Init_Serial_UCA0(BAUD_9600);
+    320            //          baud_toggle = BAUD_9600;
+    321            //        }
+    322            //      }
+    323            //    }
+    324            //    break;
+    325            //  case DISPLAY_MENU_SERIAL_COMS_UCA_SEL: //13
+    326            //    {
+    327            //      const char* line_1 = DISPLAY_MENU_SERIAL_LINE_1;
+    328            //      const char* line_2 = DISPLAY_MENU_SERIAL_LINE_2_ARROW;
+    329            //      const char* line_3 = DISPLAY_MENU_SERIAL_LINE_3;
+    330            //      const char* line_4 = DISPLAY_MENU_SERIAL_LINE_4;
+    331            //      my_display_process(line_1, line_2, line_3, line_4);
+    332            //
+    333            //      if(SW1_Pressed){
+    334            //        display_menu_state = DISPLAY_MENU_SERIAL_COMS_TX_MESSAGE;
+    335            //        SW1_Pressed = FALSE;
+    336            //      }
+    337            //      if(SW2_Pressed){
+    338            //        display_menu_state = DISPLAY_DEFAULT;
+    339            //        SW2_Pressed = FALSE;
+    340            //        //actuating code
+    341            //        if(UCA_toggle == MENU_SEL_USB){
+    342            //          UCA_toggle = MENU_SEL_IoT;
+    343            //          //note: more actuating code needed
+    344            //        }else if(UCA_toggle == MENU_SEL_IoT){
+    345            //          UCA_toggle = MENU_SEL_USB;
+    346            //        }
+    347            //      }
+    348            //    }
+    349            //    break;
+    350            //  case DISPLAY_MENU_SERIAL_COMS_TX_MESSAGE: //13
+    351            //    {
+    352            //      const char* line_1 = DISPLAY_MENU_SERIAL_LINE_1;
+    353            //      const char* line_2 = DISPLAY_MENU_SERIAL_LINE_2;
+    354            //      const char* line_3 = DISPLAY_MENU_SERIAL_LINE_3_ARROW;
+    355            //      const char* line_4 = DISPLAY_MENU_SERIAL_LINE_4;
+    356            //      my_display_process(line_1, line_2, line_3, line_4);
+    357            //
+    358            //      if(SW1_Pressed){
+    359            //        display_menu_state = DISPLAY_MENU_SERIAL_COMS_BAUD_SEL;
+    360            //        SW1_Pressed = FALSE;
+    361            //      }
+    362            //      if(SW2_Pressed){
+    363            //        display_menu_state = DISPLAY_DEFAULT;
+    364            //        SW2_Pressed = FALSE;
+    365            //        //actuating code
+    366            ////        if(UCA_toggle == MENU_SEL_USB){
+    367            ////          TX_message_USB_UCA1(Tx_queue_USB[usb_msg_queue_incrementer++]);
+    368            ////          if(usb_msg_queue_incrementer > 5){
+    369            ////            usb_msg_queue_incrementer = 0;
+    370            ////          }
+    371            ////        }else if(UCA_toggle == MENU_SEL_IoT){
+    372            ////          TX_message_IoT_UCA0(Tx_queue_IoT[iot_msg_queue_incrementer++]);
+    373            ////          if(iot_msg_queue_incrementer > 5){
+    374            ////            iot_msg_queue_incrementer = 0;
+    375            ////            // add \r\n next
+    376            ////          }
+    377            ////        }
+    378            //      }
+    379            //    }
+    380            //    break;
+    381            //  default: //0
+    382            //    {
+    383            //
+    384            //      //This encapsulates the toggling mechanism for two different default displays
+    385            //      // within a SW2 press while display_menu_state == default
+    386            //      if(SW2_Pressed){
+    387            //        SW2_Pressed = FALSE;
+    388            //        if(default_menu_toggle){
+    389            //          default_menu_toggle = FALSE;
+    390            //          default_menu_select = DEFAULT_MENU_SERIAL;
+    391            //        }else if(!default_menu_toggle){
+    392            //          default_menu_toggle = TRUE;
+    393            //          default_menu_select = DEFAULT_MENU_ADC;
+    394            //        }
+    395            //      }
+    396            //
+    397            //      //
+    398            //      switch(default_menu_select){
+    399            //      case DEFAULT_MENU_SERIAL:
+    400            //        //display line 0
+    401            //        if(UCA1BRW == BRCWR_9600 && UCA1MCTLW == MCWR_9600){  // only based on UCA1
+    402            //          strcpy(display_line[0], "Baud: 9600");
+    403            //        }else if(UCA1BRW == BRCWR_115200 && UCA1MCTLW == MCWR_115200_1){
+    404            //          strcpy(display_line[0], "Baud: 115K");
+    405            //        }
+    406            //
+    407            //
+    408            //        //display line 1 (Baud), 2(Tx), and 3 (Rx)
+    409            //        if(UCA_toggle == MENU_SEL_USB){
+    410            //          strcpy(display_line[1], "IoT P_buff");
+    411            //          if(USB_Process_Buff[1][0] == 0x00){ // nothing to display so ensure screen is clear
+    412            //            strcpy(display_line[2], "          ");
+    413            //            strcpy(display_line[3], "          ");
+    414            //          }else{
+    415            //            for(int i = 0; i < 10; i++){ // if USB, display what arrived in UCA1
+    416            //              display_line[2][i] = USB_Tx_Outgoing_Buff[i];
+    417            //              display_line[3][i] = USB_Process_Buff[1][i];
+    418            //            }
+    419            //          }
+    420            //        }else if(UCA_toggle == MENU_SEL_IoT){
+    421            //          strcpy(display_line[1], "IoT P_buff");
+    422            //
+    423            //          //if(IoT_Process_Buff[P_BUFF_1][0] == 0x00){ // nothing to display so ensure screen is clear
+    424            //            //strcpy(display_line[2], "          ");
+    425            //            //strcpy(display_line[3], "          ");
+    426            //          //}else{
+    427            //          if(wifi_connected){
+    428            //            strcpy(display_line[2], "CONNECTED ");
+    429            //          }
+    430            //
+    431            //          if(display_scroll_timer != time_half_seconds){
+    432            //            display_scroll_timer = time_half_seconds;
+    433            //
+    434            //            for(int i = 0; i <= 10; i++){ // scroll process buffer around display
+    435            //              //              display_line[2][i] = IoT_Tx_Outgoing_Buff[];
+    436            //              display_line[3][i] = IoT_Process_Buff[P_BUFF_1][display_scroll];
+    437            //              if(display_scroll >= sizeof(IoT_Process_Buff[P_BUFF_1])){
+    438            //                display_scroll = 0;
+    439            //              }
+    440            //              display_scroll++;
+    441            //            }
+    442            //          }
+    443            //
+    444            //          //}
+    445            //        }
+    446            //        break;
+    447            //      case DEFAULT_MENU_ADC:
+    448            //        break;
+    449            //      default:
+    450            //        break;
+    451            //      }
+    452            //
+    453            //      update_string(display_line[0], 0);
+    454            //      update_string(display_line[1], 1);
+    455            //      update_string(display_line[2], 2);
+    456            //      update_string(display_line[3], 3);
+    457            //
+    458            //      display_changed = 1;
+    459            //    }
+    460            //    break;
+    461            //  }
+    462            */
+    463          
+    464            /*
+    465            switch(default_menu_select){
+    466            case DEFAULT_MENU_SERIAL:
+    467              //display line 0
+    468              if(UCA1BRW == BRCWR_9600 && UCA1MCTLW == MCWR_9600){  // only based on UCA1
+    469                strcpy(display_line[0], "Baud: 9600");
+    470              }else if(UCA1BRW == BRCWR_115200 && UCA1MCTLW == MCWR_115200_1){
+    471                strcpy(display_line[0], "Baud: 115K");
+    472              }
+    473          
+    474          
+    475              //display line 1 (Baud), 2(Tx), and 3 (Rx)
+    476              if(UCA_toggle == MENU_SEL_USB){
+    477                strcpy(display_line[1], "IoT P_buff");
+    478                if(USB_Process_Buff[1][0] == 0x00){ // nothing to display so ensure screen is clear
+    479                  strcpy(display_line[2], "          ");
+    480                  strcpy(display_line[3], "          ");
+    481                }else{
+    482                  for(int i = 0; i < 10; i++){ // if USB, display what arrived in UCA1
+    483                    display_line[2][i] = USB_Tx_Outgoing_Buff[i];
+    484                    display_line[3][i] = USB_Process_Buff[1][i];
+    485                  }
+    486                }
+    487              }else if(UCA_toggle == MENU_SEL_IoT){
+    488                strcpy(display_line[1], "IoT P_buff");
+    489          
+    490                //if(IoT_Process_Buff[P_BUFF_1][0] == 0x00){ // nothing to display so ensure screen is clear
+    491                //strcpy(display_line[2], "          ");
+    492                //strcpy(display_line[3], "          ");
+    493                //}else{
+    494                if(wifi_connected){
+    495                  strcpy(display_line[2], "CONNECTED ");
+    496                }
+    497          
+    498                if(display_scroll_timer != time_half_seconds){
+    499                  display_scroll_timer = time_half_seconds;
+    500          
+    501                  for(int i = 0; i <= 10; i++){ // scroll process buffer around display
+    502                    //              display_line[2][i] = IoT_Tx_Outgoing_Buff[];
+    503                    display_line[3][i] = IoT_Process_Buff[P_BUFF_1][display_scroll];
+    504                    if(display_scroll >= sizeof(IoT_Process_Buff[P_BUFF_1])){
+    505                      display_scroll = 0;
+    506                    }
+    507                    display_scroll++;
+    508                  }
+    509                }
+    510          
+    511                //}
+    512              }
+    513              break;
+    514            case DEFAULT_MENU_ADC:
+    515              break;
+    516            default:
+    517              break;
+    518            }
+    519            */
+    520          
+    521          //  if(wifi_connected){
+    522          //    strcpy(display_line[2], "CONNECTED ");
+    523          //  }
+    524          
+    525              if(activate_adc_readings == TRUE){
+   \                     ??display_menu_state_process_2:
+   \   000014   D293....     CMP.B   #0x1, &activate_adc_readings
+   \   000018   2E20         JNE     ??display_menu_state_process_3
+    526                display_line[1][5] = 'T';
+   \   00001A   F2405400.... MOV.B   #0x54, &display_line + 16
+    527                display_line[1][6] = 'h';
+   \   000020   F2406800.... MOV.B   #0x68, &display_line + 17
+    528                display_line[1][7] = 'r';
+   \   000026   F2407200.... MOV.B   #0x72, &display_line + 18
+    529                display_line[1][8] = 's';
+   \   00002C   F2407300.... MOV.B   #0x73, &display_line + 19
+    530                display_line[1][9] = 'h';
+   \   000032   F2406800.... MOV.B   #0x68, &display_line + 20
+    531          
+    532                display_line[2][5] = 'S';
+   \   000038   F2405300.... MOV.B   #0x53, &display_line + 27
+    533                display_line[2][6] = 'p';
+   \   00003E   F2407000.... MOV.B   #0x70, &display_line + 28
+    534                display_line[2][7] = 'd';
+   \   000044   F2406400.... MOV.B   #0x64, &display_line + 29
+    535                display_line[2][8] = 'G';
+   \   00004A   F2404700.... MOV.B   #0x47, &display_line + 30
+    536                display_line[2][9] = 'l';
+   \   000050   F2406C00.... MOV.B   #0x6c, &display_line + 31
+    537          
+    538                display_line[3][5] = 'S';
+   \   000056   F2405300.... MOV.B   #0x53, &display_line + 38
+    539                display_line[3][6] = 'C';
+   \   00005C   F2404300.... MOV.B   #0x43, &display_line + 39
+    540                display_line[3][7] = 'o';
+   \   000062   F2406F00.... MOV.B   #0x6f, &display_line + 40
+    541                display_line[3][8] = 'r';
+   \   000068   F2407200.... MOV.B   #0x72, &display_line + 41
+    542                display_line[3][9] = 'r';
+   \   00006E   F2407200.... MOV.B   #0x72, &display_line + 42
+   \   000074   1A3C         JMP     ??display_menu_state_process_1
+    543          
+    544              }else{
+    545                if(display_scroll_timer != time_half_seconds){
+   \                     ??display_menu_state_process_3:
+   \   000076   9292........ CMP.W   &time_half_seconds, &display_scroll_timer
+   \   00007C   1624         JEQ     ??display_menu_state_process_1
+    546                  display_scroll_timer = time_half_seconds;
+   \   00007E   9242........ MOV.W   &time_half_seconds, &display_scroll_timer
+    547          
+    548                  for(int i = 0; i <= 10; i++){ // scroll process buffer around display
+   \   000084   0F43         MOV.W   #0x0, R15
+   \                     ??display_menu_state_process_0:
+   \   000086   3F900B00     CMP.W   #0xb, R15
+   \   00008A   0F34         JGE     ??display_menu_state_process_1
+    549                    //              display_line[2][i] = IoT_Tx_Outgoing_Buff[];
+    550                    display_line[3][i] = IoT_Process_Buff[P_BUFF_1][display_scroll];
+   \   00008C   1E42....     MOV.W   &display_scroll, R14
+   \   000090   DF4E........ MOV.B   IoT_Process_Buff(R14), display_line + 33(R15)
+    551                    if(display_scroll >= sizeof(IoT_Process_Buff[P_BUFF_1])){
+   \   000096   B2902000.... CMP.W   #0x20, &display_scroll
+   \   00009C   0228         JNC     ??display_menu_state_process_4
+    552                      display_scroll = 0;
+   \   00009E   8243....     MOV.W   #0x0, &display_scroll
+    553                    }
+    554                    display_scroll++;
+   \                     ??display_menu_state_process_4:
+   \   0000A2   9253....     ADD.W   #0x1, &display_scroll
+    555                  }
+   \   0000A6   1F53         ADD.W   #0x1, R15
+   \   0000A8   EE3F         JMP     ??display_menu_state_process_0
+    556                }
+    557          
+    558              }
+    559          
+    560            update_string(display_line[0], 0);
+   \                     ??display_menu_state_process_1:
+   \   0000AA   0D43         MOV.W   #0x0, R13
+   \   0000AC   3C40....     MOV.W   #display_line, R12
+   \   0000B0   ........     CALLA   #update_string
+    561            update_string(display_line[1], 1);
+   \   0000B4   1D43         MOV.W   #0x1, R13
+   \   0000B6   3C40....     MOV.W   #display_line + 11, R12
+   \   0000BA   ........     CALLA   #update_string
+    562            update_string(display_line[2], 2);
+   \   0000BE   2D43         MOV.W   #0x2, R13
+   \   0000C0   3C40....     MOV.W   #display_line + 22, R12
+   \   0000C4   ........     CALLA   #update_string
+    563            update_string(display_line[3], 3);
+   \   0000C8   3D400300     MOV.W   #0x3, R13
+   \   0000CC   3C40....     MOV.W   #display_line + 33, R12
+   \   0000D0   ........     CALLA   #update_string
+    564          
+    565            display_changed = 1;
+   \   0000D4   D243....     MOV.B   #0x1, &display_changed
+    566          }
+   \   0000D8   1001         RETA
+    567          
+    568          
+    569          //void clear_display(void){
+    570          //  strcpy(display_line[0], "          ");
+    571          //  update_string(display_line[0], 0);
+    572          //  strcpy(display_line[1], "          ");
+    573          //  update_string(display_line[1], 1);
+    574          //  strcpy(display_line[2], "          ");
+    575          //  update_string(display_line[2], 2);
+    576          //  strcpy(display_line[3], "          ");
+    577          //  update_string(display_line[3], 3);
+    578          //
+    579          //  display_changed = 1;
+    580          //}
+    581          //
+
+   \                                 In  segment CODE, align 2
+    582          void my_display_process(const char* line1, const char* line2, const char* line3, const char* line4){
+   \                     my_display_process:
+   \   000000   3B15         PUSHM.W #0x4, R11
+   \   000002   0A4C         MOV.W   R12, R10
+   \   000004   0B4D         MOV.W   R13, R11
+   \   000006   084E         MOV.W   R14, R8
+   \   000008   094F         MOV.W   R15, R9
+    583            strcpy(display_line[0], line1);
+   \   00000A   0D4A         MOV.W   R10, R13
+   \   00000C   3C40....     MOV.W   #display_line, R12
+   \   000010   ........     CALLA   #strcpy
+    584            update_string(display_line[0], 0);
+   \   000014   0D43         MOV.W   #0x0, R13
+   \   000016   ........     CALLA   #update_string
+    585            strcpy(display_line[1], line2);
+   \   00001A   0D4B         MOV.W   R11, R13
+   \   00001C   3C40....     MOV.W   #display_line + 11, R12
+   \   000020   ........     CALLA   #strcpy
+    586            update_string(display_line[1], 1);
+   \   000024   1D43         MOV.W   #0x1, R13
+   \   000026   3C40....     MOV.W   #display_line + 11, R12
+   \   00002A   ........     CALLA   #update_string
+    587            strcpy(display_line[2], line3);
+   \   00002E   0D48         MOV.W   R8, R13
+   \   000030   3C40....     MOV.W   #display_line + 22, R12
+   \   000034   ........     CALLA   #strcpy
+    588            update_string(display_line[2], 2);
+   \   000038   2D43         MOV.W   #0x2, R13
+   \   00003A   3C40....     MOV.W   #display_line + 22, R12
+   \   00003E   ........     CALLA   #update_string
+    589            strcpy(display_line[3], line4);
+   \   000042   0D49         MOV.W   R9, R13
+   \   000044   3C40....     MOV.W   #display_line + 33, R12
+   \   000048   ........     CALLA   #strcpy
+    590            update_string(display_line[3], 3);
+   \   00004C   3D400300     MOV.W   #0x3, R13
+   \   000050   3C40....     MOV.W   #display_line + 33, R12
+   \   000054   ........     CALLA   #update_string
+    591          
+    592            display_changed = 1;
+   \   000058   D243....     MOV.B   #0x1, &display_changed
+    593          }
+   \   00005C   3817         POPM.W  #0x4, R11
+   \   00005E   1001         RETA
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for baud_toggle>`:
+   \   000000   01           DC8 1
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   display_menu_state_process
+        4   -> update_string
+     12   my_display_process
+       12   -> strcpy
+       12   -> update_string
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       1  ?<Initializer for baud_toggle>
+       1  UCA_toggle
+       1  baud_toggle
+       1  default_menu_select
+       1  default_menu_toggle
+       1  display_menu_cycle_through
+       1  display_menu_state
+     218  display_menu_state_process
+       2  display_scroll
+       2  display_scroll_timer
+       1  iot_msg_queue_incrementer
+      96  my_display_process
+       1  usb_msg_queue_incrementer
+
+ 
+ 314 bytes in segment CODE
+   1 byte  in segment DATA16_I
+   1 byte  in segment DATA16_ID
+  11 bytes in segment DATA16_Z
+ 
+ 314 bytes of CODE  memory
+   1 byte  of CONST memory
+  12 bytes of DATA  memory
+
+Errors: none
+Warnings: none

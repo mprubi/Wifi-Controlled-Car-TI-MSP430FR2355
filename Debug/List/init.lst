@@ -1,0 +1,142 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:14
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\init.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW97BD.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\init.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\init.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\init.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\init.c
+      1          //------------------------------------------------------------------------------
+      2          //
+      3          //  Description: Initializations file
+      4          //
+      5          //
+      6          //  Mark Rubianes
+      7          //  Jan 2021
+      8          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+      9          //------------------------------------------------------------------------------
+     10          
+     11          #include  "functions.h"
+     12          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+     13          #include <string.h>
+     14          #include "macros.h"
+     15          
+     16          extern char display_line[4][11];
+     17          extern char *display[4];
+     18          extern volatile unsigned char update_display;
+     19          
+
+   \                                 In  segment CODE, align 2
+     20          void Init_Conditions(void){
+   \                     Init_Conditions:
+   \   000000   0A12         PUSH.W  R10
+     21          //------------------------------------------------------------------------------
+     22            int i;
+     23          
+     24            for(i=0;i<11;i++){
+   \   000002   0A43         MOV.W   #0x0, R10
+   \                     ??Init_Conditions_0:
+   \   000004   3A900B00     CMP.W   #0xb, R10
+   \   000008   0A34         JGE     ??Init_Conditions_1
+     25              display_line[0][i] = RESET_STATE;
+   \   00000A   CA43....     MOV.B   #0x0, display_line(R10)
+     26              display_line[1][i] = RESET_STATE;
+   \   00000E   CA43....     MOV.B   #0x0, display_line + 11(R10)
+     27              display_line[2][i] = RESET_STATE;
+   \   000012   CA43....     MOV.B   #0x0, display_line + 22(R10)
+     28              display_line[3][i] = RESET_STATE;
+   \   000016   CA43....     MOV.B   #0x0, display_line + 33(R10)
+     29            }
+   \   00001A   1A53         ADD.W   #0x1, R10
+   \   00001C   F33F         JMP     ??Init_Conditions_0
+     30            display_line[0][10] = 0;
+   \                     ??Init_Conditions_1:
+   \   00001E   C243....     MOV.B   #0x0, &display_line + 10
+     31            display_line[1][10] = 0;
+   \   000022   C243....     MOV.B   #0x0, &display_line + 21
+     32            display_line[2][10] = 0;
+   \   000026   C243....     MOV.B   #0x0, &display_line + 32
+     33            display_line[3][10] = 0;
+   \   00002A   C243....     MOV.B   #0x0, &display_line + 43
+     34          
+     35            display[0] = &display_line[0][0];
+   \   00002E   B240........ MOV.W   #display_line, &display
+     36            display[1] = &display_line[1][0];
+   \   000034   B240........ MOV.W   #display_line + 11, &display + 2
+     37            display[2] = &display_line[2][0];
+   \   00003A   B240........ MOV.W   #display_line + 22, &display + 4
+     38            display[3] = &display_line[3][0];
+   \   000040   B240........ MOV.W   #display_line + 33, &display + 6
+     39            update_display = 0;
+   \   000046   C243....     MOV.B   #0x0, &update_display
+     40          // Interrupts are disabled by default, enable them.
+     41            enable_interrupts();
+   \   00004A   ........     CALLA   #enable_interrupts
+     42          //------------------------------------------------------------------------------
+     43          
+     44            //leave the IR LED ON, figure out timing for power savings after this class
+     45            P2OUT |= IR_LED;
+   \   00004E   E2D30302     BIS.B   #0x2, &0x203
+     46          }
+   \   000052   3A41         POP.W   R10
+   \   000054   1001         RETA
+   \   000056                REQUIRE _A_PAOUT_L
+     47          
+     48          
+     49          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      6   Init_Conditions
+        6   -> enable_interrupts
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      86  Init_Conditions
+       2  _A_PAOUT_L
+
+ 
+ 86 bytes in segment CODE
+  2 bytes in segment DATA16_AN
+ 
+ 86 bytes of CODE memory
+  0 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

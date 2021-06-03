@@ -1,0 +1,278 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:16
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\motor_control.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW9F47.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\motor_control.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\motor_control.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\motor_control.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\motor_control.c
+      1          // New code: from "hints from project 3a
+      2          
+      3          //------------------------------------------------------------------------------
+      4          //
+      5          //  Description: This file contains function definitions for
+      6          //              movement and motor control
+      7          //
+      8          //  Mark Rubianes
+      9          //  Jan 2021
+     10          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+     11          //------------------------------------------------------------------------------
+     12          
+     13          //-----------------------------------------------------------------------------
+     14          
+     15          #include  "functions.h"
+     16          #include  "msp430.h"
+     17          #include <string.h>
+     18          #include "macros.h"
+     19          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     20          char motion_state = IDLE; //default, IDLE
+   \                     motion_state:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     21          unsigned int wait_count = ZERO;
+   \                     wait_count:
+   \   000000                DS8 2
+     22          extern char display_line[4][11];
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     23          unsigned int delay_start = 0;
+   \                     delay_start:
+   \   000000                DS8 2
+     24          extern unsigned int speed_L_component;
+     25          extern unsigned int speed_R_component;
+     26          extern unsigned int speed_dual_component;
+     27          extern unsigned int L_wheel_speed;
+     28          extern unsigned int R_wheel_speed;
+     29          
+
+   \                                 In  segment CODE, align 2
+     30          void motion_state_select(void){
+   \                     motion_state_select:
+     31            motion_state++;
+   \   000000   D253....     ADD.B   #0x1, &motion_state
+     32            if(motion_state > WAIT) motion_state = IDLE;
+   \   000004   E293....     CMP.B   #0x2, &motion_state
+   \   000008   0228         JNC     ??motion_state_select_0
+   \   00000A   C243....     MOV.B   #0x0, &motion_state
+     33          
+     34            switch(motion_state){
+   \                     ??motion_state_select_0:
+   \   00000E   5E42....     MOV.B   &motion_state, R14
+   \   000012   4E83         SUB.B   #0x0, R14
+   \   000014   0724         JEQ     ??motion_state_select_1
+   \   000016   5E83         SUB.B   #0x1, R14
+   \   000018   0C24         JEQ     ??motion_state_select_2
+   \   00001A   5E83         SUB.B   #0x1, R14
+   \   00001C   1124         JEQ     ??motion_state_select_3
+   \   00001E   5E83         SUB.B   #0x1, R14
+   \   000020   1624         JEQ     ??motion_state_select_4
+   \   000022   1001         RETA
+     35              case IDLE:
+     36                strcpy(display_line[0], "IDLE      ");
+   \                     ??motion_state_select_1:
+   \   000024   3D40....     MOV.W   #`?<Constant "IDLE      ">`, R13
+   \   000028   3C40....     MOV.W   #display_line, R12
+   \   00002C   ........     CALLA   #strcpy
+     37                break;
+   \   000030   1001         RETA
+     38              case WAIT:
+     39                strcpy(display_line[0], "ARM       ");
+   \                     ??motion_state_select_2:
+   \   000032   3D40....     MOV.W   #`?<Constant "ARM       ">`, R13
+   \   000036   3C40....     MOV.W   #display_line, R12
+   \   00003A   ........     CALLA   #strcpy
+     40                break;
+   \   00003E   1001         RETA
+     41              case 2:
+     42                strcpy(display_line[0], "2222222222");
+   \                     ??motion_state_select_3:
+   \   000040   3D40....     MOV.W   #`?<Constant "2222222222">`, R13
+   \   000044   3C40....     MOV.W   #display_line, R12
+   \   000048   ........     CALLA   #strcpy
+     43                break;
+   \   00004C   1001         RETA
+     44              case 3:
+     45                strcpy(display_line[0], "3333333333");
+   \                     ??motion_state_select_4:
+   \   00004E   3D40....     MOV.W   #`?<Constant "3333333333">`, R13
+   \   000052   3C40....     MOV.W   #display_line, R12
+   \   000056   ........     CALLA   #strcpy
+     46                break;
+     47            }
+     48          }
+   \   00005A   1001         RETA
+     49          // TODO: implement sleep(seconds) function using dedicated timer // use debouce switch method
+     50          //void my_sleep(int duration, char set_motion_state){
+     51          //  if(time_changed){
+     52          //    time_changed = 0;
+     53          //    if(delay_start++ >= duration){ //this is what forces the extra cycles
+     54          //      delay_start = 0;
+     55          //      if(set_motion_state) {
+     56          //        motion_state = START;
+     57          //      }
+     58          //  }
+     59          // }
+     60          //}
+     61          
+     62          
+     63          //void initiate_motion(){
+     64          //
+     65          //  if(time_changed){  // on every time_changed, do/consdier all this (else statement included)
+     66          //    time_changed = 0;
+     67          //    if(segment_count <= travel_distance){  //travel distance is how many periods until stopping
+     68          //      debug_travel_distance++;
+     69          //      if(right_motor_count++ >= right_count_time){ //if right motor > designated count time...
+     70          //        P6OUT &= ~R_FORWARD;  // ...slow right motor down by turning it off for once cycle
+     71          //
+     72          //        debug_right++;
+     73          //      }
+     74          //      if(left_motor_count++ >= left_count_time){  //these statements slow the motors down for turns as defined
+     75          //        P6OUT &= ~L_FORWARD;
+     76          //
+     77          //        debug_left++;
+     78          //      }
+     79          //      if(cycle_time >= WHEEL_PERIOD){ // if cycle time exceeds the period
+     80          //        cycle_time = 0;
+     81          //        right_motor_count = 0;
+     82          //        left_motor_count = 0;
+     83          //        segment_count++;
+     84          //        forward_ON();
+     85          //
+     86          //        debug_cycle_wheel_count++;
+     87          //      }
+     88          //    }else{ //this is the end of travel distance
+     89          //        motion_state = END;
+     90          //         // time_changed
+     91          //    }
+     92          //  }  // function
+     93          //}
+     94          
+     95          
+     96          /*
+     97          function: start_motion - commences predefined motion patterns for each
+     98          individual shape. Motors stop once shape pattern is complete
+     99          */
+
+   \                                 In  segment CODE, align 2
+    100          void motion_process(void){
+   \                     motion_process:
+    101          
+    102          
+    103          //  switch(motion_state){
+    104          //  case IDLE: // state 0
+    105          //    strcpy(display_line[2], "   IDLE   ");
+    106          //    //blink_LED();
+    107          //    break;
+    108          //  case WAIT: //  state 1  (delay to allow for button press and removing fingers before car runs)
+    109          //    strcpy(display_line[2], "   WAIT   ");
+    110          //    my_sleep(duration = WAITING_TO_START, set_motion_state = 1);
+    111          //    break;
+    112          //  case START:   // state 2
+    113          //    strcpy(display_line[2], "   START  ");
+    114          //    start_case();
+    115          //    break;
+    116          //  case RUN:
+    117          //    strcpy(display_line[2], "   RUN    ");
+    118          //    initiate_motion();
+    119          //    break;
+    120          //  case END:  // state 3
+    121          //    strcpy(display_line[2], "   END    ");
+    122          //    end_case();
+    123          //    break;
+    124          //  }
+    125          }
+   \   000000   1001         RETA
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "IDLE      ">`:
+   \   000000   49444C452020 DC8 "IDLE      "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "ARM       ">`:
+   \   000000   41524D202020 DC8 "ARM       "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "2222222222">`:
+   \   000000   323232323232 DC8 "2222222222"
+   \            3232323200  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "3333333333">`:
+   \   000000   333333333333 DC8 "3333333333"
+   \            3333333300  
+    126          
+    127          
+    128          
+    129          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   motion_process
+      4   motion_state_select
+        4   -> strcpy
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      11  ?<Constant "2222222222">
+      11  ?<Constant "3333333333">
+      11  ?<Constant "ARM       ">
+      11  ?<Constant "IDLE      ">
+       2  delay_start
+       2  motion_process
+       1  motion_state
+      92  motion_state_select
+       2  wait_count
+
+ 
+ 94 bytes in segment CODE
+ 44 bytes in segment DATA16_C
+  5 bytes in segment DATA16_Z
+ 
+ 94 bytes of CODE  memory
+ 44 bytes of CONST memory
+  5 bytes of DATA  memory
+
+Errors: none
+Warnings: none

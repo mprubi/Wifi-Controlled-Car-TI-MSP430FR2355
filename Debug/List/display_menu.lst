@@ -1,0 +1,834 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:14
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\display_menu.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW95E6.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\display_menu.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\display_menu.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\display_menu.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\display_menu.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x244
+   \   union <unnamed> _A_PCDIR_L
+   \                     _A_PCDIR_L:
+   \   000000                DS8 2
+      3          #include <string.h>
+      4          #include "macros.h"
+      5          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      6          char display_menu_cycle_through;
+   \                     display_menu_cycle_through:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      7          char display_menu_state = 0; //currently 0 through 13
+   \                     display_menu_state:
+   \   000000                DS8 1
+      8          extern volatile char SW1_Pressed;
+      9          extern volatile char SW2_Pressed;
+     10          extern unsigned int speed_global;
+     11          extern char display_line[4][11];
+     12          extern volatile unsigned char display_changed;
+     13          
+     14          
+
+   \                                 In  segment CODE, align 2
+     15          void display_menu_state_process(void){
+   \                     display_menu_state_process:
+   \   000000   3B15         PUSHM.W #0x4, R11
+     16          
+     17            if((display_menu_state == DISPLAY_DEFAULT) && SW1_Pressed){
+   \   000002   C293....     CMP.B   #0x0, &display_menu_state
+   \   000006   0720         JNE     ??display_menu_state_process_13
+   \   000008   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   00000C   0424         JEQ     ??display_menu_state_process_13
+     18              display_menu_state = DISPLAY_MENU_DIRECTION;
+   \   00000E   E243....     MOV.B   #0x2, &display_menu_state
+     19              SW1_Pressed = FALSE;
+   \   000012   C243....     MOV.B   #0x0, &SW1_Pressed
+     20            }
+     21          
+     22            switch(display_menu_state){
+   \                     ??display_menu_state_process_13:
+   \   000016   5E42....     MOV.B   &display_menu_state, R14
+   \   00001A   6E83         SUB.B   #0x2, R14
+   \   00001C   1524         JEQ     ??display_menu_state_process_14
+   \   00001E   5E83         SUB.B   #0x1, R14
+   \   000020   3224         JEQ     ??display_menu_state_process_15
+   \   000022   5E83         SUB.B   #0x1, R14
+   \   000024   4E24         JEQ     ??display_menu_state_process_16
+   \   000026   5E83         SUB.B   #0x1, R14
+   \   000028   6D24         JEQ     ??display_menu_state_process_17
+   \   00002A   5E83         SUB.B   #0x1, R14
+   \   00002C   8824         JEQ     ??display_menu_state_process_18
+   \   00002E   5E83         SUB.B   #0x1, R14
+   \   000030   AB24         JEQ     ??display_menu_state_process_19
+   \   000032   5E83         SUB.B   #0x1, R14
+   \   000034   CA24         JEQ     ??display_menu_state_process_20
+   \   000036   5E83         SUB.B   #0x1, R14
+   \   000038   ED24         JEQ     ??display_menu_state_process_21
+   \   00003A   5E83         SUB.B   #0x1, R14
+   \   00003C   1025         JEQ     ??display_menu_state_process_22
+   \   00003E   5E83         SUB.B   #0x1, R14
+   \   000040   3325         JEQ     ??display_menu_state_process_23
+   \   000042   5E83         SUB.B   #0x1, R14
+   \   000044   5625         JEQ     ??display_menu_state_process_24
+   \   000046   7A3D         JMP     ??display_menu_state_process_12
+     23          //  case DISPLAY_MAIN:
+     24          //    break;
+     25            case DISPLAY_MENU_DIRECTION: //2
+     26              //code for displaying
+     27              {
+     28                const char* line_1 = "> Dir Ctrl";
+   \                     ??display_menu_state_process_14:
+   \   000048   3A40....     MOV.W   #`?<Constant "> Dir Ctrl">`, R10
+     29                const char* line_2 = "  Speed   ";
+   \   00004C   3B40....     MOV.W   #`?<Constant "  Speed   ">`, R11
+     30                const char* line_3 = "  Bcklight";
+   \   000050   3840....     MOV.W   #`?<Constant "  Bcklight">`, R8
+     31                const char* line_4 = "  IoT     ";
+   \   000054   3940....     MOV.W   #`?<Constant "  IoT     ">`, R9
+     32                my_display_process(line_1, line_2, line_3, line_4);
+   \   000058   0F49         MOV.W   R9, R15
+   \   00005A   0E48         MOV.W   R8, R14
+   \   00005C   0D4B         MOV.W   R11, R13
+   \   00005E   0C4A         MOV.W   R10, R12
+   \   000060   ........     CALLA   #my_display_process
+     33          
+     34                if(SW1_Pressed){
+   \   000064   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   000068   0524         JEQ     ??display_menu_state_process_25
+     35                  display_menu_state = DISPLAY_MENU_SPEED;
+   \   00006A   F2400300.... MOV.B   #0x3, &display_menu_state
+     36                  SW1_Pressed = FALSE;
+   \   000070   C243....     MOV.B   #0x0, &SW1_Pressed
+     37                }
+     38          
+     39                if(SW2_Pressed){
+   \                     ??display_menu_state_process_25:
+   \   000074   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   000078   7725         JEQ     ??display_menu_state_process_1
+     40                  display_menu_state = DISPLAY_MENU_DIRECTION_FORWARD;
+   \   00007A   F2400600.... MOV.B   #0x6, &display_menu_state
+     41                  SW2_Pressed = FALSE;
+   \   000080   C243....     MOV.B   #0x0, &SW2_Pressed
+     42                }
+     43              }
+     44              break;
+   \   000084   713D         JMP     ??display_menu_state_process_1
+     45            case DISPLAY_MENU_SPEED: //3
+     46              {
+     47                const char* line_1 = "  Dir Ctrl";
+   \                     ??display_menu_state_process_15:
+   \   000086   3B40....     MOV.W   #`?<Constant "  Dir Ctrl">`, R11
+     48                const char* line_2 = "> Speed   ";
+   \   00008A   3A40....     MOV.W   #`?<Constant "> Speed   ">`, R10
+     49                const char* line_3 = "  Bcklight";
+   \   00008E   3840....     MOV.W   #`?<Constant "  Bcklight">`, R8
+     50                const char* line_4 = "  IoT     ";
+   \   000092   3940....     MOV.W   #`?<Constant "  IoT     ">`, R9
+     51                my_display_process(line_1, line_2, line_3, line_4);
+   \   000096   0F49         MOV.W   R9, R15
+   \   000098   0E48         MOV.W   R8, R14
+   \   00009A   0D4A         MOV.W   R10, R13
+   \   00009C   0C4B         MOV.W   R11, R12
+   \   00009E   ........     CALLA   #my_display_process
+     52          
+     53                if(SW1_Pressed){
+   \   0000A2   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   0000A6   0424         JEQ     ??display_menu_state_process_26
+     54                  display_menu_state = DISPLAY_MENU_BACKLIGHT;
+   \   0000A8   E242....     MOV.B   #0x4, &display_menu_state
+     55                  SW1_Pressed = FALSE;
+   \   0000AC   C243....     MOV.B   #0x0, &SW1_Pressed
+     56                }
+     57                if(SW2_Pressed){
+   \                     ??display_menu_state_process_26:
+   \   0000B0   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   0000B4   5925         JEQ     ??display_menu_state_process_1
+     58                  display_menu_state = DISPLAY_MENU_SPEED_SLOW;
+   \   0000B6   F2400900.... MOV.B   #0x9, &display_menu_state
+     59                  SW2_Pressed = FALSE;
+   \   0000BC   C243....     MOV.B   #0x0, &SW2_Pressed
+     60                }
+     61              }
+     62              break;
+   \   0000C0   533D         JMP     ??display_menu_state_process_1
+     63            case DISPLAY_MENU_BACKLIGHT: //4
+     64              {
+     65                const char* line_1 = "  Dir Ctrl";
+   \                     ??display_menu_state_process_16:
+   \   0000C2   3B40....     MOV.W   #`?<Constant "  Dir Ctrl">`, R11
+     66                const char* line_2 = "  Speed   ";
+   \   0000C6   3A40....     MOV.W   #`?<Constant "  Speed   ">`, R10
+     67                const char* line_3 = "> Bcklight";
+   \   0000CA   3840....     MOV.W   #`?<Constant "> Bcklight">`, R8
+     68                const char* line_4 = "  IoT     ";
+   \   0000CE   3940....     MOV.W   #`?<Constant "  IoT     ">`, R9
+     69                my_display_process(line_1, line_2, line_3, line_4);
+   \   0000D2   0F49         MOV.W   R9, R15
+   \   0000D4   0E48         MOV.W   R8, R14
+   \   0000D6   0D4A         MOV.W   R10, R13
+   \   0000D8   0C4B         MOV.W   R11, R12
+   \   0000DA   ........     CALLA   #my_display_process
+     70          
+     71                if(SW1_Pressed){
+   \   0000DE   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   0000E2   0524         JEQ     ??display_menu_state_process_27
+     72                  display_menu_state = DISPLAY_MENU_IOT;
+   \   0000E4   F2400500.... MOV.B   #0x5, &display_menu_state
+     73                  SW1_Pressed = FALSE;
+   \   0000EA   C243....     MOV.B   #0x0, &SW1_Pressed
+     74                }
+     75                if(SW2_Pressed){
+   \                     ??display_menu_state_process_27:
+   \   0000EE   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   0000F2   3A25         JEQ     ??display_menu_state_process_1
+     76                  BACKLIGHT_TOGGLE();
+   \   0000F4   F2E010004502 XOR.B   #0x10, &0x245
+     77                  display_menu_state = DISPLAY_DEFAULT;
+   \   0000FA   C243....     MOV.B   #0x0, &display_menu_state
+     78                  SW2_Pressed = FALSE;
+   \   0000FE   C243....     MOV.B   #0x0, &SW2_Pressed
+     79                }
+     80              }
+     81              break;
+   \   000102   323D         JMP     ??display_menu_state_process_1
+     82            case DISPLAY_MENU_IOT: //5
+     83              {
+     84                const char* line_1 = "  Dir Ctrl";
+   \                     ??display_menu_state_process_17:
+   \   000104   3B40....     MOV.W   #`?<Constant "  Dir Ctrl">`, R11
+     85                const char* line_2 = "  Speed   ";
+   \   000108   3A40....     MOV.W   #`?<Constant "  Speed   ">`, R10
+     86                const char* line_3 = "  Bcklight";
+   \   00010C   3840....     MOV.W   #`?<Constant "  Bcklight">`, R8
+     87                const char* line_4 = "> IoT     ";
+   \   000110   3940....     MOV.W   #`?<Constant "> IoT     ">`, R9
+     88                my_display_process(line_1, line_2, line_3, line_4);
+   \   000114   0F49         MOV.W   R9, R15
+   \   000116   0E48         MOV.W   R8, R14
+   \   000118   0D4A         MOV.W   R10, R13
+   \   00011A   0C4B         MOV.W   R11, R12
+   \   00011C   ........     CALLA   #my_display_process
+     89          
+     90                if(SW1_Pressed){
+   \   000120   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   000124   0424         JEQ     ??display_menu_state_process_28
+     91                  display_menu_state = DISPLAY_MENU_DIRECTION;
+   \   000126   E243....     MOV.B   #0x2, &display_menu_state
+     92                  SW1_Pressed = FALSE;
+   \   00012A   C243....     MOV.B   #0x0, &SW1_Pressed
+     93                }
+     94                if(SW2_Pressed){
+   \                     ??display_menu_state_process_28:
+   \   00012E   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   000132   1A25         JEQ     ??display_menu_state_process_1
+     95                  //GREEN_LED_TOGGLE();
+     96                  display_menu_state = DISPLAY_DEFAULT;
+   \   000134   C243....     MOV.B   #0x0, &display_menu_state
+     97                  SW2_Pressed = FALSE;
+   \   000138   C243....     MOV.B   #0x0, &SW2_Pressed
+     98                }
+     99              }
+    100              break;
+   \   00013C   153D         JMP     ??display_menu_state_process_1
+    101            case DISPLAY_MENU_DIRECTION_FORWARD: //6
+    102              //code to display
+    103              {
+    104                const char* line_1 = "> FORWARD ";
+   \                     ??display_menu_state_process_18:
+   \   00013E   3B40....     MOV.W   #`?<Constant "> FORWARD ">`, R11
+    105                const char* line_2 = "  STOP    ";
+   \   000142   3A40....     MOV.W   #`?<Constant "  STOP    ">`, R10
+    106                const char* line_3 = "  REVERSE ";
+   \   000146   3840....     MOV.W   #`?<Constant "  REVERSE ">`, R8
+    107                const char* line_4 = "          ";
+   \   00014A   3940....     MOV.W   #`?<Constant "          ">`, R9
+    108                my_display_process(line_1, line_2, line_3, line_4);
+   \   00014E   0F49         MOV.W   R9, R15
+   \   000150   0E48         MOV.W   R8, R14
+   \   000152   0D4A         MOV.W   R10, R13
+   \   000154   0C4B         MOV.W   R11, R12
+   \   000156   ........     CALLA   #my_display_process
+    109          
+    110                if(SW1_Pressed){
+   \   00015A   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   00015E   0524         JEQ     ??display_menu_state_process_29
+    111                  display_menu_state = DISPLAY_MENU_DIRECTION_STOP;
+   \   000160   F2400700.... MOV.B   #0x7, &display_menu_state
+    112                  SW1_Pressed = FALSE;
+   \   000166   C243....     MOV.B   #0x0, &SW1_Pressed
+    113                }
+    114                if(SW2_Pressed){
+   \                     ??display_menu_state_process_29:
+   \   00016A   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   00016E   FC24         JEQ     ??display_menu_state_process_1
+    115                  display_menu_state = DISPLAY_DEFAULT;
+   \   000170   C243....     MOV.B   #0x0, &display_menu_state
+    116                  SW2_Pressed = FALSE;
+   \   000174   C243....     MOV.B   #0x0, &SW2_Pressed
+    117                  speed_global = SLOW;
+   \   000178   B2401027.... MOV.W   #0x2710, &speed_global
+    118                  forward(speed_global);
+   \   00017E   1C42....     MOV.W   &speed_global, R12
+   \   000182   ........     CALLA   #forward
+    119                }
+    120              }
+    121              break;
+   \   000186   F03C         JMP     ??display_menu_state_process_1
+    122            case DISPLAY_MENU_DIRECTION_STOP: //7
+    123              {
+    124                const char* line_1 = "  FORWARD ";
+   \                     ??display_menu_state_process_19:
+   \   000188   3B40....     MOV.W   #`?<Constant "  FORWARD ">`, R11
+    125                const char* line_2 = "> STOP    ";
+   \   00018C   3A40....     MOV.W   #`?<Constant "> STOP    ">`, R10
+    126                const char* line_3 = "  REVERSE ";
+   \   000190   3840....     MOV.W   #`?<Constant "  REVERSE ">`, R8
+    127                const char* line_4 = "          ";
+   \   000194   3940....     MOV.W   #`?<Constant "          ">`, R9
+    128                my_display_process(line_1, line_2, line_3, line_4);
+   \   000198   0F49         MOV.W   R9, R15
+   \   00019A   0E48         MOV.W   R8, R14
+   \   00019C   0D4A         MOV.W   R10, R13
+   \   00019E   0C4B         MOV.W   R11, R12
+   \   0001A0   ........     CALLA   #my_display_process
+    129          
+    130                if(SW1_Pressed){
+   \   0001A4   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   0001A8   0424         JEQ     ??display_menu_state_process_30
+    131                  display_menu_state = DISPLAY_MENU_DIRECTION_REVERSE;
+   \   0001AA   F242....     MOV.B   #0x8, &display_menu_state
+    132                  SW1_Pressed = FALSE;
+   \   0001AE   C243....     MOV.B   #0x0, &SW1_Pressed
+    133                }
+    134                if(SW2_Pressed){
+   \                     ??display_menu_state_process_30:
+   \   0001B2   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   0001B6   D824         JEQ     ??display_menu_state_process_1
+    135                  display_menu_state = DISPLAY_DEFAULT;
+   \   0001B8   C243....     MOV.B   #0x0, &display_menu_state
+    136                  SW2_Pressed = FALSE;
+   \   0001BC   C243....     MOV.B   #0x0, &SW2_Pressed
+    137                  speed_global = WHEEL_OFF;
+   \   0001C0   8243....     MOV.W   #0x0, &speed_global
+    138                  stop_car();
+   \   0001C4   ........     CALLA   #stop_car
+    139                }
+    140              }
+    141              break;
+   \   0001C8   CF3C         JMP     ??display_menu_state_process_1
+    142            case DISPLAY_MENU_DIRECTION_REVERSE: //8
+    143              {
+    144                const char* line_1 = "  FORWARD ";
+   \                     ??display_menu_state_process_20:
+   \   0001CA   3B40....     MOV.W   #`?<Constant "  FORWARD ">`, R11
+    145                const char* line_2 = "  STOP    ";
+   \   0001CE   3A40....     MOV.W   #`?<Constant "  STOP    ">`, R10
+    146                const char* line_3 = "> REVERSE ";
+   \   0001D2   3840....     MOV.W   #`?<Constant "> REVERSE ">`, R8
+    147                const char* line_4 = "          ";
+   \   0001D6   3940....     MOV.W   #`?<Constant "          ">`, R9
+    148                my_display_process(line_1, line_2, line_3, line_4);
+   \   0001DA   0F49         MOV.W   R9, R15
+   \   0001DC   0E48         MOV.W   R8, R14
+   \   0001DE   0D4A         MOV.W   R10, R13
+   \   0001E0   0C4B         MOV.W   R11, R12
+   \   0001E2   ........     CALLA   #my_display_process
+    149          
+    150                if(SW1_Pressed){
+   \   0001E6   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   0001EA   0524         JEQ     ??display_menu_state_process_31
+    151                  display_menu_state = DISPLAY_MENU_DIRECTION_FORWARD;
+   \   0001EC   F2400600.... MOV.B   #0x6, &display_menu_state
+    152                  SW1_Pressed = FALSE;
+   \   0001F2   C243....     MOV.B   #0x0, &SW1_Pressed
+    153                }
+    154                if(SW2_Pressed){
+   \                     ??display_menu_state_process_31:
+   \   0001F6   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   0001FA   B624         JEQ     ??display_menu_state_process_1
+    155                  display_menu_state = DISPLAY_DEFAULT;
+   \   0001FC   C243....     MOV.B   #0x0, &display_menu_state
+    156                  SW2_Pressed = FALSE;
+   \   000200   C243....     MOV.B   #0x0, &SW2_Pressed
+    157                  speed_global = SLOW;
+   \   000204   B2401027.... MOV.W   #0x2710, &speed_global
+    158                  reverse(speed_global);
+   \   00020A   1C42....     MOV.W   &speed_global, R12
+   \   00020E   ........     CALLA   #reverse
+    159                }
+    160              }
+    161              break;
+   \   000212   AA3C         JMP     ??display_menu_state_process_1
+    162            case DISPLAY_MENU_SPEED_SLOW: //9
+    163              {
+    164                const char* line_1 = "> SLOW    ";
+   \                     ??display_menu_state_process_21:
+   \   000214   3B40....     MOV.W   #`?<Constant "> SLOW    ">`, R11
+    165                const char* line_2 = "  MEDIUM  ";
+   \   000218   3A40....     MOV.W   #`?<Constant "  MEDIUM  ">`, R10
+    166                const char* line_3 = "  FAST    ";
+   \   00021C   3840....     MOV.W   #`?<Constant "  FAST    ">`, R8
+    167                const char* line_4 = "  TURBO   ";
+   \   000220   3940....     MOV.W   #`?<Constant "  TURBO   ">`, R9
+    168                my_display_process(line_1, line_2, line_3, line_4);
+   \   000224   0F49         MOV.W   R9, R15
+   \   000226   0E48         MOV.W   R8, R14
+   \   000228   0D4A         MOV.W   R10, R13
+   \   00022A   0C4B         MOV.W   R11, R12
+   \   00022C   ........     CALLA   #my_display_process
+    169          
+    170                if(SW1_Pressed){
+   \   000230   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   000234   0524         JEQ     ??display_menu_state_process_32
+    171                  display_menu_state = DISPLAY_MENU_SPEED_MEDIUM;
+   \   000236   F2400A00.... MOV.B   #0xa, &display_menu_state
+    172                  SW1_Pressed = FALSE;
+   \   00023C   C243....     MOV.B   #0x0, &SW1_Pressed
+    173                }
+    174                if(SW2_Pressed){
+   \                     ??display_menu_state_process_32:
+   \   000240   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   000244   9124         JEQ     ??display_menu_state_process_1
+    175                  display_menu_state = DISPLAY_DEFAULT;
+   \   000246   C243....     MOV.B   #0x0, &display_menu_state
+    176                  SW2_Pressed = FALSE;
+   \   00024A   C243....     MOV.B   #0x0, &SW2_Pressed
+    177                  speed_global = SLOW;
+   \   00024E   B2401027.... MOV.W   #0x2710, &speed_global
+    178                  forward(speed_global);
+   \   000254   1C42....     MOV.W   &speed_global, R12
+   \   000258   ........     CALLA   #forward
+    179                }
+    180              }
+    181              break;
+   \   00025C   853C         JMP     ??display_menu_state_process_1
+    182            case DISPLAY_MENU_SPEED_MEDIUM: //10
+    183              {
+    184                const char* line_1 = "  SLOW    ";
+   \                     ??display_menu_state_process_22:
+   \   00025E   3B40....     MOV.W   #`?<Constant "  SLOW    ">`, R11
+    185                const char* line_2 = "> MEDIUM  ";
+   \   000262   3A40....     MOV.W   #`?<Constant "> MEDIUM  ">`, R10
+    186                const char* line_3 = "  FAST    ";
+   \   000266   3840....     MOV.W   #`?<Constant "  FAST    ">`, R8
+    187                const char* line_4 = "  TURBO   ";
+   \   00026A   3940....     MOV.W   #`?<Constant "  TURBO   ">`, R9
+    188                my_display_process(line_1, line_2, line_3, line_4);
+   \   00026E   0F49         MOV.W   R9, R15
+   \   000270   0E48         MOV.W   R8, R14
+   \   000272   0D4A         MOV.W   R10, R13
+   \   000274   0C4B         MOV.W   R11, R12
+   \   000276   ........     CALLA   #my_display_process
+    189          
+    190                if(SW1_Pressed){
+   \   00027A   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   00027E   0524         JEQ     ??display_menu_state_process_33
+    191                  display_menu_state = DISPLAY_MENU_SPEED_FAST;
+   \   000280   F2400B00.... MOV.B   #0xb, &display_menu_state
+    192                  SW1_Pressed = FALSE;
+   \   000286   C243....     MOV.B   #0x0, &SW1_Pressed
+    193                }
+    194                if(SW2_Pressed){
+   \                     ??display_menu_state_process_33:
+   \   00028A   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   00028E   6C24         JEQ     ??display_menu_state_process_1
+    195                  display_menu_state = DISPLAY_DEFAULT;
+   \   000290   C243....     MOV.B   #0x0, &display_menu_state
+    196                  SW2_Pressed = FALSE;
+   \   000294   C243....     MOV.B   #0x0, &SW2_Pressed
+    197                  speed_global = FAST;
+   \   000298   B240007D.... MOV.W   #0x7d00, &speed_global
+    198                  forward(speed_global);
+   \   00029E   1C42....     MOV.W   &speed_global, R12
+   \   0002A2   ........     CALLA   #forward
+    199                }
+    200              }
+    201              break;
+   \   0002A6   603C         JMP     ??display_menu_state_process_1
+    202            case DISPLAY_MENU_SPEED_FAST: //11
+    203              {
+    204                const char* line_1 = "  SLOW    ";
+   \                     ??display_menu_state_process_23:
+   \   0002A8   3B40....     MOV.W   #`?<Constant "  SLOW    ">`, R11
+    205                const char* line_2 = "  MEDIUM  ";
+   \   0002AC   3A40....     MOV.W   #`?<Constant "  MEDIUM  ">`, R10
+    206                const char* line_3 = "> FAST    ";
+   \   0002B0   3840....     MOV.W   #`?<Constant "> FAST    ">`, R8
+    207                const char* line_4 = "  TURBO   ";
+   \   0002B4   3940....     MOV.W   #`?<Constant "  TURBO   ">`, R9
+    208                my_display_process(line_1, line_2, line_3, line_4);
+   \   0002B8   0F49         MOV.W   R9, R15
+   \   0002BA   0E48         MOV.W   R8, R14
+   \   0002BC   0D4A         MOV.W   R10, R13
+   \   0002BE   0C4B         MOV.W   R11, R12
+   \   0002C0   ........     CALLA   #my_display_process
+    209          
+    210                if(SW1_Pressed){
+   \   0002C4   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   0002C8   0524         JEQ     ??display_menu_state_process_34
+    211                  display_menu_state = DISPLAY_MENU_SPEED_TURBO;
+   \   0002CA   F2400C00.... MOV.B   #0xc, &display_menu_state
+    212                  SW1_Pressed = FALSE;
+   \   0002D0   C243....     MOV.B   #0x0, &SW1_Pressed
+    213                }
+    214                if(SW2_Pressed){
+   \                     ??display_menu_state_process_34:
+   \   0002D4   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   0002D8   4724         JEQ     ??display_menu_state_process_1
+    215                  display_menu_state = DISPLAY_DEFAULT;
+   \   0002DA   C243....     MOV.B   #0x0, &display_menu_state
+    216                  SW2_Pressed = FALSE;
+   \   0002DE   C243....     MOV.B   #0x0, &SW2_Pressed
+    217                  speed_global = FAST;
+   \   0002E2   B240007D.... MOV.W   #0x7d00, &speed_global
+    218                  forward(speed_global);
+   \   0002E8   1C42....     MOV.W   &speed_global, R12
+   \   0002EC   ........     CALLA   #forward
+    219                }
+    220              }
+    221              break;
+   \   0002F0   3B3C         JMP     ??display_menu_state_process_1
+    222            case DISPLAY_MENU_SPEED_TURBO: //12
+    223              {
+    224                const char* line_1 = "  SLOW    ";
+   \                     ??display_menu_state_process_24:
+   \   0002F2   3B40....     MOV.W   #`?<Constant "  SLOW    ">`, R11
+    225                const char* line_2 = "  MEDIUM  ";
+   \   0002F6   3A40....     MOV.W   #`?<Constant "  MEDIUM  ">`, R10
+    226                const char* line_3 = "  FAST    ";
+   \   0002FA   3840....     MOV.W   #`?<Constant "  FAST    ">`, R8
+    227                const char* line_4 = "> TURBO   ";
+   \   0002FE   3940....     MOV.W   #`?<Constant "> TURBO   ">`, R9
+    228                my_display_process(line_1, line_2, line_3, line_4);
+   \   000302   0F49         MOV.W   R9, R15
+   \   000304   0E48         MOV.W   R8, R14
+   \   000306   0D4A         MOV.W   R10, R13
+   \   000308   0C4B         MOV.W   R11, R12
+   \   00030A   ........     CALLA   #my_display_process
+    229          
+    230                if(SW1_Pressed){
+   \   00030E   C293....     CMP.B   #0x0, &SW1_Pressed
+   \   000312   0524         JEQ     ??display_menu_state_process_35
+    231                  display_menu_state = DISPLAY_MENU_SPEED_SLOW;
+   \   000314   F2400900.... MOV.B   #0x9, &display_menu_state
+    232                  SW1_Pressed = FALSE;
+   \   00031A   C243....     MOV.B   #0x0, &SW1_Pressed
+    233                }
+    234                if(SW2_Pressed){
+   \                     ??display_menu_state_process_35:
+   \   00031E   C293....     CMP.B   #0x0, &SW2_Pressed
+   \   000322   2224         JEQ     ??display_menu_state_process_1
+    235                  display_menu_state = DISPLAY_DEFAULT;
+   \   000324   C243....     MOV.B   #0x0, &display_menu_state
+    236                  SW2_Pressed = FALSE;
+   \   000328   C243....     MOV.B   #0x0, &SW2_Pressed
+    237                  speed_global = TURBO;
+   \   00032C   B24050C3.... MOV.W   #0xc350, &speed_global
+    238                  forward(speed_global);
+   \   000332   1C42....     MOV.W   &speed_global, R12
+   \   000336   ........     CALLA   #forward
+    239                }
+    240              }
+    241              break;
+   \   00033A   163C         JMP     ??display_menu_state_process_1
+    242            default: //0
+    243              {
+    244                strcpy(display_line[0], "ADC VALUES");
+   \                     ??display_menu_state_process_12:
+   \   00033C   3D40....     MOV.W   #`?<Constant "ADC VALUES">`, R13
+   \   000340   3C40....     MOV.W   #display_line, R12
+   \   000344   ........     CALLA   #strcpy
+    245                update_string(display_line[0], 0);
+   \   000348   0D43         MOV.W   #0x0, R13
+   \   00034A   ........     CALLA   #update_string
+    246                strcpy(display_line[1], "Left Right");
+   \   00034E   3D40....     MOV.W   #`?<Constant "Left Right">`, R13
+   \   000352   3C40....     MOV.W   #display_line + 11, R12
+   \   000356   ........     CALLA   #strcpy
+    247                update_string(display_line[1], 1);
+   \   00035A   1D43         MOV.W   #0x1, R13
+   \   00035C   3C40....     MOV.W   #display_line + 11, R12
+   \   000360   ........     CALLA   #update_string
+    248          
+    249                display_changed = 1;
+   \   000364   D243....     MOV.B   #0x1, &display_changed
+    250              }
+    251              break;
+    252            }
+    253          }
+   \                     ??display_menu_state_process_1:
+   \   000368   3817         POPM.W  #0x4, R11
+   \   00036A   1001         RETA
+   \   00036C                REQUIRE _A_PCDIR_L
+    254          
+
+   \                                 In  segment CODE, align 2
+    255          void my_display_process(const char* line1, const char* line2, const char* line3, const char* line4){
+   \                     my_display_process:
+   \   000000   3B15         PUSHM.W #0x4, R11
+   \   000002   0A4C         MOV.W   R12, R10
+   \   000004   0B4D         MOV.W   R13, R11
+   \   000006   084E         MOV.W   R14, R8
+   \   000008   094F         MOV.W   R15, R9
+    256            strcpy(display_line[0], line1);
+   \   00000A   0D4A         MOV.W   R10, R13
+   \   00000C   3C40....     MOV.W   #display_line, R12
+   \   000010   ........     CALLA   #strcpy
+    257            update_string(display_line[0], 0);
+   \   000014   0D43         MOV.W   #0x0, R13
+   \   000016   ........     CALLA   #update_string
+    258            strcpy(display_line[1], line2);
+   \   00001A   0D4B         MOV.W   R11, R13
+   \   00001C   3C40....     MOV.W   #display_line + 11, R12
+   \   000020   ........     CALLA   #strcpy
+    259            update_string(display_line[1], 1);
+   \   000024   1D43         MOV.W   #0x1, R13
+   \   000026   3C40....     MOV.W   #display_line + 11, R12
+   \   00002A   ........     CALLA   #update_string
+    260            strcpy(display_line[2], line3);
+   \   00002E   0D48         MOV.W   R8, R13
+   \   000030   3C40....     MOV.W   #display_line + 22, R12
+   \   000034   ........     CALLA   #strcpy
+    261            update_string(display_line[2], 2);
+   \   000038   2D43         MOV.W   #0x2, R13
+   \   00003A   3C40....     MOV.W   #display_line + 22, R12
+   \   00003E   ........     CALLA   #update_string
+    262            strcpy(display_line[3], line4);
+   \   000042   0D49         MOV.W   R9, R13
+   \   000044   3C40....     MOV.W   #display_line + 33, R12
+   \   000048   ........     CALLA   #strcpy
+    263            update_string(display_line[3], 3);
+   \   00004C   3D400300     MOV.W   #0x3, R13
+   \   000050   3C40....     MOV.W   #display_line + 33, R12
+   \   000054   ........     CALLA   #update_string
+    264          
+    265            display_changed = 1;
+   \   000058   D243....     MOV.B   #0x1, &display_changed
+    266          }
+   \   00005C   3817         POPM.W  #0x4, R11
+   \   00005E   1001         RETA
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> Dir Ctrl">`:
+   \   000000   3E2044697220 DC8 "> Dir Ctrl"
+   \            4374726C00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  Speed   ">`:
+   \   000000   202053706565 DC8 "  Speed   "
+   \            6420202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  Bcklight">`:
+   \   000000   202042636B6C DC8 "  Bcklight"
+   \            6967687400  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  IoT     ">`:
+   \   000000   2020496F5420 DC8 "  IoT     "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  Dir Ctrl">`:
+   \   000000   202044697220 DC8 "  Dir Ctrl"
+   \            4374726C00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> Speed   ">`:
+   \   000000   3E2053706565 DC8 "> Speed   "
+   \            6420202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> Bcklight">`:
+   \   000000   3E2042636B6C DC8 "> Bcklight"
+   \            6967687400  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> IoT     ">`:
+   \   000000   3E20496F5420 DC8 "> IoT     "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> FORWARD ">`:
+   \   000000   3E20464F5257 DC8 "> FORWARD "
+   \            4152442000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  STOP    ">`:
+   \   000000   202053544F50 DC8 "  STOP    "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  REVERSE ">`:
+   \   000000   202052455645 DC8 "  REVERSE "
+   \            5253452000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "          ">`:
+   \   000000   202020202020 DC8 "          "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  FORWARD ">`:
+   \   000000   2020464F5257 DC8 "  FORWARD "
+   \            4152442000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> STOP    ">`:
+   \   000000   3E2053544F50 DC8 "> STOP    "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> REVERSE ">`:
+   \   000000   3E2052455645 DC8 "> REVERSE "
+   \            5253452000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> SLOW    ">`:
+   \   000000   3E20534C4F57 DC8 "> SLOW    "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  MEDIUM  ">`:
+   \   000000   20204D454449 DC8 "  MEDIUM  "
+   \            554D202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  FAST    ">`:
+   \   000000   202046415354 DC8 "  FAST    "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  TURBO   ">`:
+   \   000000   202054555242 DC8 "  TURBO   "
+   \            4F20202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "  SLOW    ">`:
+   \   000000   2020534C4F57 DC8 "  SLOW    "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> MEDIUM  ">`:
+   \   000000   3E204D454449 DC8 "> MEDIUM  "
+   \            554D202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> FAST    ">`:
+   \   000000   3E2046415354 DC8 "> FAST    "
+   \            2020202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "> TURBO   ">`:
+   \   000000   3E2054555242 DC8 "> TURBO   "
+   \            4F20202000  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "ADC VALUES">`:
+   \   000000   414443205641 DC8 "ADC VALUES"
+   \            4C55455300  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Left Right">`:
+   \   000000   4C6566742052 DC8 "Left Right"
+   \            6967687400  
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+     12   display_menu_state_process
+       12   -> forward
+       12   -> my_display_process
+       12   -> reverse
+       12   -> stop_car
+       12   -> strcpy
+       12   -> update_string
+     12   my_display_process
+       12   -> strcpy
+       12   -> update_string
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      11  ?<Constant "          ">
+      11  ?<Constant "  Bcklight">
+      11  ?<Constant "  Dir Ctrl">
+      11  ?<Constant "  FAST    ">
+      11  ?<Constant "  FORWARD ">
+      11  ?<Constant "  IoT     ">
+      11  ?<Constant "  MEDIUM  ">
+      11  ?<Constant "  REVERSE ">
+      11  ?<Constant "  SLOW    ">
+      11  ?<Constant "  STOP    ">
+      11  ?<Constant "  Speed   ">
+      11  ?<Constant "  TURBO   ">
+      11  ?<Constant "> Bcklight">
+      11  ?<Constant "> Dir Ctrl">
+      11  ?<Constant "> FAST    ">
+      11  ?<Constant "> FORWARD ">
+      11  ?<Constant "> IoT     ">
+      11  ?<Constant "> MEDIUM  ">
+      11  ?<Constant "> REVERSE ">
+      11  ?<Constant "> SLOW    ">
+      11  ?<Constant "> STOP    ">
+      11  ?<Constant "> Speed   ">
+      11  ?<Constant "> TURBO   ">
+      11  ?<Constant "ADC VALUES">
+      11  ?<Constant "Left Right">
+       2  _A_PCDIR_L
+       1  display_menu_cycle_through
+       1  display_menu_state
+     876  display_menu_state_process
+      96  my_display_process
+
+ 
+ 972 bytes in segment CODE
+   2 bytes in segment DATA16_AN
+ 275 bytes in segment DATA16_C
+   2 bytes in segment DATA16_Z
+ 
+ 972 bytes of CODE  memory
+ 275 bytes of CONST memory
+   2 bytes of DATA  memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

@@ -1,0 +1,619 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:52
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\operation_PID_controler.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW8DF0.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\operation_PID_controler.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\operation_PID_controler.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\operation_PID_controler.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\operation_PID_controler.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x454
+   \   union <unnamed> _A_TB3CCR1_L
+   \                     _A_TB3CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x456
+   \   union <unnamed> _A_TB3CCR2_L
+   \                     _A_TB3CCR2_L:
+   \   000000                DS8 2
+      3          #include <string.h>
+      4          #include "macros.h"
+      5          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      6          volatile char observe_control_system = FALSE;
+   \                     observe_control_system:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+      7          char current_state = ON_LINE,
+   \                     current_state:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for current_state>`
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      8               previous_state;
+   \                     previous_state:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      9          int previous_error = 0;
+   \                     previous_error:
+   \   000000                DS8 2
+     10          extern volatile unsigned int left_sensor_mov_average,
+     11                                       right_sensor_mov_average;
+     12          extern volatile char PID_control_enabled,
+     13                              bang;
+     14          extern int black_line_edge_threshold;
+     15          extern unsigned int speed_global,
+     16                              speed_correction;
+     17          //long debug_follow_black_line_counter = 0, 
+     18          //      debug_observe_control_system_counter = 0,
+     19          //      debug_control_signal_calc_counter = 0;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     20          int debug_L_BLACK[DEBUG_ARR_SIZE],
+   \                     debug_L_BLACK:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     21              debug_R_BLACK[DEBUG_ARR_SIZE],
+   \                     debug_R_BLACK:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     22              debug_L_SPEED[DEBUG_ARR_SIZE],
+   \                     debug_L_SPEED:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     23              debug_R_SPEED[DEBUG_ARR_SIZE],
+   \                     debug_R_SPEED:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     24              debug_Control[DEBUG_ARR_SIZE];
+   \                     debug_Control:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     25          int debug_scroller = 0;
+   \                     debug_scroller:
+   \   000000                DS8 2
+     26          
+     27          // Monitoring Loop
+
+   \                                 In  segment CODE, align 2
+     28          void follow_black_line(void){
+   \                     follow_black_line:
+     29            // Check if OK to re-evaluate system
+     30            
+     31            //debugging var
+     32          //  debug_follow_black_line_counter++;
+     33            
+     34            if(PID_control_enabled){
+   \   000000   C293....     CMP.B   #0x0, &PID_control_enabled
+   \   000004   2D24         JEQ     ??follow_black_line_2
+     35              if(observe_control_system){
+   \   000006   C293....     CMP.B   #0x0, &observe_control_system
+   \   00000A   2A24         JEQ     ??follow_black_line_2
+     36                
+     37                //debugging var
+     38          //      debug_observe_control_system_counter++;
+     39                
+     40                observe_control_system  = FALSE;
+   \   00000C   C243....     MOV.B   #0x0, &observe_control_system
+     41                // Get State Information
+     42                current_state = determine_current_state();
+   \   000010   ........     CALLA   #determine_current_state
+   \   000014   C24C....     MOV.B   R12, &current_state
+     43                if(current_state == OFF_LINE) { // when completely off black line, handle car without PID control
+   \   000018   C293....     CMP.B   #0x0, &current_state
+   \   00001C   1820         JNE     ??follow_black_line_3
+     44                  switch(previous_state){
+   \   00001E   5E42....     MOV.B   &previous_state, R14
+   \   000022   6E83         SUB.B   #0x2, R14
+   \   000024   0324         JEQ     ??follow_black_line_4
+   \   000026   5E83         SUB.B   #0x1, R14
+   \   000028   0824         JEQ     ??follow_black_line_5
+   \   00002A   0E3C         JMP     ??follow_black_line_0
+     45                  case LEFT_OF_LINE:
+     46                    forward(SLOW, SOFT_RIGHT_TURN, 0);
+   \                     ??follow_black_line_4:
+   \   00002C   4E43         MOV.B   #0x0, R14
+   \   00002E   6D43         MOV.B   #0x2, R13
+   \   000030   3C40E02E     MOV.W   #0x2ee0, R12
+   \   000034   ........     CALLA   #forward
+     47                    break;
+   \   000038   0E3C         JMP     ??follow_black_line_1
+     48                  case RIGHT_OF_LINE:
+     49                    forward(SLOW, SOFT_LEFT_TURN, 0);
+   \                     ??follow_black_line_5:
+   \   00003A   4E43         MOV.B   #0x0, R14
+   \   00003C   5D43         MOV.B   #0x1, R13
+   \   00003E   3C40E02E     MOV.W   #0x2ee0, R12
+   \   000042   ........     CALLA   #forward
+     50                    break;
+   \   000046   073C         JMP     ??follow_black_line_1
+     51                  default:
+     52                    //TODO: await manual navigation instructions
+     53                    stop_car();// If prev state is unknown because of total overshoot, stop and await manual nav
+   \                     ??follow_black_line_0:
+   \   000048   ........     CALLA   #stop_car
+     54          //          if((left_sensor_mov_average > black_line_edge_threshold) && (right_sensor_mov_average > black_line_edge_threshold)){
+     55          //            stop_car();
+     56          //            current_state = determine_current_state();
+     57          //            previous_state = current_state;
+     58          //          }else reverse(SLOW);
+     59                    break;
+   \   00004C   043C         JMP     ??follow_black_line_1
+     60                  }
+     61          
+     62                  //TODO: handle when to set current state back to = ON_LINE
+     63                }
+     64                else process_actuator(control_signal_calculation()); // we are not just reading white so we are able to track set point
+   \                     ??follow_black_line_3:
+   \   00004E   ........     CALLA   #control_signal_calculation
+   \   000052   ........     CALLA   #process_actuator
+     65                // Set variables for next iteration
+     66                previous_state = current_state;
+   \                     ??follow_black_line_1:
+   \   000056   D242........ MOV.B   &current_state, &previous_state
+     67                observe_control_system  = FALSE; //TODO: tie this to the sample time (30 mSec timer) and set TRUE
+   \   00005C   C243....     MOV.B   #0x0, &observe_control_system
+     68              }
+     69            }
+     70          }
+   \                     ??follow_black_line_2:
+   \   000060   1001         RETA
+     71          
+     72          // PID
+
+   \                                 In  segment CODE, align 2
+     73          int control_signal_calculation(void){
+   \                     control_signal_calculation:
+   \   000000   7B15         PUSHM.W #0x8, R11
+   \   000002   B1000800     SUBA    #0x8, SP
+     74            int proportial_error = 0, integral_error = 0, derivative_error = 0;
+   \   000006   0A43         MOV.W   #0x0, R10
+   \   000008   81430000     MOV.W   #0x0, 0(SP)
+   \   00000C   0543         MOV.W   #0x0, R5
+     75            int u_control = 0;
+   \   00000E   0443         MOV.W   #0x0, R4
+     76            int sample_time = 30; // Hz - ADC readings occur 250 times per second ?
+   \   000010   3B401E00     MOV.W   #0x1e, R11
+     77            int set_point = 0;
+   \   000014   81430200     MOV.W   #0x0, 0x2(SP)
+     78            float Kp_gain = 3;
+   \   000018   81430400     MOV.W   #0x0, 0x4(SP)
+   \   00001C   B14040400600 MOV.W   #0x4040, 0x6(SP)
+     79            float Ki_gain = 1;
+   \   000022   0643         MOV.W   #0x0, R6
+   \   000024   3740803F     MOV.W   #0x3f80, R7
+     80            float Kd_gain = 1;
+   \   000028   0843         MOV.W   #0x0, R8
+   \   00002A   3940803F     MOV.W   #0x3f80, R9
+     81          
+     82          
+     83            // Calculate PID error
+     84            proportial_error = set_point - (left_sensor_mov_average - right_sensor_mov_average); // Magnitude of error indicates how far off the line, sign of error indicates direction of movement
+   \   00002E   1F42....     MOV.W   &left_sensor_mov_average, R15
+   \   000032   1E410200     MOV.W   0x2(SP), R14
+   \   000036   0E8F         SUB.W   R15, R14
+   \   000038   1E52....     ADD.W   &right_sensor_mov_average, R14
+   \   00003C   0A4E         MOV.W   R14, R10
+     85            integral_error = previous_error + (proportial_error*sample_time);
+   \   00003E   1F42....     MOV.W   &previous_error, R15
+   \   000042   0212         PUSH.W  SR
+   \   000044   32C2         DINT
+   \   000046   0343         NOP
+   \   000048   824A....     MOV.W   R10, &__iar_HWMUL              // MPY
+   \   00004C   824B....     MOV.W   R11, &__iar_HWMUL + 8          // OP2
+   \   000050   1F52....     ADD.W   &__iar_HWMUL + 10, R15         // RESLO
+   \   000054   0343         NOP
+   \   000056   3241         POP.W   SR
+   \   000058   814F0000     MOV.W   R15, 0(SP)
+     86            derivative_error = (proportial_error - previous_error)/sample_time;
+   \   00005C   0C4A         MOV.W   R10, R12
+   \   00005E   1C82....     SUB.W   &previous_error, R12
+   \   000062   0E4B         MOV.W   R11, R14
+   \   000064   ........     CALLA   #?DivMod16s
+   \   000068   054C         MOV.W   R12, R5
+     87            previous_error = proportial_error; // save error for next loop
+   \   00006A   824A....     MOV.W   R10, &previous_error
+     88          
+     89            // Calculate PID control signal
+     90            u_control = Kp_gain*proportial_error + Ki_gain*integral_error + Kd_gain*derivative_error;
+                             ^
+Warning[Pa093]: implicit conversion from floating point to integer
+   \   00006E   0C4A         MOV.W   R10, R12
+   \   000070   0D4C         MOV.W   R12, R13
+   \   000072   0D5D         RLA.W   R13
+   \   000074   0D7D         SUBC.W  R13, R13
+   \   000076   3DE3         XOR.W   #0xffff, R13
+   \   000078   ........     CALLA   #_Cast32sto32f
+   \   00007C   1E410400     MOV.W   0x4(SP), R14
+   \   000080   1F410600     MOV.W   0x6(SP), R15
+   \   000084   ........     CALLA   #_Mul32f
+   \   000088   0D12         PUSH.W  R13
+   \   00008A   0C12         PUSH.W  R12
+   \   00008C   1C410400     MOV.W   0x4(SP), R12
+   \   000090   0D4C         MOV.W   R12, R13
+   \   000092   0D5D         RLA.W   R13
+   \   000094   0D7D         SUBC.W  R13, R13
+   \   000096   3DE3         XOR.W   #0xffff, R13
+   \   000098   ........     CALLA   #_Cast32sto32f
+   \   00009C   0E46         MOV.W   R6, R14
+   \   00009E   0F47         MOV.W   R7, R15
+   \   0000A0   ........     CALLA   #_Mul32f
+   \   0000A4   3E41         POP.W   R14
+   \   0000A6   3F41         POP.W   R15
+   \   0000A8   ........     CALLA   #_Add32f
+   \   0000AC   0D12         PUSH.W  R13
+   \   0000AE   0C12         PUSH.W  R12
+   \   0000B0   0C45         MOV.W   R5, R12
+   \   0000B2   0D4C         MOV.W   R12, R13
+   \   0000B4   0D5D         RLA.W   R13
+   \   0000B6   0D7D         SUBC.W  R13, R13
+   \   0000B8   3DE3         XOR.W   #0xffff, R13
+   \   0000BA   ........     CALLA   #_Cast32sto32f
+   \   0000BE   0E48         MOV.W   R8, R14
+   \   0000C0   0F49         MOV.W   R9, R15
+   \   0000C2   ........     CALLA   #_Mul32f
+   \   0000C6   3E41         POP.W   R14
+   \   0000C8   3F41         POP.W   R15
+   \   0000CA   ........     CALLA   #_Add32f
+   \   0000CE   ........     CALLA   #_Cast32fto32s
+   \   0000D2   044C         MOV.W   R12, R4
+     91            
+     92          //  debug_control_signal_calc_counter++;
+     93              
+     94            return u_control; //complete PID signal to the actuator
+   \   0000D4   0C44         MOV.W   R4, R12
+   \   0000D6   A1000800     ADDA    #0x8, SP
+   \   0000DA   7417         POPM.W  #0x8, R11
+   \   0000DC   1001         RETA
+     95          }
+     96          
+
+   \                                 In  segment CODE, align 2
+     97          void process_actuator(int control_value){
+   \                     process_actuator:
+   \   000000   5B15         PUSHM.W #0x6, R11
+     98            // Assume vehicle is designed to move at some cruise speed, and adjust wheel PWM values to track a curved line
+     99            // Negative valued control indicates a right turn, positive valued control indicates left turn
+    100          //  int cruise_speed = MEDIUM, MIN_speed = SLOW, MAX_speed = FAST;
+    101            int final_control_value = 0;
+   \   000002   0F43         MOV.W   #0x0, R15
+    102            
+    103            int cruise_speed = SLOW, MIN_speed = 10000, MAX_speed = FAST;
+                                                                           ^
+Warning[Pe068]: integer conversion resulted in a change of sign
+
+    proportial_error = set_point - (left_sensor_mov_average - right_sensor_mov_average); // Magnitude of error indicates how far off the line, sign of error indicates direction of movement
+    ^
+"C:\Users\nopassword\Desktop\ECE_306\Project 06\operation_PID_controler.c",84  Warning[Pa082]: 
+          undefined behavior: the order of volatile accesses is undefined in
+          this statement
+   \   000004   3E40E02E     MOV.W   #0x2ee0, R14
+   \   000008   3D401027     MOV.W   #0x2710, R13
+   \   00000C   3A403A8F     MOV.W   #0x8f3a, R10
+    104            unsigned int left_speed = 0, right_speed = 0;
+   \   000010   0B43         MOV.W   #0x0, R11
+   \   000012   0843         MOV.W   #0x0, R8
+    105          
+    106            final_control_value = control_value;  
+   \   000014   0F4C         MOV.W   R12, R15
+    107          
+    108            right_speed = cruise_speed - final_control_value;
+   \   000016   094E         MOV.W   R14, R9
+   \   000018   098F         SUB.W   R15, R9
+   \   00001A   0849         MOV.W   R9, R8
+    109            left_speed = cruise_speed + final_control_value;
+   \   00001C   094E         MOV.W   R14, R9
+   \   00001E   095F         ADD.W   R15, R9
+   \   000020   0B49         MOV.W   R9, R11
+    110            // speed boundaries
+    111            if(left_speed < MIN_speed){
+   \   000022   0B9D         CMP.W   R13, R11
+   \   000024   012C         JC      ??process_actuator_1
+    112              left_speed = MIN_speed;
+   \   000026   0B4D         MOV.W   R13, R11
+    113            }
+    114            if(right_speed < MIN_speed){
+   \                     ??process_actuator_1:
+   \   000028   089D         CMP.W   R13, R8
+   \   00002A   022C         JC      ??process_actuator_2
+    115              right_speed = MIN_speed;
+   \   00002C   084D         MOV.W   R13, R8
+   \   00002E   073C         JMP     ??process_actuator_0
+    116            }
+    117            else if(left_speed > MAX_speed){
+   \                     ??process_actuator_2:
+   \   000030   0A9B         CMP.W   R11, R10
+   \   000032   022C         JC      ??process_actuator_3
+    118              left_speed = MAX_speed;
+   \   000034   0B4A         MOV.W   R10, R11
+   \   000036   033C         JMP     ??process_actuator_0
+    119            }else if(right_speed > MAX_speed){
+   \                     ??process_actuator_3:
+   \   000038   0A98         CMP.W   R8, R10
+   \   00003A   012C         JC      ??process_actuator_0
+    120              right_speed = MAX_speed;
+   \   00003C   084A         MOV.W   R10, R8
+    121            }
+    122            // Set speed values to PWM registers
+    123            LEFT_FORWARD_SPEED = left_speed;
+   \                     ??process_actuator_0:
+   \   00003E   824B5604     MOV.W   R11, &0x456
+    124            RIGHT_FORWARD_SPEED = right_speed;
+   \   000042   82485404     MOV.W   R8, &0x454
+    125            
+    126            if (debug_scroller++ > DEBUG_ARR_SIZE){
+   \   000046   1942....     MOV.W   &debug_scroller, R9
+   \   00004A   0649         MOV.W   R9, R6
+   \   00004C   1653         ADD.W   #0x1, R6
+   \   00004E   8246....     MOV.W   R6, &debug_scroller
+   \   000052   39901100     CMP.W   #0x11, R9
+   \   000056   0238         JL      ??process_actuator_4
+    127                debug_scroller = 0;
+   \   000058   8243....     MOV.W   #0x0, &debug_scroller
+    128              }
+    129            
+    130            debug_L_BLACK[debug_scroller] = left_sensor_mov_average;
+   \                     ??process_actuator_4:
+   \   00005C   1942....     MOV.W   &debug_scroller, R9
+   \   000060   0959         RLA.W   R9
+   \   000062   9942........ MOV.W   &left_sensor_mov_average, debug_L_BLACK(R9)
+    131            debug_R_BLACK[debug_scroller] = right_sensor_mov_average;
+   \   000068   1942....     MOV.W   &debug_scroller, R9
+   \   00006C   0959         RLA.W   R9
+   \   00006E   9942........ MOV.W   &right_sensor_mov_average, debug_R_BLACK(R9)
+    132            debug_L_SPEED[debug_scroller] = LEFT_FORWARD_SPEED;
+   \   000074   1942....     MOV.W   &debug_scroller, R9
+   \   000078   0959         RLA.W   R9
+   \   00007A   99425604.... MOV.W   &0x456, debug_L_SPEED(R9)
+    133            debug_R_SPEED[debug_scroller] = RIGHT_FORWARD_SPEED;
+   \   000080   1942....     MOV.W   &debug_scroller, R9
+   \   000084   0959         RLA.W   R9
+   \   000086   99425404.... MOV.W   &0x454, debug_R_SPEED(R9)
+    134            debug_Control[debug_scroller] = control_value;
+   \   00008C   1942....     MOV.W   &debug_scroller, R9
+   \   000090   0959         RLA.W   R9
+   \   000092   894C....     MOV.W   R12, debug_Control(R9)
+    135            
+    136          }
+   \   000096   5617         POPM.W  #0x6, R11
+   \   000098   1001         RETA
+   \   00009A                REQUIRE _A_TB3CCR2_L
+   \   00009A                REQUIRE _A_TB3CCR1_L
+    137          
+
+   \                                 In  segment CODE, align 2
+    138          char determine_current_state(void){
+   \                     determine_current_state:
+    139            //char current_state;  MISTAKE: This local existed in addition to the global!!
+    140          
+    141            // NOTE: MISTAKE: was using bitwise operator instead of logical AND !!!
+    142            if((left_sensor_mov_average < black_line_edge_threshold) && (right_sensor_mov_average < black_line_edge_threshold)){
+   \   000000   9292........ CMP.W   &black_line_edge_threshold, &left_sensor_mov_average
+   \   000006   062C         JC      ??determine_current_state_0
+   \   000008   9292........ CMP.W   &black_line_edge_threshold, &right_sensor_mov_average
+   \   00000E   022C         JC      ??determine_current_state_0
+    143              current_state = OFF_LINE;
+   \   000010   C243....     MOV.B   #0x0, &current_state
+    144            }
+    145            //need memory of when values peak and drop off
+    146            if((left_sensor_mov_average > black_line_edge_threshold) && (right_sensor_mov_average< black_line_edge_threshold)){
+   \                     ??determine_current_state_0:
+   \   000014   9292........ CMP.W   &left_sensor_mov_average, &black_line_edge_threshold
+   \   00001A   072C         JC      ??determine_current_state_1
+   \   00001C   9292........ CMP.W   &black_line_edge_threshold, &right_sensor_mov_average
+   \   000022   032C         JC      ??determine_current_state_1
+    147              current_state = RIGHT_OF_LINE;
+   \   000024   F2400300.... MOV.B   #0x3, &current_state
+    148            }
+    149            if((left_sensor_mov_average < black_line_edge_threshold) && (right_sensor_mov_average > black_line_edge_threshold)){
+   \                     ??determine_current_state_1:
+   \   00002A   9292........ CMP.W   &black_line_edge_threshold, &left_sensor_mov_average
+   \   000030   062C         JC      ??determine_current_state_2
+   \   000032   9292........ CMP.W   &right_sensor_mov_average, &black_line_edge_threshold
+   \   000038   022C         JC      ??determine_current_state_2
+    150              current_state = LEFT_OF_LINE;
+   \   00003A   E243....     MOV.B   #0x2, &current_state
+    151            }
+    152            
+    153            if((left_sensor_mov_average > black_line_edge_threshold) && (right_sensor_mov_average > black_line_edge_threshold)){
+   \                     ??determine_current_state_2:
+   \   00003E   9292........ CMP.W   &left_sensor_mov_average, &black_line_edge_threshold
+   \   000044   062C         JC      ??determine_current_state_3
+   \   000046   9292........ CMP.W   &right_sensor_mov_average, &black_line_edge_threshold
+   \   00004C   022C         JC      ??determine_current_state_3
+    154                current_state = ON_LINE;
+   \   00004E   D243....     MOV.B   #0x1, &current_state
+    155            }
+    156            // this is just for bang bang method
+    157            if(bang == TRUE){
+   \                     ??determine_current_state_3:
+   \   000052   D293....     CMP.B   #0x1, &bang
+   \   000056   0A20         JNE     ??determine_current_state_4
+    158              if((left_sensor_mov_average > black_line_edge_threshold) && (right_sensor_mov_average > black_line_edge_threshold)){
+   \   000058   9292........ CMP.W   &left_sensor_mov_average, &black_line_edge_threshold
+   \   00005E   062C         JC      ??determine_current_state_4
+   \   000060   9292........ CMP.W   &right_sensor_mov_average, &black_line_edge_threshold
+   \   000066   022C         JC      ??determine_current_state_4
+    159                current_state = ON_LINE;
+   \   000068   D243....     MOV.B   #0x1, &current_state
+    160              }
+    161            }
+    162            return current_state;
+   \                     ??determine_current_state_4:
+   \   00006C   5C42....     MOV.B   &current_state, R12
+   \   000070   1001         RETA
+    163          }
+    164          
+
+   \                                 In  segment CODE, align 2
+    165          void follow_black_line_bang(void){
+   \                     follow_black_line_bang:
+    166            switch(determine_current_state()){
+   \   000000   ........     CALLA   #determine_current_state
+   \   000004   4C83         SUB.B   #0x0, R12
+   \   000006   2224         JEQ     ??follow_black_line_bang_0
+   \   000008   5C83         SUB.B   #0x1, R12
+   \   00000A   0524         JEQ     ??follow_black_line_bang_1
+   \   00000C   5C83         SUB.B   #0x1, R12
+   \   00000E   0A24         JEQ     ??follow_black_line_bang_2
+   \   000010   5C83         SUB.B   #0x1, R12
+   \   000012   1224         JEQ     ??follow_black_line_bang_3
+   \   000014   1001         RETA
+    167              case ON_LINE:
+    168                LEFT_FORWARD_SPEED = speed_global;
+   \                     ??follow_black_line_bang_1:
+   \   000016   9242....5604 MOV.W   &speed_global, &0x456
+    169                RIGHT_FORWARD_SPEED = speed_global;
+   \   00001C   9242....5404 MOV.W   &speed_global, &0x454
+    170              break;
+   \   000022   1001         RETA
+    171              case LEFT_OF_LINE:
+    172                LEFT_FORWARD_SPEED = (speed_global+speed_correction);
+   \                     ??follow_black_line_bang_2:
+   \   000024   1F42....     MOV.W   &speed_global, R15
+   \   000028   1F52....     ADD.W   &speed_correction, R15
+   \   00002C   824F5604     MOV.W   R15, &0x456
+    173                RIGHT_FORWARD_SPEED = (speed_global);
+   \   000030   9242....5404 MOV.W   &speed_global, &0x454
+    174                //needed correction
+    175              break;
+   \   000036   1001         RETA
+    176              case RIGHT_OF_LINE:
+    177                LEFT_FORWARD_SPEED = (speed_global);
+   \                     ??follow_black_line_bang_3:
+   \   000038   9242....5604 MOV.W   &speed_global, &0x456
+    178                RIGHT_FORWARD_SPEED = (speed_global + speed_correction);
+   \   00003E   1F42....     MOV.W   &speed_global, R15
+   \   000042   1F52....     ADD.W   &speed_correction, R15
+   \   000046   824F5404     MOV.W   R15, &0x454
+    179                //needed correction
+    180              break;
+   \   00004A   1001         RETA
+    181              case OFF_LINE:
+    182                stop_car();
+   \                     ??follow_black_line_bang_0:
+   \   00004C   ........     CALLA   #stop_car
+    183              break;
+    184            }
+    185            //previous_state = current_state;
+    186          }
+   \   000050   1001         RETA
+   \   000052                REQUIRE _A_TB3CCR2_L
+   \   000052                REQUIRE _A_TB3CCR1_L
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for current_state>`:
+   \   000000   01           DC8 1
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+     32   control_signal_calculation
+       28 ?DivMod16s
+       28 _Add32f
+       28 _Cast32fto32s
+       28 _Cast32sto32f
+       32 _Cast32sto32f
+       28 _Mul32f
+       32 _Mul32f
+      4   determine_current_state
+      4   follow_black_line
+        4   -> control_signal_calculation
+        4   -> determine_current_state
+        4   -> forward
+        4   -> process_actuator
+        4   -> stop_car
+      4   follow_black_line_bang
+        4   -> determine_current_state
+        4   -> stop_car
+     16   process_actuator
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       1  ?<Initializer for current_state>
+       2  _A_TB3CCR1_L
+       2  _A_TB3CCR2_L
+     222  control_signal_calculation
+       1  current_state
+      32  debug_Control
+      32  debug_L_BLACK
+      32  debug_L_SPEED
+      32  debug_R_BLACK
+      32  debug_R_SPEED
+       2  debug_scroller
+     114  determine_current_state
+      98  follow_black_line
+      82  follow_black_line_bang
+       1  observe_control_system
+       2  previous_error
+       1  previous_state
+     154  process_actuator
+
+ 
+ 670 bytes in segment CODE
+   4 bytes in segment DATA16_AN
+   1 byte  in segment DATA16_I
+   1 byte  in segment DATA16_ID
+ 166 bytes in segment DATA16_Z
+ 
+ 670 bytes of CODE  memory
+   1 byte  of CONST memory
+ 167 bytes of DATA  memory (+ 4 bytes shared)
+
+Errors: none
+Warnings: 3

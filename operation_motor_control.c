@@ -5,28 +5,14 @@
 #include <stdlib.h>
 #include "macros.h"
 
-extern unsigned int speed_L_component = 0;
-extern unsigned int speed_R_component = 0;
-extern unsigned int speed_dual_component = 0;
-extern unsigned int L_wheel_speed = 0;
-extern unsigned int R_wheel_speed = 0;
-extern unsigned int set_R_F, set_R_R, set_L_F, set_L_R;
-unsigned int speed_global = WHEEL_OFF;
-extern volatile char from_forward;
-extern volatile char from_reverse;
-char interface_bools;
-extern volatile int time_seconds;
-volatile int FET_delay_timer = 0;
-//#define accelerate/decelerate   (0x0)
-//#define unused   (0x1)
-//#define unused   (0x2)
-//#define unused   (0x3)
-//#define unused   (0x4)
-//#define unused   (0x5)
-//#define unused   (0x6)
-//#define unused   (0x7)
-
-
+unsigned int speed_global = WHEEL_OFF,
+             travel_time_seconds = 0;
+extern volatile char from_forward,
+                     from_reverse,
+                     time_seconds,
+                     FET_delay_timer,
+                     activate_pivot_timer,
+                     activate_travel_time;
 
 /*TODO:
 
@@ -39,47 +25,72 @@ TODO: gradual acc_dec using timer on order of mSec which increase/decrease wheel
 
 */
 
-/*
-//char assign_PWM_values_with_error_check(void){
-//  char forward_and_reverse_FETS_enabled = 0;
-//
-//  //P6OUT &= ~R_REVERSE
-//  if(RIGHT_REVERSE_SPEED == 0){
-//    RIGHT_FORWARD_SPEED = R_wheel_speed;
-//  }
-//  if(LEFT_REVERSE_SPEED == 0){
-//    LEFT_FORWARD_SPEED = L_wheel_speed;
-//  }
-//  if(RIGHT_FORWARD_SPEED == 0){
-//    RIGHT_REVERSE_SPEED = R_wheel_speed;
-//  }
-//  if(LEFT_FORWARD_SPEED == 0){
-//    LEFT_REVERSE_SPEED = L_wheel_speed;
-//  }
-//
-//  if (((RIGHT_FORWARD_SPEED > 0) && (RIGHT_REVERSE_SPEED > 0)) || ((LEFT_FORWARD_SPEED > 0) && (LEFT_REVERSE_SPEED > 0))){
-//    forward_and_reverse_FETS_enabled = 1;
-//  }
-//  return forward_and_reverse_FETS_enabled;
-//}
-*/
+void forward(int speed, char direction, char time_seconds){
+  //    Hand over these volatiles to a temporary local in order to get rid of this warning:
+  //    -Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
+//  unsigned int speed_L_component = 0;
+//  unsigned int speed_R_component = 0;
+  unsigned int L_wheel_speed = 0;
+  unsigned int R_wheel_speed = 0;
+  unsigned int Left_Reverse_Speed = LEFT_REVERSE_SPEED;
+  unsigned int Right_Reverse_Speed = RIGHT_REVERSE_SPEED;
+  speed_global = speed;
 
-void forward(int speed){
-//    Hand over these volatiles to a temporary local in order to get rid of this warning:
-//    -Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
-  int Left_Reverse_Speed = LEFT_REVERSE_SPEED;
-  int Right_Reverse_Speed = RIGHT_REVERSE_SPEED;
-  //int t_seconds = time_seconds;
+//  stop_car();
+  
+  switch(speed){
+  case 'F':
+    speed = FAST;
+    break;      
+  case 'M':
+    speed = MEDIUM;
+    break;
+    case 'T':
+    speed = TURBO;
+    break;
+  }
 
-  //initialize these to zero when only going straight
-  speed_dual_component = 0;
-  speed_L_component = 0;
-  speed_R_component = 0;
-  L_wheel_speed = 0;
-  R_wheel_speed = 0;
+  //determine the general velocity
+  switch(direction){
+  case STRAIGHT:
+    L_wheel_speed = speed;
+    R_wheel_speed = speed;
+    break;
+  case SOFT_LEFT_TURN:
+    //    speed_L_component = -SOFT_TURN;
+    //    speed_R_component = SOFT_TURN;
 
+    L_wheel_speed = (speed - SOFT_TURN);
+    R_wheel_speed = (speed + SOFT_TURN);
+    break;
+  case SOFT_RIGHT_TURN:
+    //    speed_L_component = SOFT_TURN;
+    //    speed_R_component = -SOFT_TURN;
+    L_wheel_speed = (speed + SOFT_TURN);
+    R_wheel_speed = (speed - SOFT_TURN);
+    break;
+  case MEDIUM_LEFT_TURN:
+    //    speed_L_component = -MEDIUM_TURN;
+    //    speed_R_component = MEDIUM_TURN;
+    L_wheel_speed = (speed - MEDIUM_TURN);
+    R_wheel_speed = (speed + MEDIUM_TURN);
+    break;
+  case MEDIUM_RIGHT_TURN:
+    //    speed_L_component = MEDIUM_TURN;
+    //    speed_R_component = -MEDIUM_TURN;
+    L_wheel_speed = (speed + MEDIUM_TURN);
+    R_wheel_speed = (speed - MEDIUM_TURN);
+    break;
+  default: //straight
+    L_wheel_speed = speed;
+    R_wheel_speed = speed;
+    break;
+  }
 
-  if(Left_Reverse_Speed | Right_Reverse_Speed){
+  //check if motors are powered in reverse
+
+  //WARNING: need to figure out other way to call same function after delay
+  if(Left_Reverse_Speed || Right_Reverse_Speed){
     LEFT_REVERSE_SPEED = WHEEL_OFF;
     RIGHT_REVERSE_SPEED = WHEEL_OFF;
 
@@ -90,30 +101,76 @@ void forward(int speed){
     //come back a second later and set the other speeds
     FET_delay_timer += time_seconds; //turn on a one second timer, handled in TB2 CCR1
 
-  }else if(!Left_Reverse_Speed | !Right_Reverse_Speed){
+  }else if(!Left_Reverse_Speed || !Right_Reverse_Speed){
 
-    speed_dual_component = speed;
-    L_wheel_speed = (speed_dual_component + speed_L_component);
-    R_wheel_speed = (speed_dual_component + speed_R_component);
-
+//    L_wheel_speed = (speed + speed_L_component);
+//    R_wheel_speed = (speed + speed_R_component);
+    if(time_seconds != 0){
+      travel_time_seconds = time_seconds;
+      activate_travel_time = TRUE;
+    }
     LEFT_FORWARD_SPEED = L_wheel_speed;
     RIGHT_FORWARD_SPEED = R_wheel_speed;
+  }
+}
+
+void pivot(char direction, int magnitude){
+  unsigned int L_wheel_speed = magnitude;
+  unsigned int R_wheel_speed = magnitude;
+  unsigned int Left_Reverse_Speed = LEFT_REVERSE_SPEED;
+  unsigned int Right_Reverse_Speed = RIGHT_REVERSE_SPEED;
+  unsigned int Left_Forward_Speed = LEFT_FORWARD_SPEED;
+  unsigned int Right_Forward_Speed = RIGHT_FORWARD_SPEED;
+
+  //unsigned int speed = MEDIUM;
+  //determine the general velocity
+  switch(direction){
+  case LEFT_PIVOT:
+    if(Left_Forward_Speed || Right_Reverse_Speed){
+      LEFT_FORWARD_SPEED = WHEEL_OFF;
+      RIGHT_REVERSE_SPEED = WHEEL_OFF;
+      from_forward = TRUE;
+      FET_delay_timer += time_seconds; //turn on a one second timer, handled in TB2 CCR1
+    }else if(!Left_Forward_Speed || !Right_Reverse_Speed){
+      LEFT_REVERSE_SPEED = L_wheel_speed;
+      RIGHT_FORWARD_SPEED = R_wheel_speed;
+      activate_pivot_timer = TRUE;
+    }
+    break;
+  case RIGHT_PIVOT:
+    if(Left_Reverse_Speed || Right_Forward_Speed){
+      LEFT_REVERSE_SPEED = WHEEL_OFF;
+      RIGHT_FORWARD_SPEED = WHEEL_OFF;
+      from_forward = TRUE;
+      FET_delay_timer += time_seconds; //turn on a one second timer, handled in TB2 CCR1
+    }else if(!Left_Reverse_Speed || !Right_Forward_Speed){
+      LEFT_FORWARD_SPEED = L_wheel_speed;
+      RIGHT_REVERSE_SPEED = R_wheel_speed;
+      activate_pivot_timer = TRUE;
+    }
+    break;
+  default:
+    //    L_wheel_speed = speed;
+    //    R_wheel_speed = speed;
+    break;
   }
 }
 
 void reverse(int speed){
 //    Hand over these volatiles to a temporary local in order to get rid of this warning:
 //    -Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
-  int Left_Forward_Speed = LEFT_FORWARD_SPEED;
-  int Right_Forward_Speed = RIGHT_FORWARD_SPEED;
+  unsigned int L_wheel_speed = 0;
+  unsigned int R_wheel_speed = 0;
+  unsigned int Left_Forward_Speed = LEFT_FORWARD_SPEED;
+  unsigned int Right_Forward_Speed = RIGHT_FORWARD_SPEED;
+  speed_global = speed;
 
-  speed_dual_component = 0;
-  speed_L_component = 0;
-  speed_R_component = 0;
-  L_wheel_speed = 0;
-  R_wheel_speed = 0;
+//  speed_L_component = 0;
+//  speed_R_component = 0;
+  L_wheel_speed = speed;
+  R_wheel_speed = speed;
 
-  if(Left_Forward_Speed | Right_Forward_Speed){
+  if(Left_Forward_Speed || Right_Forward_Speed){
     LEFT_FORWARD_SPEED = WHEEL_OFF;
     RIGHT_FORWARD_SPEED = WHEEL_OFF;
 
@@ -123,11 +180,10 @@ void reverse(int speed){
 
     FET_delay_timer += time_seconds;
 
-  }else if(!Left_Forward_Speed | !Right_Forward_Speed){
+  }else if(!Left_Forward_Speed || !Right_Forward_Speed){
 
-    speed_dual_component = speed;
-    L_wheel_speed = (speed_dual_component + speed_L_component);
-    R_wheel_speed = (speed_dual_component + speed_R_component);
+//    L_wheel_speed = (speed_dual_component + speed_L_component);
+//    R_wheel_speed = (speed_dual_component + speed_R_component);
 
     LEFT_REVERSE_SPEED = L_wheel_speed;
     RIGHT_REVERSE_SPEED = R_wheel_speed;
@@ -141,7 +197,8 @@ void stop_car(void){
   LEFT_REVERSE_SPEED = WHEEL_OFF;
 }
 
-void change_velocity(int magnitude, char acc_dec){
-//TODO: implement this
-}
+//void change_velocity(int magnitude, char acc_dec){
+////TODO: implement this
+//}
+
 

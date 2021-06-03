@@ -121,7 +121,7 @@ void init_port_2(void){
   P2SEL0 &= ~IOT_PROG_SEL; // IOT_PROG_SEL GPIO operation
   P2SEL1 &= ~IOT_PROG_SEL; // IOT_PROG_SEL GPIO operation
   P2OUT &= ~IOT_PROG_SEL; // Initial Value = Low / Off
-  P2DIR |= IOT_PROG_SEL; // Direction = output
+  P2DIR &= ~IOT_PROG_SEL; // Direction = input
 
   //5
   P2SEL0 &= ~P2_5; // P2_5 GPIO operation
@@ -186,9 +186,13 @@ void init_port_3(void){
   P3DIR &= ~IOT_LINK;
 
   //7
-  P3SEL0 &= ~IOT_RESET; //
-  P3SEL1 &=~IOT_RESET; //
-  P3DIR &= ~IOT_RESET; //
+  P3SEL0 &= ~IOT_RESET; // CHANGED
+  P3SEL1 &= ~IOT_RESET; //
+  P3OUT &= ~IOT_RESET; // active low (start out active for at least 100 ms)
+  P3DIR |= IOT_RESET; // INPUT
+
+//  P3DIR |= IOT_RESET; // OUTPUT
+//  Set as Output Active low for 50ms with pull up to 3.3VDC.
 }
 
 void init_port_4(void){
@@ -279,9 +283,25 @@ void init_port_5(void){
   P5SEL1 |= V_3_3; //
 
   //4
-  P5SEL0 &= ~IOT_PROG_MODE; //
+  P5SEL0 &= ~IOT_PROG_MODE; // IOT_PROGRAM_MODE
   P5SEL1 &= ~IOT_PROG_MODE; //
-  P5DIR &= ~IOT_PROG_MODE;
+  P5OUT &= ~IOT_PROG_MODE; // Initial Value = Low / Off
+  P5DIR &= ~IOT_PROG_MODE; // Input
+
+  //5 not on schematic, not used, GPIO INPUT
+  P5SEL0 &= ~P5_5;
+  P5SEL1 &= ~P5_5;
+  P5DIR &= ~P5_5;
+
+  //6 not on schematic, not used, GPIO INPUT
+  P5SEL0 &= ~P5_6;
+  P5SEL1 &= ~P5_6;
+  P5DIR &= ~P5_6;
+
+  //7 not on schematic, not used, GPIO INPUT
+  P5SEL0 &= ~P5_7;
+  P5SEL1 &= ~P5_7;
+  P5DIR &= ~P5_7;
 
 }
 
@@ -338,10 +358,15 @@ void init_port_6(void){ //ALL PINS ARE GPIO OUT
   P6SEL1 &= ~P6_5; //
   P6DIR &= ~P6_5;
 
-  //6
+  //6  Question: this was undefined but has been compiling, not sure why
   P6SEL0 &= ~GRN_LED; //
   P6SEL1 &= ~GRN_LED; //
   P6OUT &= ~GRN_LED; // Keep LED low until needed
   P6DIR |= GRN_LED; //LED is an output
+
+  //7 not on schematic, not used, GPIO INPUT
+  P6SEL0 &= ~P6_7; //
+  P6SEL1 &= ~P6_7; //
+  P6DIR &= ~P6_7; //
 
 }

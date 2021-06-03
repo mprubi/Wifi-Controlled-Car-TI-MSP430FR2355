@@ -1,0 +1,110 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:16
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\PID.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EWA0C0.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\PID.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\PID.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\PID.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\PID.c
+      1          //
+      2          //#deine WHITE_STATE
+      3          //
+      4          //// Monitoring Loop pseudo code
+      5          //void LineFollowing(void)
+      6          //  {
+      7          //    // Check if it is time to re-evaluate system
+      8          //    if(ready){
+      9          //        ready = false;
+     10          //        // Get State Information
+     11          //        current_state = GetCurrentState(); // Check combinational sensor state (On line, off line, right of line, left of line)
+     12          //        if(current_state == WHITE_STATE) { // if we are currently reading white, controller is not valid so turn back until we see the line
+     13          //          switch( previous_state ) {
+     14          //          case LEFT_STATE:
+     15          //            TurnRight();
+     16          //            break;
+     17          //          case RIGHT_STATE:
+     18          //            TurnLeft();
+     19          //            break;
+     20          //          default:
+     21          //            SpinInPlace();// If we completely overshoot the line and don’t know how to go back, spin and hope for the best
+     22          //            break;
+     23          //          }
+     24          //        }
+     25          //        else WheelControl(SimplePid); // we are not just reading white so we are able to track set point
+     26          //        // Set variables for next iteration
+     27          //        previous_state = current_state;
+     28          //        ready = false;
+     29          //      }
+     30          //  }
+     31          //
+     32          //// Basic PID pseudo code
+     33          //int control_SimplePid(void)
+     34          //  {
+     35          //    // Get sensor readings
+     36          //    Read_Adc();
+     37          //    // Calculate error
+     38          //    // NOTE: Your error calculation will differ depending on how many inputs you have and what the desired alignment of your vehicle is!
+     39          //    e = reference - (left_sensor - right_sensor); // Magnitude of error indicates how far off the line, sign of error indicates direction of movement
+     40          //    // Set PID error variables
+     41          //    current_error = e;
+     42          //    sum_error = sum_error + (current_error*sample_time);
+     43          //    delta_error = (current_error - previous_error)/sample_time;
+     44          //    previous_error = current_error; // save error for next loop
+     45          //    // Calculate individual controller outputs
+     46          //    P = current_error;
+     47          //    I = sum_error;
+     48          //    D = delta_error;
+     49          //    // Calculate PID control signal
+     50          //    u = Kp*P + Ki*I + Kd*D;
+     51          //    Return u; //this is the total signal to the actuator
+     52          //  }
+     53          //
+     54          //// Basic Control Actuation pseudo code
+     55          //void WheelControl(control)
+     56          //  {
+     57          //    // Assume vehicle is designed to move at some cruise speed, and adjust wheel PWM values to track a curved line
+     58          //    // Negative valued control indicates a right turn, positive valued control indicates left turn
+     59          //    lspeed = CRUISE_SPEED - control;
+     60          //    rspeed = CRUISE_SPEED + control;
+     61          //    // Saturate speed values within PWM range
+     62          //    if( lspeed < MIN_SPEED ) lspeed = MIN_SPEED; if( rspeed < MIN_SPEED ) rspeed = MIN_SPEED;
+     63          //    else if( lspeed > MAX_SPEED ) lspeed = MAX_SPEED; else if( rspeed > MAX_SPEED ) rspeed = MAX_SPEED;
+     64          //    // Set speed values to PWM registers
+     65          //    LEFT_FORWARD_SPEED = lspeed;
+     66          //    RIGHT_FORWARD_SPEED = rspeed;
+     67          //  }
+
+
+ 
+
+ 
+
+
+Errors: none
+Warnings: none

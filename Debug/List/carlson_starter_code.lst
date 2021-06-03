@@ -1,0 +1,173 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:13
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\carlson_starter_code.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW93A2.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\carlson_starter_code.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\carlson_starter_code.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\carlson_starter_code.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\carlson_starter_code.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+      3          #include <string.h>
+      4          #include <stdio.h>
+      5          #include <stdlib.h>
+      6          #include "macros.h"
+      7          
+      8          extern unsigned char display_mode;
+      9          extern volatile unsigned char display_changed;
+     10          extern volatile unsigned int Time_Sequence;
+     11          
+     12          extern char display_line[4][11];
+     13          extern char *display[4];
+     14          //extern volatile char one_time;
+     15          
+
+   \                                 In  segment CODE, align 2
+     16          void carlsons_code(void){
+   \                     carlsons_code:
+     17            switch(Time_Sequence){  //Time_Sequence is counting upwards in a timer
+   \   000000   1F42....     MOV.W   &Time_Sequence, R15
+   \   000004   3F803200     SUB.W   #0x32, R15
+   \   000008   1F24         JEQ     ??carlsons_code_2
+   \   00000A   3F803200     SUB.W   #0x32, R15
+   \   00000E   1824         JEQ     ??carlsons_code_3
+   \   000010   3F803200     SUB.W   #0x32, R15
+   \   000014   0F24         JEQ     ??carlsons_code_4
+   \   000016   3F803200     SUB.W   #0x32, R15
+   \   00001A   0824         JEQ     ??carlsons_code_5
+   \   00001C   3F803200     SUB.W   #0x32, R15
+   \   000020   1820         JNE     ??carlsons_code_0
+     18              //interrupt that is in timersB0.r43 (compiled code))
+     19              // New code from "hints from project 3a
+     20            case TIME_SEQ_250:
+     21              //if(one_time){  //one_time makes sure each case statement is only run once
+     22                //per switch block, then one_time is set to zero (these statements are
+     23                //still hit another 2- 3 hundred times after first actions are completed)
+     24                Init_LEDs();
+   \   000022   ........     CALLA   #Init_LEDs
+     25                //lcd_BIG_mid();
+     26                //display_changed = 1;
+     27                //one_time = ZERO;
+     28              //}
+     29              Time_Sequence = ZERO;    //gets set back to zero after reaching 250
+   \   000026   8243....     MOV.W   #0x0, &Time_Sequence
+     30              //counts (arbitrary rate that the instructor doesn't remember); this
+     31              //restarts the switch case loop
+     32              //interrupt might also set this to zero
+     33              break;
+   \   00002A   1001         RETA
+     34          
+     35            case TIME_SEQ_200:
+     36              //if(one_time){
+     37                P6OUT |= GRN_LED;            // Change State of LED 5
+   \                     ??carlsons_code_5:
+   \   00002C   F2D040004302 BIS.B   #0x40, &0x243
+     38                //one_time = ZERO;
+     39              //}
+     40              break;
+   \   000032   1001         RETA
+     41            case TIME_SEQ_150:
+     42              //if(one_time){
+     43                P1OUT |= RED_LED;            // Change State of LED 4
+   \                     ??carlsons_code_4:
+   \   000034   D2D30202     BIS.B   #0x1, &0x202
+     44                P6OUT &= ~GRN_LED;           // Change State of LED 5
+   \   000038   F2C040004302 BIC.B   #0x40, &0x243
+     45                //one_time = ZERO;
+     46              //}
+     47              break;
+   \   00003E   1001         RETA
+     48            case TIME_SEQ_100:
+     49              //if(one_time){
+     50                //lcd_4line();
+     51                P6OUT |= GRN_LED;            // Change State of LED 5
+   \                     ??carlsons_code_3:
+   \   000040   F2D040004302 BIS.B   #0x40, &0x243
+     52                //display_changed = 1;
+     53                //one_time = ZERO;
+     54              //}
+     55              break;
+   \   000046   1001         RETA
+     56            case  TIME_SEQ_50:
+     57              //if(one_time){
+     58                P1OUT &= ~RED_LED;           // Change State of LED 4
+   \                     ??carlsons_code_2:
+   \   000048   D2C30202     BIC.B   #0x1, &0x202
+     59                P6OUT &= ~GRN_LED;           // Change State of LED 5
+   \   00004C   F2C040004302 BIC.B   #0x40, &0x243
+     60                //one_time = ZERO;
+     61              //}
+     62              break;
+     63            default: break;
+     64            }
+     65          }
+   \                     ??carlsons_code_0:
+   \   000052   1001         RETA
+   \   000054                REQUIRE _A_PCOUT_L
+   \   000054                REQUIRE _A_PAOUT_L
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   carlsons_code
+        4   -> Init_LEDs
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  _A_PAOUT_L
+       2  _A_PCOUT_L
+      84  carlsons_code
+
+ 
+ 84 bytes in segment CODE
+  4 bytes in segment DATA16_AN
+ 
+ 84 bytes of CODE memory
+  0 bytes of DATA memory (+ 4 bytes shared)
+
+Errors: none
+Warnings: none

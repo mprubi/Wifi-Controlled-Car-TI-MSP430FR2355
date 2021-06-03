@@ -1,0 +1,424 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           15/Mar/2021  15:33:44
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 05\switches.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW9F06.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 05\switches.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 05\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 05\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 05\Debug\List\switches.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 05\Debug\Obj\switches.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 05\switches.c
+      1          // New code: from "hints from project 3a
+      2          
+      3          //------------------------------------------------------------------------------
+      4          //
+      5          //  Description: This file contains functions definitions for hardware switches on MSP430
+      6          //
+      7          //
+      8          //  Mark Rubianes
+      9          //  Jan 2021
+     10          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+     11          //------------------------------------------------------------------------------
+     12          
+     13          //------------------------------------------------------------------------------
+     14                //NOT ADDED TO PROJECT YET. ADD TO PROJECT, THEN DELETE .R43 FILE!!!
+     15          #include  "functions.h"
+     16          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x21c
+   \   union <unnamed> _A_PAIFG_L
+   \                     _A_PAIFG_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x23a
+   \   union <unnamed> _A_PBIE_L
+   \                     _A_PBIE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x23c
+   \   union <unnamed> _A_PBIFG_L
+   \                     _A_PBIFG_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x384
+   \   union <unnamed> _A_TB0CCTL1_L
+   \                     _A_TB0CCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x394
+   \   union <unnamed> _A_TB0CCR1_L
+   \                     _A_TB0CCR1_L:
+   \   000000                DS8 2
+     17          #include <string.h>
+     18          #include "macros.h"
+     19          
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     20          char okay_to_look_at_switch1 = OKAY;
+   \                     okay_to_look_at_switch1:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for okay_to_look_at_switch1>`
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     21          char okay_to_look_at_switch2 = OKAY;
+   \                     okay_to_look_at_switch2:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for okay_to_look_at_switch2>`
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     22          char sw1_position = RELEASED;
+   \                     sw1_position:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for sw1_position>`
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     23          char sw2_position = RELEASED;
+   \                     sw2_position:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for sw2_position>`
+
+   \                                 In  segment DATA16_I, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     24          unsigned int count_debounce_SW1 = DEBOUNCE_TIME;
+   \                     count_debounce_SW1:
+   \   000000                DS8 2
+   \   000002                REQUIRE `?<Initializer for count_debounce_SW1>`
+
+   \                                 In  segment DATA16_I, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     25          unsigned int count_debounce_SW2 = DEBOUNCE_TIME;
+   \                     count_debounce_SW2:
+   \   000000                DS8 2
+   \   000002                REQUIRE `?<Initializer for count_debounce_SW2>`
+     26          
+     27          /*
+     28          count_debounce_SW1 and count_debounce_SW2 where defined as chars,
+     29          error: Warning[Pa084]: pointless integer comparison, the result is always true
+     30          
+     31          I was comparing a char (1 byte) against an int (2 bytes)
+     32          
+     33          Debouncing code: debouncing is managing the hundreds of extra contacts that
+     34          are made when a mechanical switch is pressed because the clock is running at
+     35          the speed of thousands of times a second (Mhz range). This code is the software
+     36          way of handling this problem, although it uses up clock cycles. A better solution
+     37          is through hardware debouncing and filtering the contacts so it's a smooth
+     38          transition.
+     39          
+     40          */
+     41          
+     42          
+     43          
+     44          // Using interrupts
+     45          
+     46          /*Starting Template
+     47          #
+     48          pragma vector = {Vector}
+     49          // do not forget the header
+     50          __interrupt
+     51          void my_isr (void)
+     52          // do whatever must be done
+     53          }
+     54          
+     55          Using  #pragma vector = {vector_name}
+     56          Tells the compiler it’s an ISR. This is important  because
+     57          the ISR has a different stack frame compared with subroutine. This means
+     58          it 1) Saves all registers and Flag register is also saved, and 3)
+     59          Different return needed (REIT vs. EXITD)
+     60          
+     61          
+     62          Latency is six cycles starting with the acceptance of an interrupt request
+     63          and lasting until the start of execution of the first instruction of the
+     64          service routine: GIE (Global Interrupt Enable) bit is set/cleared here.
+     65          
+     66          RETI (Return from Interrupt) takes five cycles
+     67          
+     68          Due to the pipelined CPU architecture, the instruction following
+     69          the enable interrupt instruction ( is always executed, even if
+     70          an interrupt service request is pending when the interrupts are
+     71          enabled
+     72          •
+     73          If the enable interrupt instruction ( is immediately followed
+     74          by a disable interrupt instruction ( a pending interrupt
+     75          might not be serviced Further instructions after DINT might
+     76          execute incorrectly and result in unexpected CPU execution It is
+     77          recommended to always insert at least one instruction between
+     78          EINT and DINT Note that any alternative instruction use that sets
+     79          and immediately clears the CPU status register GIE bit must be
+     80          considered in the same fashion
+     81          
+     82          
+     83          Configure MCU:
+     84          Enable interrupts for system  ?????
+     85          
+     86          */
+     87          
+     88          /*
+     89          init timer b0 is only global setup needed for timers
+     90          lcd won't work if DIV from hmwk 5 is still in place
+     91          */
+     92          
+     93          #pragma vector = PORT4_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+     94          __interrupt void switchP4_interrupt(void){
+   \                     switchP4_interrupt:
+     95            // Switch 1
+     96            if (P4IFG & SW1) {
+   \   000000   E2B33D02     BIT.B   #0x2, &0x23d
+   \   000004   0F28         JNC     ??switchP4_interrupt_0
+     97              /*
+     98                    1. Disable Switch 1
+     99                    2. Clear Switch 1 Flag
+    100                    3. Clear TimerB 0 Interrupt Flag for Capture Compare Register 1
+    101                    4. Add Interval to TB 0 R for TB 0 CCR 1
+    102                    5. Enable TimerB 0 1
+    103              */
+    104          
+    105              //Question: WTF does disable Switch 1 interrupt mean? This below??
+    106              P4IE &= ~SW1;  // 1) "Interrupt Enable" bit
+   \   000006   E2C33B02     BIC.B   #0x2, &0x23b
+    107              P4IFG &= ~SW1; // 2) IFG SW1 cleared
+   \   00000A   E2C33D02     BIC.B   #0x2, &0x23d
+    108          
+    109          
+    110              P6OUT &= ~LCD_BACKLITE;  //this line was just testing to see if the interrupt worked at all
+   \   00000E   F2C010004302 BIC.B   #0x10, &0x243
+    111          
+    112              TB0CCTL1 &= ~CCIFG; // 3) clear any possible pending interrupt flags
+   \   000014   92C38403     BIC.W   #0x1, &0x384
+    113              TB0CCR1 += CCR0_200_MSEC_INTERVAL; // Note: needs to be for 1 second for safe debounce
+   \   000018   B250A0869403 ADD.W   #0x86a0, &0x394
+    114          
+    115              //question: WTF Carlson said " add TB0 to the CCR1 value to get to the timer" ??? end of 3/2 lecture
+    116              TB0CCTL1 |= CCIE; // CCR1 enable interrupt
+   \   00001E   B2D010008403 BIS.W   #0x10, &0x384
+    117          
+    118              //Question: "at some time later, the timer's gunna happen. What do you do in the timer? You do the reverse.
+    119              // you disable the timer, you clear your flags (both in your switch and timer), and
+    120              // then you enable your switch interrupt"
+    121            }
+    122          }
+   \                     ??switchP4_interrupt_0:
+   \   000024   0013         RETI
+   \   000026                REQUIRE _A_PBIFG_L
+   \   000026                REQUIRE _A_PBIE_L
+   \   000026                REQUIRE _A_PCOUT_L
+   \   000026                REQUIRE _A_TB0CCTL1_L
+   \   000026                REQUIRE _A_TB0CCR1_L
+    123          #pragma vector = PORT2_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    124          __interrupt void switchP2_interrupt(void){
+   \                     switchP2_interrupt:
+    125            // Switch 2
+    126            if (P2IFG & SW2) {
+   \   000000   F2B21D02     BIT.B   #0x8, &0x21d
+   \   000004   0528         JNC     ??switchP2_interrupt_0
+    127              P2IFG &= ~SW2; // IFG SW2 cleared
+   \   000006   F2C21D02     BIC.B   #0x8, &0x21d
+    128              P6OUT |= LCD_BACKLITE;
+   \   00000A   F2D010004302 BIS.B   #0x10, &0x243
+    129            }
+    130          }
+   \                     ??switchP2_interrupt_0:
+   \   000010   0013         RETI
+   \   000012                REQUIRE _A_PAIFG_L
+   \   000012                REQUIRE _A_PCOUT_L
+
+   \                                 In  segment INTVEC, offset 0x2c, root
+   \                     `??switchP4_interrupt::??INTVEC 44`:
+   \   00002C   ....         DC16    switchP4_interrupt
+
+   \                                 In  segment INTVEC, offset 0x30, root
+   \                     `??switchP2_interrupt::??INTVEC 48`:
+   \   000030   ....         DC16    switchP2_interrupt
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for okay_to_look_at_switch1>`:
+   \   000000   01           DC8 1
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for okay_to_look_at_switch2>`:
+   \   000000   01           DC8 1
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for sw1_position>`:
+   \   000000   01           DC8 1
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for sw2_position>`:
+   \   000000   01           DC8 1
+
+   \                                 In  segment DATA16_ID, align 2, align-sorted
+   \                     `?<Initializer for count_debounce_SW1>`:
+   \   000000   F87F         DC16 32760
+
+   \                                 In  segment DATA16_ID, align 2, align-sorted
+   \                     `?<Initializer for count_debounce_SW2>`:
+   \   000000   F87F         DC16 32760
+    131          
+    132          /////// OLD SWITCh PROCESS CODE ///////////////////////////////////////////////////////////////
+    133          /*
+    134          
+    135          void Switches_Process(void) {
+    136          //
+    137          // This function calls the individual Switch Functions
+    138          //
+    139            Switch1_Process();
+    140            Switch2_Process();
+    141          }
+    142          //
+    143          
+    144          void Switch1_Process(void){
+    145          //
+    146          // Switch 1 Configurations
+    147          //
+    148            if(okay_to_look_at_switch1 && sw1_position){
+    149              if(!(SWITCH1_INPUT_STATE())){  // !(P4IN & SW1) means switch is LOW // & here is bitwise
+    150                //AND (if T, switch is high, default state)
+    151          
+    152                // P4IN & SW1 is how you check the in state of switch 1, the P4IN
+    153                //special purpose register is multiplexed with the pin SW1
+    154                sw1_position = PRESSED;
+    155                okay_to_look_at_switch1 = NOT_OKAY; // not okay until debounce count down
+    156                count_debounce_SW1 = DEBOUNCE_RESTART; //reset here, switch hit for first time
+    157                //my button press code
+    158                motion_state_select();
+    159          
+    160                //fet_test_state_select();
+    161          
+    162                //all_motors_OFF();
+    163                //reverse_ON();
+    164          
+    165              }
+    166            }
+    167          // this is a sepparate if statement
+    168            if(count_debounce_SW1 < DEBOUNCE_TIME){
+    169              //RED_LED_TOGGLE();  uncomment to visualize length of debounce period
+    170              count_debounce_SW1++;
+    171            }else{  //enough time has incremented to be safe to call switch released
+    172              okay_to_look_at_switch1 = OKAY; //flags switch as okay to look at
+    173              if(SWITCH1_INPUT_STATE()){
+    174                sw1_position = RELEASED;
+    175              }
+    176           }
+    177          }
+    178            //
+    179          
+    180          void Switch2_Process(void){
+    181            //
+    182            // Switch 2 Configurations
+    183            //
+    184            if(okay_to_look_at_switch2 && sw2_position){
+    185              if(!(SWITCH2_INPUT_STATE())){
+    186                sw2_position = PRESSED;
+    187                okay_to_look_at_switch2 = NOT_OKAY;
+    188                count_debounce_SW2 = DEBOUNCE_RESTART;
+    189          
+    190                //my button press code not implemented yet
+    191                GREEN_LED_OFF();
+    192                RED_LED_TOGGLE();
+    193                //stop();
+    194                //shape_state_select();
+    195          
+    196                //fet_test_activate();
+    197          
+    198                //all_motors_OFF();
+    199                //reverse_OFF();
+    200              }
+    201            }
+    202            if(count_debounce_SW2 < DEBOUNCE_TIME){
+    203              //GREEN_LED_TOGGLE();  uncomment to visualize length of debounce period
+    204              count_debounce_SW2++;
+    205            }else{
+    206              okay_to_look_at_switch2 = OKAY;
+    207              if(SWITCH2_INPUT_STATE()){
+    208                sw2_position = RELEASED;
+    209              }
+    210            }
+    211          }
+    212          //
+    213          
+    214          */
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   switchP2_interrupt
+      4   switchP4_interrupt
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  ?<Initializer for count_debounce_SW1>
+       2  ?<Initializer for count_debounce_SW2>
+       1  ?<Initializer for okay_to_look_at_switch1>
+       1  ?<Initializer for okay_to_look_at_switch2>
+       1  ?<Initializer for sw1_position>
+       1  ?<Initializer for sw2_position>
+       2  _A_PAIFG_L
+       2  _A_PBIE_L
+       2  _A_PBIFG_L
+       2  _A_PCOUT_L
+       2  _A_TB0CCR1_L
+       2  _A_TB0CCTL1_L
+       2  count_debounce_SW1
+       2  count_debounce_SW2
+       1  okay_to_look_at_switch1
+       1  okay_to_look_at_switch2
+       1  sw1_position
+       1  sw2_position
+      18  switchP2_interrupt
+       2  switchP2_interrupt::??INTVEC 48
+      38  switchP4_interrupt
+       2  switchP4_interrupt::??INTVEC 44
+
+ 
+ 12 bytes in segment DATA16_AN
+  8 bytes in segment DATA16_I
+  8 bytes in segment DATA16_ID
+  4 bytes in segment INTVEC
+ 56 bytes in segment ISR_CODE
+ 
+ 56 bytes of CODE  memory
+  8 bytes of CONST memory (+  4 bytes shared)
+  8 bytes of DATA  memory (+ 12 bytes shared)
+
+Errors: none
+Warnings: none

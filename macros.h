@@ -8,8 +8,6 @@
 //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
 //------------------------------------------------------------------------------
 
-extern volatile int project_5_timer;
-extern volatile int project_5_Seconds;
 
 #include "ports.h"
 
@@ -149,6 +147,7 @@ extern volatile int project_5_Seconds;
 
 #define TB1_SEC_0_025 (TB1_SEC_0_050/2)  // 25 msec for TB1 CCR1
 #define TB1_SEC_0_030 (3750)  // 30 msec for TB1 CCR1
+#define TB1_SEC_0_040 (5000)  // 40 msec for TB1 CCR1
 #define TB1_SEC_0_050 (6250)
 #define TB1_SEC_0_200 (TB1_SEC_0_050*4) // 25,000
 
@@ -183,51 +182,134 @@ extern volatile int project_5_Seconds;
 //TI's naming scheme is confusing: TIMER0_B1_VECTOR is still part of TimerB0,
 // "TIMER0" denotes "TIMERB0". The "_B1" refers to the second interupt vector
 
-//PWM related
+//PWM
 #define WHEEL_PERIOD    (50000)
 #define WHEEL_OFF       (0)
-#define SLOW            (10000)
-#define MEDIUM          (17000)
-#define FAST            (32000)
-#define TURBO           (50000)
+#define SLOW            (12000)
+#define PIVOT          (19000)
+#define MEDIUM          (23333)
+#define FAST            (36666)
+#define TURBO           (49999)
+#define SPEED_DIVISION  (13333)
+#define HARD_TURN  (6666)
+#define MEDIUM_TURN  (3333)
+#define SOFT_TURN  (1666)
+#define DEBUG_ARR_SIZE (16) //previously working with 64
+
+#define STRAIGHT                 (0)
+#define SOFT_LEFT_TURN           (1)
+#define SOFT_RIGHT_TURN          (2)
+#define MEDIUM_LEFT_TURN         (3)
+#define MEDIUM_RIGHT_TURN        (4)
+#define HARD_LEFT_TURN           (5)
+#define HARD_RIGHT_TURN          (6)
 
 #define RIGHT_FORWARD_SPEED (TB3CCR1)
 #define LEFT_FORWARD_SPEED (TB3CCR2)
 #define RIGHT_REVERSE_SPEED (TB3CCR3)
 #define LEFT_REVERSE_SPEED (TB3CCR4)
 
-//ADC related
+#define LEFT_PIVOT (0)
+#define RIGHT_PIVOT (1)
+
+//ADC
 
 #define ADC_LEFT_SENSOR         (0x00)
 #define ADC_RIGHT_SENSOR        (0x01)
 #define ADC_V_BAT               (0x02)
 #define ADC_V_THUMB             (0x03)
-#define ADC_CONVERSION_ENABLE   (ADCCTL0 |= ADCENC)
-#define ADC_CONVERSION_DISABLE  (ADCCTL0 &= ~ADCENC)
-#define ADC_CONVERSION_START    (ADCCTL0 |= ADCSC)
-#define IR_LED_OFF              (P2OUT &= ~IR_LED)
-#define IR_LED_ON               (P2OUT |= IR_LED)
-#define IR_LED_TOGGLE           (P2OUT ^= IR_LED)
+#define ADC_CONVERSION_ENABLE()   (ADCCTL0 |= ADCENC)
+#define ADC_CONVERSION_DISABLE()  (ADCCTL0 &= ~ADCENC)
+#define ADC_CONVERSION_START()    (ADCCTL0 |= ADCSC)
+#define IR_LED_OFF()              (P2OUT &= ~IR_LED)
+#define IR_LED_ON()               (P2OUT |= IR_LED)
+#define IR_LED_TOGGLE()           (P2OUT ^= IR_LED)
 
-//Serial related
-#define BEGINNING (0)
-#define SMALL_RING_SIZE (16)
-#define LARGE_RING_SIZE (20)
-
-
+//menu display
 #define DISPLAY_DEFAULT (0)
 #define DISPLAY_MENU_DIRECTION (2)
 #define DISPLAY_MENU_SPEED (3)
 #define DISPLAY_MENU_BACKLIGHT (4)
-#define DISPLAY_MENU_IOT (5)
+#define DISPLAY_MENU_SERIAL_COMS (5)
 #define DISPLAY_MENU_DIRECTION_FORWARD (6)
 #define DISPLAY_MENU_DIRECTION_STOP (7)
 #define DISPLAY_MENU_DIRECTION_REVERSE (8)
+#define DISPLAY_MENU_DIRECTION_PID (9)
+#define DISPLAY_MENU_SPEED_SLOW (10)
+#define DISPLAY_MENU_SPEED_MEDIUM (11)
+#define DISPLAY_MENU_SPEED_FAST (12)
+#define DISPLAY_MENU_SPEED_TURBO (13)
+#define DISPLAY_MENU_SERIAL_COMS_BAUD_SEL (14)
+#define DISPLAY_MENU_SERIAL_COMS_UCA_SEL  (15)
+#define DISPLAY_MENU_SERIAL_COMS_TX_MESSAGE  (16)
 
-#define DISPLAY_MENU_SPEED_SLOW (9)
-#define DISPLAY_MENU_SPEED_MEDIUM (10)
-#define DISPLAY_MENU_SPEED_FAST (11)
-#define DISPLAY_MENU_SPEED_TURBO (12)
+#define DISPLAY_MENU_LINE_1             (" Control  ")
+#define DISPLAY_MENU_LINE_1_ARROW       (">Control  ")
+#define DISPLAY_MENU_LINE_2             (" Speed    ")
+#define DISPLAY_MENU_LINE_2_ARROW       (">Speed    ")
+#define DISPLAY_MENU_LINE_3             (" Bcklight ") //" Bcklight"
+#define DISPLAY_MENU_LINE_3_ARROW       (">Bcklight ") //">Bcklight"
+#define DISPLAY_MENU_LINE_4             (" SerialCom")
+#define DISPLAY_MENU_LINE_4_ARROW       (">SerialCom")
+
+#define DISPLAY_MENU_SERIAL_LINE_1        (" Baud Rate")
+#define DISPLAY_MENU_SERIAL_LINE_1_ARROW  (">Baud Rate")
+#define DISPLAY_MENU_SERIAL_LINE_2        (" IoT/USB  ")
+#define DISPLAY_MENU_SERIAL_LINE_2_ARROW  (">IoT/USB  ")
+#define DISPLAY_MENU_SERIAL_LINE_3        (" Tx Next M")
+#define DISPLAY_MENU_SERIAL_LINE_3_ARROW  (">Tx Next M")
+#define DISPLAY_MENU_SERIAL_LINE_4        ("          ")
+#define DISPLAY_MENU_SERIAL_LINE_4_ARROW  ("          ")
+
+#define MENU_SEL_IoT (0)
+#define MENU_SEL_USB (1)
+
+#define DEFAULT_MENU_SERIAL (0)
+#define DEFAULT_MENU_ADC (1)
+
+//PID Control
+#define LINE_CENTER     (650)
+#define LINE_CENTER_THRESH     (630)
+#define LINE_EDGE       (350)
+#define OFF_LINE        (0)
+#define ON_LINE         (1)
+#define LEFT_OF_LINE    (2)
+#define RIGHT_OF_LINE   (3)
+
+//Serial
+#define RESET (0)
+#define STILL_PROCESSING (1)
+#define SMALL_RING_SIZE (16)
+#define LARGE_RING_SIZE (25)
+#define LARGE_RING_SIZE_32 (32)
+#define VERY_LARGE_RING_SIZE (128)
+#define BAUD_9600 (1)
+#define BAUD_115200 (2)
+#define BAUD_460800 (3)
+#define BRCWR_9600 (52)
+#define MCWR_9600 (0x4911)
+#define BRCWR_115200 (4)
+#define MCWR_115200_1 (0xAA51)
+#define MCWR_115200_2 (0x5551)
+#define MCWR_115200_3 (0x6B51)
+
+#define STILL_PROCESSING (1)
+#define NOT_PROCESSING (0)
+#define WORD_REGISTER   (0)
+#define NULL_CHAR        (0x00)
+#define LINE_FEED       ('\n')
+#define CARRIAGE_RETURN ('\r')
+#define P_BUFF_1 (0)
+#define P_BUFF_2 (1)
+#define P_BUFF_3 (2)
+
+#define NUM_BUFFERS (2)
+#define P_BUFF_SIZE_32 (32)
+#define P_BUFF_SIZE_128 (128)
+
+
+#define UCA1_TX (0)
+#define UCA0_TX (1)
 
 
 

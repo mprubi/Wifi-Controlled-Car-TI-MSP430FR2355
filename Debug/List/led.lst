@@ -1,0 +1,151 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:16
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\led.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW9DED.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\led.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\led.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\led.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\led.c
+      1          //------------------------------------------------------------------------------
+      2          //
+      3          //  Description: LED file
+      4          //
+      5          //
+      6          //  Mark Rubianes
+      7          //  Jan 2021
+      8          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+      9          //------------------------------------------------------------------------------
+     10          
+     11          
+     12          #include  "functions.h"
+     13          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+     14          #include <string.h>
+     15          #include "macros.h"
+     16          
+     17          //unsigned int Time_Sequence;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     18          char execute_once;
+   \                     execute_once:
+   \   000000                DS8 1
+     19          
+
+   \                                 In  segment CODE, align 2
+     20          void Init_LEDs(void){
+   \                     Init_LEDs:
+     21          //------------------------------------------------------------------------------
+     22          // LED Configurations
+     23          //------------------------------------------------------------------------------
+     24          // Turns on both LEDs
+     25            P1OUT &= ~RED_LED;
+   \   000000   D2C30202     BIC.B   #0x1, &0x202
+     26            P6OUT &= ~GRN_LED;
+   \   000004   F2C040004302 BIC.B   #0x40, &0x243
+     27          //------------------------------------------------------------------------------
+     28          }
+   \   00000A   1001         RETA
+   \   00000C                REQUIRE _A_PAOUT_L
+   \   00000C                REQUIRE _A_PCOUT_L
+     29          
+     30          /*
+     31          void LED_blink_at_rate(void){
+     32            switch(Time_Sequence){
+     33          
+     34                case TIME_SEQ_250:
+     35                  Time_Sequence = ZERO;
+     36                  break;
+     37                case TIME_SEQ_200:
+     38                  if(execute_once){
+     39                    GREEN_LED_TOGGLE();
+     40                    execute_once = ZERO;
+     41                  }
+     42                  break;
+     43                case TIME_SEQ_150:
+     44                  if(execute_once){
+     45                    RED_LED_TOGGLE();
+     46                    GREEN_LED_TOGGLE();
+     47                    execute_once = ZERO;
+     48                  }
+     49                  break;
+     50                case TIME_SEQ_100:
+     51                  if(execute_once){
+     52                    GREEN_LED_TOGGLE();
+     53                    execute_once = ZERO;
+     54                  }
+     55                  break;
+     56                case  TIME_SEQ_50:
+     57                  if(execute_once){
+     58                    RED_LED_TOGGLE();
+     59                    GREEN_LED_TOGGLE();
+     60                    execute_once = ZERO;
+     61                  }
+     62                  break;
+     63                default: break;
+     64              }
+     65          }
+     66          
+     67          */
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Init_LEDs
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      12  Init_LEDs
+       2  _A_PAOUT_L
+       2  _A_PCOUT_L
+       1  execute_once
+
+ 
+ 12 bytes in segment CODE
+  4 bytes in segment DATA16_AN
+  1 byte  in segment DATA16_Z
+ 
+ 12 bytes of CODE memory
+  1 byte  of DATA memory (+ 4 bytes shared)
+
+Errors: none
+Warnings: none

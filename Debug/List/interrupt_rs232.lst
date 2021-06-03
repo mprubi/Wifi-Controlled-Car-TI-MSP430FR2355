@@ -1,0 +1,438 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:51
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_rs232.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW87EE.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_rs232.c"
+#        -lC "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\interrupt_rs232.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\interrupt_rs232.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_rs232.c
+      1          //ADC conversions and timers suggestions: take a reading about every 10 mSec,
+      2          //and obtain running average every 80 Sec
+      3          #include  "functions.h"
+      4          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x50c
+   \   union <unnamed> _A_UCA0RXBUF_L
+   \                     _A_UCA0RXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x50e
+   \   union <unnamed> _A_UCA0TXBUF_L
+   \                     _A_UCA0TXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x51a
+   \   union <unnamed> _A_UCA0IE_L
+   \                     _A_UCA0IE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x51e
+   \   union <unnamed> _A_UCA0IV_L
+   \                     _A_UCA0IV_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x58c
+   \   union <unnamed> _A_UCA1RXBUF_L
+   \                     _A_UCA1RXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x58e
+   \   union <unnamed> _A_UCA1TXBUF_L
+   \                     _A_UCA1TXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x59a
+   \   union <unnamed> _A_UCA1IE_L
+   \                     _A_UCA1IE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x59e
+   \   union <unnamed> _A_UCA1IV_L
+   \                     _A_UCA1IV_L:
+   \   000000                DS8 2
+      5          #include <string.h>
+      6          #include "macros.h"
+      7          #include <math.h>
+      8          
+      9          // global variables
+     10          //TODO: to maximize memory usage consider utilizing 1 byte for 4 different bools, and bit shift to access each value
+     11          extern volatile char USB_Rx_Ring_Buff [LARGE_RING_SIZE_32],
+     12                               IoT_Rx_Ring_Buff [VERY_LARGE_RING_SIZE];
+     13          extern char USB_Tx_Outgoing_Buff[LARGE_RING_SIZE_32],
+     14                      IoT_Tx_Outgoing_Buff[LARGE_RING_SIZE_32];
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     15          volatile char UCA1_index = 0,
+   \                     UCA1_index:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     16                       UCA0_index = 0,
+   \                     UCA0_index:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     17                       wr_wrap_around_rd = 0,
+   \                     wr_wrap_around_rd:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     18                       wraparound_check_start = FALSE;
+   \                     wraparound_check_start:
+   \   000000                DS8 1
+     19          //RX RING
+     20          extern volatile unsigned int usb_rx_ring_wr,
+     21                                       iot_rx_ring_wr; // used in ISR and Main() to place in buffer,
+     22          extern unsigned int usb_rx_ring_rd,
+     23                              iot_rx_ring_rd;
+     24          //usb_rx_ring_rd Rx is only actually used in main because you're only reading from main
+     25          ////TX RING
+     26          //extern unsigned int usb_tx_ring_wr,
+     27          //                    IoT_tx_ring_wr;
+     28          //extern unsigned int usb_tx_ring_rd,
+     29          //                    IoT_tx_ring_rd;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     30          volatile char startup_okay_to_TX = FALSE,
+   \                     startup_okay_to_TX:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     31                        msg_recieved_from_IoT = FALSE,//
+   \                     msg_recieved_from_IoT:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     32                        msg_recieved_from_PC = FALSE;
+   \                     msg_recieved_from_PC:
+   \   000000                DS8 1
+     33          //extern volatile int time_seconds,
+     34          //                    Tx_message_timer;
+     35          
+     36          //volatile int debug_ISR_iot_1 = 0,
+     37          //             debug_ISR_iot_2 = 0,
+     38          //             debug_ISR_iot_3 = 0,
+     39          //             debug_ISR_usb_1 = 0,
+     40          //             debug_ISR_usb_2 = 0,
+     41          //             debug_ISR_usb_3 = 0;
+     42          
+     43          /* The purpose of this ISR is JUST to use the write signal to PUT data in the buffer,
+     44          where we read that same buffer later in main.
+     45          */
+     46          #pragma vector=EUSCI_A1_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+     47          __interrupt void eUSCI_A1_ISR(void){  // USB module
+   \                     eUSCI_A1_ISR:
+   \   000000   3F15         PUSHM.W #0x4, R15
+     48            unsigned int temp,
+     49                         char_check;
+     50            switch(__even_in_range (UCA1IV, 0x08)){
+   \   000002   1F429E05     MOV.W   &0x59e, R15
+   \   000006   E00F         ADDA    R15, PC
+   \                     `?<Jumptable for eUSCI_A1_ISR>_0`:
+   \   000008   363C         JMP     ??eUSCI_A1_ISR_0
+   \   00000A   033C         JMP     ??eUSCI_A1_ISR_3
+   \   00000C   173C         JMP     ??eUSCI_A1_ISR_4
+   \   00000E   333C         JMP     ??eUSCI_A1_ISR_0
+   \   000010   323C         JMP     ??eUSCI_A1_ISR_0
+     51            case 0: // Vector 0 - no interrupt
+     52              break;
+     53            case 2: // Vector 2 - RXIFG
+     54              //important note: there is only one buffer register, so this should not appear more than once in program
+     55              temp = usb_rx_ring_wr; // all the extra local variable does is remove error where compiler wants you to resolve two volatiles in ISR
+   \                     ??eUSCI_A1_ISR_3:
+   \   000012   1D42....     MOV.W   &usb_rx_ring_wr, R13
+     56               char_check = UCA1RXBUF;
+   \   000016   1E428C05     MOV.W   &0x58c, R14
+     57              //USB_Rx_Ring_Buff[temp] = UCA1RXBUF; // RX --> USB_Rx_Ring_Buff character (triggered every time something is placed in UCA1RXBUF)
+     58          
+     59              //This was used to test software loopback from PC to PC. Replaced by hardware loopback from PC to PC(jumper on J9)
+     60              //UCA1TXBUF = UCA1_loop_back; // hand this char straight back to the USB Tx
+     61          
+     62              //Tx_message_timer = time_seconds + 2;  //enables 2 second message queue
+     63          
+     64          //    if(!startup_okay_to_TX){
+     65          //      UCA1_index = 0;
+     66          //      strcpy(USB_Tx_Outgoing_Buff, "READY\r\n");
+     67          ////      USB_Tx_Outgoing_Buff[0] = 'O';
+     68          ////      USB_Tx_Outgoing_Buff[1] = 'K';
+     69          ////      USB_Tx_Outgoing_Buff[2] = '\r';
+     70          ////      USB_Tx_Outgoing_Buff[3] = '\n';
+     71          //      startup_okay_to_TX = TRUE;
+     72          //      UCA1IE |= UCTXIE; // enable the Tx interupt
+     73          //      msg_recieved_from_PC = FALSE;
+     74          //      UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];  //NOTE: this takes care of the duplicate initial char
+     75          //      return;
+     76          //    }
+     77          //    debug_ISR_usb_1++;
+     78              if(char_check != NULL_CHAR){
+   \   00001A   0E93         CMP.W   #0x0, R14
+   \   00001C   2C24         JEQ     ??eUSCI_A1_ISR_0
+     79          //      debug_ISR_usb_2++;
+     80                USB_Rx_Ring_Buff[temp] = char_check;
+   \   00001E   CD4E....     MOV.B   R14, USB_Rx_Ring_Buff(R13)
+     81                msg_recieved_from_PC = TRUE;
+   \   000022   D243....     MOV.B   #0x1, &msg_recieved_from_PC
+     82                if (++usb_rx_ring_wr >= (sizeof(USB_Rx_Ring_Buff))){ //when you get to the end of the array
+   \   000026   1F42....     MOV.W   &usb_rx_ring_wr, R15
+   \   00002A   1F53         ADD.W   #0x1, R15
+   \   00002C   824F....     MOV.W   R15, &usb_rx_ring_wr
+   \   000030   3F902000     CMP.W   #0x20, R15
+   \   000034   2028         JNC     ??eUSCI_A1_ISR_0
+     83          //        debug_ISR_usb_3++;
+     84                  usb_rx_ring_wr = RESET; // Circular buffer back to RESET
+   \   000036   8243....     MOV.W   #0x0, &usb_rx_ring_wr
+     85                }
+     86              }
+     87              break;
+   \   00003A   1D3C         JMP     ??eUSCI_A1_ISR_0
+     88            case 4: // Vector 4 - TXIFG
+     89              // MY implementation
+     90              if(USB_Tx_Outgoing_Buff[UCA1_index] != NULL_CHAR){
+   \                     ??eUSCI_A1_ISR_4:
+   \   00003C   5F42....     MOV.B   &UCA1_index, R15
+   \   000040   4F4F         MOV.B   R15, R15
+   \   000042   CF93....     CMP.B   #0x0, USB_Tx_Outgoing_Buff(R15)
+   \   000046   0D24         JEQ     ??eUSCI_A1_ISR_2
+     91                UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
+   \   000048   5F42....     MOV.B   &UCA1_index, R15
+   \   00004C   4C4F         MOV.B   R15, R12
+   \   00004E   5C53         ADD.B   #0x1, R12
+   \   000050   C24C....     MOV.B   R12, &UCA1_index
+   \   000054   4F4F         MOV.B   R15, R15
+   \   000056   5F4F....     MOV.B   USB_Tx_Outgoing_Buff(R15), R15
+   \   00005A   4F4F         MOV.B   R15, R15
+   \   00005C   824F8E05     MOV.W   R15, &0x58e
+     92                return;
+   \   000060   0A3C         JMP     ??eUSCI_A1_ISR_0
+     93              }else if(USB_Tx_Outgoing_Buff[UCA1_index] == NULL_CHAR){ //if this is the last character
+   \                     ??eUSCI_A1_ISR_2:
+   \   000062   5F42....     MOV.B   &UCA1_index, R15
+   \   000066   4F4F         MOV.B   R15, R15
+   \   000068   CF93....     CMP.B   #0x0, USB_Tx_Outgoing_Buff(R15)
+   \   00006C   0420         JNE     ??eUSCI_A1_ISR_0
+     94                UCA1IE &= ~UCTXIE;
+   \   00006E   A2C39A05     BIC.W   #0x2, &0x59a
+     95                UCA1_index = 0;
+   \   000072   C243....     MOV.B   #0x0, &UCA1_index
+     96                return;// disable Tx ISR so it doesn't trigger after string is transmitted
+     97              }
+     98            default:
+     99              break;
+    100            }
+    101          }
+   \                     ??eUSCI_A1_ISR_0:
+   \   000076   3C17         POPM.W  #0x4, R15
+   \   000078   0013         RETI
+   \   00007A                REQUIRE _A_UCA1RXBUF_L
+   \   00007A                REQUIRE _A_UCA1TXBUF_L
+   \   00007A                REQUIRE _A_UCA1IE_L
+   \   00007A                REQUIRE _A_UCA1IV_L
+    102          
+    103          #pragma vector=EUSCI_A0_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    104          __interrupt void eUSCI_A0_ISR(void){ // Wifi Module
+   \                     eUSCI_A0_ISR:
+   \   000000   3F15         PUSHM.W #0x4, R15
+    105            unsigned int temp,
+    106                         char_check;
+    107            switch(__even_in_range (UCA0IV, 0x08)){
+   \   000002   1F421E05     MOV.W   &0x51e, R15
+   \   000006   E00F         ADDA    R15, PC
+   \                     `?<Jumptable for eUSCI_A0_ISR>_0`:
+   \   000008   463C         JMP     ??eUSCI_A0_ISR_0
+   \   00000A   033C         JMP     ??eUSCI_A0_ISR_4
+   \   00000C   243C         JMP     ??eUSCI_A0_ISR_5
+   \   00000E   433C         JMP     ??eUSCI_A0_ISR_0
+   \   000010   423C         JMP     ??eUSCI_A0_ISR_0
+    108            case 0: // Vector 0 - no interrupt
+    109              break;
+    110            case 2: // Vector 2 - RXIFG
+    111              // UCA0RXBUF is what I'm getting FROM the Wifi Module
+    112              temp = iot_rx_ring_wr;
+   \                     ??eUSCI_A0_ISR_4:
+   \   000012   1D42....     MOV.W   &iot_rx_ring_wr, R13
+    113              char_check = UCA0RXBUF;
+   \   000016   1E420C05     MOV.W   &0x50c, R14
+    114          
+    115              //debug_ISR_iot_1++;
+    116              //IoT_Rx_Ring_Buff[temp] = UCA0RXBUF; // RX --> IoT_Rx_Ring_Buff character
+    117          
+    118              UCA1TXBUF = char_check; // hand this char over to USB Tx to receive it on the PC
+   \   00001A   824E8E05     MOV.W   R14, &0x58e
+    119              if(char_check != NULL_CHAR){
+   \   00001E   0E93         CMP.W   #0x0, R14
+   \   000020   3A24         JEQ     ??eUSCI_A0_ISR_0
+    120                //debug_ISR_iot_2++;
+    121                IoT_Rx_Ring_Buff[temp] = char_check; //also receive here to inspect
+   \   000022   CD4E....     MOV.B   R14, IoT_Rx_Ring_Buff(R13)
+    122                msg_recieved_from_IoT = TRUE; // set this false after processing
+   \   000026   D243....     MOV.B   #0x1, &msg_recieved_from_IoT
+    123                if (++iot_rx_ring_wr >= (sizeof(IoT_Rx_Ring_Buff))){ //when you get to the end of the array
+   \   00002A   1F42....     MOV.W   &iot_rx_ring_wr, R15
+   \   00002E   1F53         ADD.W   #0x1, R15
+   \   000030   824F....     MOV.W   R15, &iot_rx_ring_wr
+   \   000034   3F908000     CMP.W   #0x80, R15
+   \   000038   0228         JNC     ??eUSCI_A0_ISR_2
+    124                  //debug_ISR_iot_3++;
+    125                  iot_rx_ring_wr = RESET; // Circular buffer back to RESET
+   \   00003A   8243....     MOV.W   #0x0, &iot_rx_ring_wr
+    126                }
+    127          
+    128                //check whether wr wraped around rd
+    129                if(wraparound_check_start == TRUE){
+   \                     ??eUSCI_A0_ISR_2:
+   \   00003E   D293....     CMP.B   #0x1, &wraparound_check_start
+   \   000042   2920         JNE     ??eUSCI_A0_ISR_0
+    130                  //every == is like a falling edge that triggers an increment
+    131                  if(iot_rx_ring_wr == iot_rx_ring_rd + 1){
+   \   000044   1F42....     MOV.W   &iot_rx_ring_rd, R15
+   \   000048   1F53         ADD.W   #0x1, R15
+   \   00004A   829F....     CMP.W   R15, &iot_rx_ring_wr
+   \   00004E   2320         JNE     ??eUSCI_A0_ISR_0
+    132                    wr_wrap_around_rd++;
+   \   000050   D253....     ADD.B   #0x1, &wr_wrap_around_rd
+    133                  }
+    134          
+    135                }
+    136          
+    137              }
+    138              break;
+   \   000054   203C         JMP     ??eUSCI_A0_ISR_0
+    139            case 4: // Vector 4 - TXIFG
+    140              if(startup_okay_to_TX){
+   \                     ??eUSCI_A0_ISR_5:
+   \   000056   C293....     CMP.B   #0x0, &startup_okay_to_TX
+   \   00005A   1D24         JEQ     ??eUSCI_A0_ISR_0
+    141                if(IoT_Tx_Outgoing_Buff[UCA0_index] != NULL_CHAR){
+   \   00005C   5F42....     MOV.B   &UCA0_index, R15
+   \   000060   4F4F         MOV.B   R15, R15
+   \   000062   CF93....     CMP.B   #0x0, IoT_Tx_Outgoing_Buff(R15)
+   \   000066   0D24         JEQ     ??eUSCI_A0_ISR_3
+    142                  UCA0TXBUF = IoT_Tx_Outgoing_Buff[UCA0_index++];
+   \   000068   5F42....     MOV.B   &UCA0_index, R15
+   \   00006C   4C4F         MOV.B   R15, R12
+   \   00006E   5C53         ADD.B   #0x1, R12
+   \   000070   C24C....     MOV.B   R12, &UCA0_index
+   \   000074   4F4F         MOV.B   R15, R15
+   \   000076   5F4F....     MOV.B   IoT_Tx_Outgoing_Buff(R15), R15
+   \   00007A   4F4F         MOV.B   R15, R15
+   \   00007C   824F0E05     MOV.W   R15, &0x50e
+    143                  return;
+   \   000080   0A3C         JMP     ??eUSCI_A0_ISR_0
+    144                }else if(IoT_Tx_Outgoing_Buff[UCA0_index] == NULL_CHAR){ //if this is the last character
+   \                     ??eUSCI_A0_ISR_3:
+   \   000082   5F42....     MOV.B   &UCA0_index, R15
+   \   000086   4F4F         MOV.B   R15, R15
+   \   000088   CF93....     CMP.B   #0x0, IoT_Tx_Outgoing_Buff(R15)
+   \   00008C   0420         JNE     ??eUSCI_A0_ISR_0
+    145                  UCA0IE &= ~UCTXIE;
+   \   00008E   A2C31A05     BIC.W   #0x2, &0x51a
+    146                  UCA0_index = 0;
+   \   000092   C243....     MOV.B   #0x0, &UCA0_index
+    147                  return;// disable Tx ISR so it doesn't trigger after string is transmitted
+    148                }
+    149              }
+    150              break;
+    151          
+    152            }
+    153          }
+   \                     ??eUSCI_A0_ISR_0:
+   \   000096   3C17         POPM.W  #0x4, R15
+   \   000098   0013         RETI
+   \   00009A                REQUIRE _A_UCA0RXBUF_L
+   \   00009A                REQUIRE _A_UCA1TXBUF_L
+   \   00009A                REQUIRE _A_UCA0TXBUF_L
+   \   00009A                REQUIRE _A_UCA0IE_L
+   \   00009A                REQUIRE _A_UCA0IV_L
+
+   \                                 In  segment INTVEC, offset 0x40, root
+   \                     `??eUSCI_A1_ISR::??INTVEC 64`:
+   \   000040   ....         DC16    eUSCI_A1_ISR
+
+   \                                 In  segment INTVEC, offset 0x42, root
+   \                     `??eUSCI_A0_ISR::??INTVEC 66`:
+   \   000042   ....         DC16    eUSCI_A0_ISR
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+     12   eUSCI_A0_ISR
+     12   eUSCI_A1_ISR
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       1  UCA0_index
+       1  UCA1_index
+       2  _A_UCA0IE_L
+       2  _A_UCA0IV_L
+       2  _A_UCA0RXBUF_L
+       2  _A_UCA0TXBUF_L
+       2  _A_UCA1IE_L
+       2  _A_UCA1IV_L
+       2  _A_UCA1RXBUF_L
+       2  _A_UCA1TXBUF_L
+     154  eUSCI_A0_ISR
+       2  eUSCI_A0_ISR::??INTVEC 66
+     122  eUSCI_A1_ISR
+       2  eUSCI_A1_ISR::??INTVEC 64
+       1  msg_recieved_from_IoT
+       1  msg_recieved_from_PC
+       1  startup_okay_to_TX
+       1  wr_wrap_around_rd
+       1  wraparound_check_start
+
+ 
+  16 bytes in segment DATA16_AN
+   7 bytes in segment DATA16_Z
+   4 bytes in segment INTVEC
+ 276 bytes in segment ISR_CODE
+ 
+ 276 bytes of CODE  memory
+   0 bytes of CONST memory (+  4 bytes shared)
+   7 bytes of DATA  memory (+ 16 bytes shared)
+
+Errors: none
+Warnings: none

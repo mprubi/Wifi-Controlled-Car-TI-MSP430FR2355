@@ -1,0 +1,1591 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:50
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\init_serial.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW8365.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\init_serial.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\init_serial.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\init_serial.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\init_serial.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x244
+   \   union <unnamed> _A_PCDIR_L
+   \                     _A_PCDIR_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x500
+   \   union <unnamed> _A_UCA0CTLW0_L
+   \                     _A_UCA0CTLW0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x506
+   \   union <unnamed> _A_UCA0BRW_L
+   \                     _A_UCA0BRW_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x508
+   \   union <unnamed> _A_UCA0MCTLW_L
+   \                     _A_UCA0MCTLW_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x50e
+   \   union <unnamed> _A_UCA0TXBUF_L
+   \                     _A_UCA0TXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x51a
+   \   union <unnamed> _A_UCA0IE_L
+   \                     _A_UCA0IE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x580
+   \   union <unnamed> _A_UCA1CTLW0_L
+   \                     _A_UCA1CTLW0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x586
+   \   union <unnamed> _A_UCA1BRW_L
+   \                     _A_UCA1BRW_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x588
+   \   union <unnamed> _A_UCA1MCTLW_L
+   \                     _A_UCA1MCTLW_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x58e
+   \   union <unnamed> _A_UCA1TXBUF_L
+   \                     _A_UCA1TXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x59a
+   \   union <unnamed> _A_UCA1IE_L
+   \                     _A_UCA1IE_L:
+   \   000000                DS8 2
+      3          #include <string.h>
+      4          #include "macros.h"
+      5          #include <math.h>
+      6          #include <stdio.h>
+      7          #include <stdlib.h>
+      8          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      9          volatile char USB_Rx_Ring_Buff[LARGE_RING_SIZE_32],
+   \                     USB_Rx_Ring_Buff:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     10                        IoT_Rx_Ring_Buff[VERY_LARGE_RING_SIZE],
+   \                     IoT_Rx_Ring_Buff:
+   \   000000                DS8 128
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     11                        bang;
+   \                     bang:
+   \   000000                DS8 1
+     12          extern volatile char PID_control_enabled;
+     13          extern volatile char bang;
+     14          
+     15          extern char current_state,
+     16                      previous_state;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     17          char USB_Tx_Outgoing_Buff[LARGE_RING_SIZE_32],
+   \                     USB_Tx_Outgoing_Buff:
+   \   000000                DS8 32
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     18               IoT_Tx_Outgoing_Buff[LARGE_RING_SIZE_32];
+   \                     IoT_Tx_Outgoing_Buff:
+   \   000000                DS8 32
+     19          extern volatile char UCA1_index,
+     20                               UCA0_index,
+     21                               wr_wrap_around_rd,
+     22                               wraparound_check_start,
+     23                               time_seconds,
+     24                               PID_enable_timer;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     25          char command_argument_found,
+   \                     command_argument_found:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_I, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     26                once_per_toggle = TRUE;
+   \                     once_per_toggle:
+   \   000000                DS8 1
+   \   000001                REQUIRE `?<Initializer for once_per_toggle>`
+     27          
+
+   \                                 In  segment DATA16_I, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     28          int black_line_edge_threshold = 550;
+   \                     black_line_edge_threshold:
+   \   000000                DS8 2
+   \   000002                REQUIRE `?<Initializer for black_line_edge_threshold>`
+     29          extern unsigned int speed_global;
+     30          
+
+   \                                 In  segment DATA16_I, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     31          unsigned int speed_correction = 10000;
+   \                     speed_correction:
+   \   000000                DS8 2
+   \   000002                REQUIRE `?<Initializer for speed_correction>`
+     32          
+     33          //RX RING
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     34          volatile unsigned int usb_rx_ring_wr,
+   \                     usb_rx_ring_wr:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     35                                iot_rx_ring_wr, // used in ISR and Main() to place in buffer,
+   \                     iot_rx_ring_wr:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     36                                iot_process_buff_wr = 0;
+   \                     iot_process_buff_wr:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     37          unsigned int usb_rx_ring_rd, //rx_ring_rd mot used in interrupt
+   \                     usb_rx_ring_rd:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     38                       iot_rx_ring_rd;
+   \                     iot_rx_ring_rd:
+   \   000000                DS8 2
+     39          ////TX RING
+     40          //unsigned int usb_tx_ring_wr,
+     41          //             IoT_tx_ring_wr;
+     42          //unsigned int usb_tx_ring_rd,
+     43          //             IoT_tx_ring_rd;
+     44          
+     45          //for Rx process buffer
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     46          char USB_Process_Buff[NUM_BUFFERS][P_BUFF_SIZE_32],
+   \                     USB_Process_Buff:
+   \   000000                DS8 64
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     47               IoT_Process_Buff[NUM_BUFFERS][P_BUFF_SIZE_128]; // msgs from IoT are verbose
+   \                     IoT_Process_Buff:
+   \   000000                DS8 256
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     48          unsigned int usb_process_buff_wr = 0;
+   \                     usb_process_buff_wr:
+   \   000000                DS8 2
+     49          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     50          unsigned char current_command[2][LARGE_RING_SIZE];
+   \                     current_command:
+   \   000000                DS8 50
+     51          
+     52          extern volatile char startup_okay_to_TX,
+     53                               activate_adc_readings;//
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     54          char usb_ring_to_process_buffer_complete = FALSE,
+   \                     usb_ring_to_process_buffer_complete:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     55               iot_ring_to_process_buffer_complete = FALSE,
+   \                     iot_ring_to_process_buffer_complete:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     56               ok_to_parse_recieved_iot_commands = FALSE,
+   \                     ok_to_parse_recieved_iot_commands:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     57               wifi_connected = FALSE;
+   \                     wifi_connected:
+   \   000000                DS8 1
+     58          //char programming_IoT = TRUE;
+     59          extern volatile char msg_recieved_from_IoT,
+     60                               msg_recieved_from_PC;
+     61          
+
+   \                                 In  segment CODE, align 2
+     62          void Init_Serial_UCA1(int baud_select){ // UCA1 connects to USB
+   \                     Init_Serial_UCA1:
+     63            int Baud_Rate_Control_Word_Register,
+     64                Modulation_Control_Word_Register;
+     65          
+     66            if(baud_select == BAUD_9600){
+   \   000000   1C93         CMP.W   #0x1, R12
+   \   000002   0520         JNE     ??Init_Serial_UCA1_3
+     67              Baud_Rate_Control_Word_Register = BRCWR_9600;
+   \   000004   3F403400     MOV.W   #0x34, R15
+     68              Modulation_Control_Word_Register = MCWR_9600;
+   \   000008   3E401149     MOV.W   #0x4911, R14
+   \   00000C   053C         JMP     ??Init_Serial_UCA1_2
+     69            }else if(baud_select == BAUD_115200){
+   \                     ??Init_Serial_UCA1_3:
+   \   00000E   2C93         CMP.W   #0x2, R12
+   \   000010   0320         JNE     ??Init_Serial_UCA1_2
+     70              Baud_Rate_Control_Word_Register = BRCWR_115200;
+   \   000012   2F42         MOV.W   #0x4, R15
+     71              Modulation_Control_Word_Register = MCWR_115200_1;
+   \   000014   3E4051AA     MOV.W   #0xaa51, R14
+     72            }else if(baud_select == BAUD_460800){
+     73          //    Baud_Rate_Control_Word_Register = 5;
+     74          //    Modulation_Control_Word_Register = 0x5551;
+     75            }
+     76          
+     77            int i; //initialize entire USB Tx array (ring buffer) to NULL
+     78            for(i = 0; i <LARGE_RING_SIZE_32; i++){
+   \                     ??Init_Serial_UCA1_2:
+   \   000018   0D43         MOV.W   #0x0, R13
+   \                     ??Init_Serial_UCA1_0:
+   \   00001A   3D902000     CMP.W   #0x20, R13
+   \   00001E   0434         JGE     ??Init_Serial_UCA1_4
+     79              USB_Rx_Ring_Buff[i] = NULL_CHAR; // USB Rx Buffer
+   \   000020   CD43....     MOV.B   #0x0, USB_Rx_Ring_Buff(R13)
+     80            }
+   \   000024   1D53         ADD.W   #0x1, R13
+   \   000026   F93F         JMP     ??Init_Serial_UCA1_0
+     81            usb_rx_ring_wr = RESET;
+   \                     ??Init_Serial_UCA1_4:
+   \   000028   8243....     MOV.W   #0x0, &usb_rx_ring_wr
+     82            usb_rx_ring_rd = RESET;
+   \   00002C   8243....     MOV.W   #0x0, &usb_rx_ring_rd
+     83          
+     84            //initialize entire USB Tx array (ring buffer) to NULL
+     85            for(i = 0; i <LARGE_RING_SIZE_32; i++){ // May not use this
+   \   000030   0D43         MOV.W   #0x0, R13
+   \                     ??Init_Serial_UCA1_1:
+   \   000032   3D902000     CMP.W   #0x20, R13
+   \   000036   0434         JGE     ??Init_Serial_UCA1_5
+     86              USB_Tx_Outgoing_Buff[i] = NULL_CHAR; // USB Tx Buffer
+   \   000038   CD43....     MOV.B   #0x0, USB_Tx_Outgoing_Buff(R13)
+     87            }
+   \   00003C   1D53         ADD.W   #0x1, R13
+   \   00003E   F93F         JMP     ??Init_Serial_UCA1_1
+     88          //  usb_tx_ring_wr = RESET;
+     89          //  usb_tx_ring_rd = RESET;
+     90          
+     91            // Configure UART 1
+     92            UCA1CTLW0 = WORD_REGISTER; // Use word register
+   \                     ??Init_Serial_UCA1_5:
+   \   000040   82438005     MOV.W   #0x0, &0x580
+     93            UCA1CTLW0 |= UCSWRST; // Set Software reset enable
+   \   000044   92D38005     BIS.W   #0x1, &0x580
+     94            UCA1CTLW0 |= UCSSEL__SMCLK; // Set SMCLK as f_BRCLK
+   \   000048   B2D080008005 BIS.W   #0x80, &0x580
+     95          
+     96            UCA1BRW = Baud_Rate_Control_Word_Register;  // 9,600 Baud  // BRW - Baud Rate Control Word Register
+   \   00004E   824F8605     MOV.W   R15, &0x586
+     97            // UCA1MCTLW = UCSx + UCFx + UCOS16;    "+" means concatenate
+     98            //         ==> 0x49 +  1   +   1;
+     99            UCA1MCTLW = Modulation_Control_Word_Register ;   // MCTLW - Modulation Control Word Register
+   \   000052   824E8805     MOV.W   R14, &0x588
+    100            UCA1CTLW0 &= ~ UCSWRST; // Set Software reset enable  //CTLW - Control Word Register
+   \   000056   92C38005     BIC.W   #0x1, &0x580
+    101            UCA1IE |= UCRXIE; // Enable RX interrupt in __interrupt void eUSCI_A1_ISR
+   \   00005A   92D39A05     BIS.W   #0x1, &0x59a
+    102            // make sure ISR exists to handle the statement above
+    103          
+    104            //"prime the pump here (flag is set after this line)
+    105            //UCA1IE |= UCTXIE;  // Enable Tx interrupt in __interrupt void eUSCI_A1_ISR
+    106            //UCA1TXBUF = NULL_CHAR;
+    107          
+    108            startup_okay_to_TX = FALSE;
+   \   00005E   C243....     MOV.B   #0x0, &startup_okay_to_TX
+    109          }
+   \   000062   1001         RETA
+   \   000064                REQUIRE _A_UCA1CTLW0_L
+   \   000064                REQUIRE _A_UCA1BRW_L
+   \   000064                REQUIRE _A_UCA1MCTLW_L
+   \   000064                REQUIRE _A_UCA1IE_L
+    110          
+
+   \                                 In  segment CODE, align 2
+    111          void Init_Serial_UCA0(int baud_select){ // UCA0 Connects to the IoT Module,
+   \                     Init_Serial_UCA0:
+    112            int Baud_Rate_Control_Word_Register,
+    113                Modulation_Control_Word_Register;
+    114          
+    115            if(baud_select == BAUD_9600){
+   \   000000   1C93         CMP.W   #0x1, R12
+   \   000002   0520         JNE     ??Init_Serial_UCA0_3
+    116              Baud_Rate_Control_Word_Register = BRCWR_9600;  // UCA0BRW = 52
+   \   000004   3F403400     MOV.W   #0x34, R15
+    117              Modulation_Control_Word_Register = MCWR_9600;  // UCA0MCTLW = 0x4911
+   \   000008   3E401149     MOV.W   #0x4911, R14
+   \   00000C   053C         JMP     ??Init_Serial_UCA0_2
+    118            }else if(baud_select == BAUD_115200){
+   \                     ??Init_Serial_UCA0_3:
+   \   00000E   2C93         CMP.W   #0x2, R12
+   \   000010   0320         JNE     ??Init_Serial_UCA0_2
+    119              Baud_Rate_Control_Word_Register = BRCWR_115200;  //UCA0BRW = 4
+   \   000012   2F42         MOV.W   #0x4, R15
+    120              Modulation_Control_Word_Register = MCWR_115200_1;  //UCA0MCTLW = 0xAA51
+   \   000014   3E4051AA     MOV.W   #0xaa51, R14
+    121            }else if(baud_select == BAUD_460800){
+    122          //    Baud_Rate_Control_Word_Register = 5;
+    123          //    Modulation_Control_Word_Register = 0x5551;
+    124            }
+    125          
+    126            int i;
+    127            for(i = 0; i <VERY_LARGE_RING_SIZE; i++){
+   \                     ??Init_Serial_UCA0_2:
+   \   000018   0D43         MOV.W   #0x0, R13
+   \                     ??Init_Serial_UCA0_0:
+   \   00001A   3D908000     CMP.W   #0x80, R13
+   \   00001E   0434         JGE     ??Init_Serial_UCA0_4
+    128              IoT_Rx_Ring_Buff[i] = NULL_CHAR; // USB Rx Buffer
+   \   000020   CD43....     MOV.B   #0x0, IoT_Rx_Ring_Buff(R13)
+    129            }
+   \   000024   1D53         ADD.W   #0x1, R13
+   \   000026   F93F         JMP     ??Init_Serial_UCA0_0
+    130            iot_rx_ring_wr = RESET;
+   \                     ??Init_Serial_UCA0_4:
+   \   000028   8243....     MOV.W   #0x0, &iot_rx_ring_wr
+    131            iot_rx_ring_rd = RESET;
+   \   00002C   8243....     MOV.W   #0x0, &iot_rx_ring_rd
+    132          
+    133            for(i = 0; i <LARGE_RING_SIZE; i ++){ // May not use this
+   \   000030   0D43         MOV.W   #0x0, R13
+   \                     ??Init_Serial_UCA0_1:
+   \   000032   3D901900     CMP.W   #0x19, R13
+   \   000036   0434         JGE     ??Init_Serial_UCA0_5
+    134              IoT_Tx_Outgoing_Buff[i] = NULL_CHAR; // USB Tx Buffer
+   \   000038   CD43....     MOV.B   #0x0, IoT_Tx_Outgoing_Buff(R13)
+    135            }
+   \   00003C   1D53         ADD.W   #0x1, R13
+   \   00003E   F93F         JMP     ??Init_Serial_UCA0_1
+    136          
+    137          //  IoT_tx_ring_wr = RESET;
+    138          //  IoT_tx_ring_rd = RESET;
+    139          
+    140            // Configure UART 0
+    141            UCA0CTLW0 = 0; // Use word register
+   \                     ??Init_Serial_UCA0_5:
+   \   000040   82430005     MOV.W   #0x0, &0x500
+    142            UCA0CTLW0 |= UCSWRST; // Set Software reset enable
+   \   000044   92D30005     BIS.W   #0x1, &0x500
+    143            UCA0CTLW0 |= UCSSEL__SMCLK; // Set SMCLK as f_BRCLK
+   \   000048   B2D080000005 BIS.W   #0x80, &0x500
+    144          
+    145            UCA0BRW = Baud_Rate_Control_Word_Register;  // 115,200 Baud  // BRW - Baud Rate Control Word Register
+   \   00004E   824F0605     MOV.W   R15, &0x506
+    146            // UCA0MCTLW = UCSx + UCFx + UCOS16;    "+" means concatenate
+    147            //         ==> 0x55 +  5   +   1;
+    148            UCA0MCTLW = Modulation_Control_Word_Register;   // MCTLW - Modulation Control Word Register
+   \   000052   824E0805     MOV.W   R14, &0x508
+    149            UCA0CTLW0 &= ~ UCSWRST; // Set Software reset enable  //CTLW - Control Word Register
+   \   000056   92C30005     BIC.W   #0x1, &0x500
+    150            UCA0IE |= UCRXIE; // Enable RX interrupt in interrupt_rs232.c
+   \   00005A   92D31A05     BIS.W   #0x1, &0x51a
+    151            // make sure ISR exists to handle the statement above
+    152          
+    153            //"prime the pump here (flag is set after this line)
+    154            //UCA0IE |= UCTXIE;  // Enable Tx interrupt in __interrupt void eUSCI_A1_ISR
+    155            //UCA0TXBUF = 0x00;
+    156          }
+   \   00005E   1001         RETA
+   \   000060                REQUIRE _A_UCA0CTLW0_L
+   \   000060                REQUIRE _A_UCA0BRW_L
+   \   000060                REQUIRE _A_UCA0MCTLW_L
+   \   000060                REQUIRE _A_UCA0IE_L
+    157          
+
+   \                                 In  segment CODE, align 2
+    158          void RX_USB_Process_Buff(void){
+   \                     RX_USB_Process_Buff:
+    159            if(usb_rx_ring_rd != usb_rx_ring_wr){//new character ready from ring buffer
+   \   000000   9292........ CMP.W   &usb_rx_ring_wr, &usb_rx_ring_rd
+   \   000006   1024         JEQ     ??RX_USB_Process_Buff_2
+    160          
+    161              //grab the character, and null the ring buffer
+    162              USB_Process_Buff[P_BUFF_1][usb_process_buff_wr++] = USB_Rx_Ring_Buff[usb_rx_ring_rd];
+   \   000008   1F42....     MOV.W   &usb_rx_ring_rd, R15
+   \   00000C   1E42....     MOV.W   &usb_process_buff_wr, R14
+   \   000010   DE4F........ MOV.B   USB_Rx_Ring_Buff(R15), USB_Process_Buff(R14)
+   \   000016   9253....     ADD.W   #0x1, &usb_process_buff_wr
+    163              USB_Rx_Ring_Buff[usb_rx_ring_rd++] = NULL_CHAR;
+   \   00001A   1F42....     MOV.W   &usb_rx_ring_rd, R15
+   \   00001E   CF43....     MOV.B   #0x0, USB_Rx_Ring_Buff(R15)
+   \   000022   9253....     ADD.W   #0x1, &usb_rx_ring_rd
+   \   000026   153C         JMP     ??RX_USB_Process_Buff_1
+    164          
+    165            }else if (usb_rx_ring_rd == usb_rx_ring_wr){ // 
+   \                     ??RX_USB_Process_Buff_2:
+   \   000028   9292........ CMP.W   &usb_rx_ring_wr, &usb_rx_ring_rd
+   \   00002E   1120         JNE     ??RX_USB_Process_Buff_1
+    166          //    USB_Process_Buff[P_BUFF_1][usb_process_buff_wr] = USB_Rx_Ring_Buff[usb_rx_ring_rd];  //NOTE: MISTAKE: By this time, last character is already read from ring buffer. This line copied an unnecessary extra character
+    167              USB_Rx_Ring_Buff[usb_rx_ring_rd] = NULL_CHAR;
+   \   000030   1F42....     MOV.W   &usb_rx_ring_rd, R15
+   \   000034   CF43....     MOV.B   #0x0, USB_Rx_Ring_Buff(R15)
+    168              usb_process_buff_wr = RESET;
+   \   000038   8243....     MOV.W   #0x0, &usb_process_buff_wr
+    169          
+    170              //COPY to BUFF 2 once at the end
+    171              for(int i = 0; i<P_BUFF_SIZE_32; i++){
+   \   00003C   0F43         MOV.W   #0x0, R15
+   \                     ??RX_USB_Process_Buff_0:
+   \   00003E   3F902000     CMP.W   #0x20, R15
+   \   000042   0534         JGE     ??RX_USB_Process_Buff_3
+    172                USB_Process_Buff[P_BUFF_2][i] = USB_Process_Buff[P_BUFF_1][i];  //copying EVERYTHING to TWO buffers
+   \   000044   DF4F........ MOV.B   USB_Process_Buff(R15), USB_Process_Buff + 32(R15)
+    173                //USB_Process_Buff[P_BUFF_1][i] = NULL_CHAR; //
+    174              }
+   \   00004A   1F53         ADD.W   #0x1, R15
+   \   00004C   F83F         JMP     ??RX_USB_Process_Buff_0
+    175          
+    176              usb_ring_to_process_buffer_complete = TRUE;
+   \                     ??RX_USB_Process_Buff_3:
+   \   00004E   D243....     MOV.B   #0x1, &usb_ring_to_process_buffer_complete
+    177            }
+    178            //            check boundaries of ring and process rd ptrs
+    179            //       NOT checking if wr wrapped around already
+    180            if (usb_rx_ring_rd >= (sizeof(USB_Rx_Ring_Buff))){
+   \                     ??RX_USB_Process_Buff_1:
+   \   000052   B2902000.... CMP.W   #0x20, &usb_rx_ring_rd
+   \   000058   0228         JNC     ??RX_USB_Process_Buff_4
+    181              usb_rx_ring_rd = RESET;
+   \   00005A   8243....     MOV.W   #0x0, &usb_rx_ring_rd
+    182            }
+    183            //by the end of this function, expect P_BUFF_1 to be cleared
+    184          // decide if what I have is meant for IoT or PC
+    185            if(usb_ring_to_process_buffer_complete){
+   \                     ??RX_USB_Process_Buff_4:
+   \   00005E   C293....     CMP.B   #0x0, &usb_ring_to_process_buffer_complete
+   \   000062   1B24         JEQ     ??RX_USB_Process_Buff_5
+    186              usb_ring_to_process_buffer_complete = FALSE;
+   \   000064   C243....     MOV.B   #0x0, &usb_ring_to_process_buffer_complete
+    187              if(USB_Process_Buff[P_BUFF_1][0] == '^'){ //incomming command for IoT
+   \   000068   F2905E00.... CMP.B   #0x5e, &USB_Process_Buff
+   \   00006E   0C20         JNE     ??RX_USB_Process_Buff_6
+    188                strip_carat_before_IoT();
+   \   000070   ........     CALLA   #strip_carat_before_IoT
+    189                load_TX_Out_buff_clr_P_Buff_1_and_kick_off(UCA0_TX); // send to IoT
+   \   000074   5C43         MOV.B   #0x1, R12
+   \   000076   ........     CALLA   #load_TX_Out_buff_clr_P_Buff_1_and_kick_off
+    190                clear_process_buffer(UCA1_TX, P_BUFF_1, P_BUFF_SIZE_32); //still clearing the USB process buffer here before msg reaches IoT
+   \   00007A   3E402000     MOV.W   #0x20, R14
+   \   00007E   0D43         MOV.W   #0x0, R13
+   \   000080   4C43         MOV.B   #0x0, R12
+   \   000082   ........     CALLA   #clear_process_buffer
+   \   000086   1001         RETA
+    191              }else{ // passthrough PC
+    192          
+    193                load_TX_Out_buff_clr_P_Buff_1_and_kick_off(UCA1_TX); // loop back around to PC
+   \                     ??RX_USB_Process_Buff_6:
+   \   000088   4C43         MOV.B   #0x0, R12
+   \   00008A   ........     CALLA   #load_TX_Out_buff_clr_P_Buff_1_and_kick_off
+    194                clear_process_buffer(UCA1_TX, P_BUFF_1, P_BUFF_SIZE_32);
+   \   00008E   3E402000     MOV.W   #0x20, R14
+   \   000092   0D43         MOV.W   #0x0, R13
+   \   000094   4C43         MOV.B   #0x0, R12
+   \   000096   ........     CALLA   #clear_process_buffer
+    195              }
+    196            }
+    197          }
+   \                     ??RX_USB_Process_Buff_5:
+   \   00009A   1001         RETA
+
+   \                                 In  segment CODE, align 2
+    198          void strip_carat_before_IoT(void){
+   \                     strip_carat_before_IoT:
+    199            for(int i = 0; i <= P_BUFF_SIZE_32-2; i++){
+   \   000000   0F43         MOV.W   #0x0, R15
+   \                     ??strip_carat_before_IoT_0:
+   \   000002   3F901F00     CMP.W   #0x1f, R15
+   \   000006   0534         JGE     ??strip_carat_before_IoT_1
+    200              USB_Process_Buff[P_BUFF_1][i] = USB_Process_Buff[P_BUFF_1][i+1];
+   \   000008   DF4F........ MOV.B   USB_Process_Buff + 1(R15), USB_Process_Buff(R15)
+    201            }
+   \   00000E   1F53         ADD.W   #0x1, R15
+   \   000010   F83F         JMP     ??strip_carat_before_IoT_0
+    202            //expect: outgoing TX buff == process buff - 1st carat, and all process buff 1 == 0x00
+    203          //assumption: don't need to worry about null chars after last char
+    204          }
+   \                     ??strip_carat_before_IoT_1:
+   \   000012   1001         RETA
+
+   \                                 In  segment CODE, align 2
+    205          void clear_process_buffer(char process_buffer, int row_number, int buffer_size){
+   \                     clear_process_buffer:
+   \   000000   1B15         PUSHM.W #0x2, R11
+    206            if(process_buffer == UCA1_TX){
+   \   000002   4C93         CMP.B   #0x0, R12
+   \   000004   0B20         JNE     ??clear_process_buffer_2
+    207              for(int i = 0; i < buffer_size; i++){
+   \   000006   0F43         MOV.W   #0x0, R15
+   \                     ??clear_process_buffer_0:
+   \   000008   0F9E         CMP.W   R14, R15
+   \   00000A   1534         JGE     ??clear_process_buffer_3
+    208                USB_Process_Buff[row_number][i] = NULL_CHAR;
+   \   00000C   0A4D         MOV.W   R13, R10
+   \   00000E   5A0E         RLAM.W  #0x4, R10
+   \   000010   5A02         RLAM.W  #0x1, R10
+   \   000012   0A5F         ADD.W   R15, R10
+   \   000014   CA43....     MOV.B   #0x0, USB_Process_Buff(R10)
+    209              }
+   \   000018   1F53         ADD.W   #0x1, R15
+   \   00001A   F63F         JMP     ??clear_process_buffer_0
+    210            }else if(process_buffer == UCA0_TX){
+   \                     ??clear_process_buffer_2:
+   \   00001C   5C93         CMP.B   #0x1, R12
+   \   00001E   0B20         JNE     ??clear_process_buffer_3
+    211              for(int i = 0; i < buffer_size; i++){
+   \   000020   0F43         MOV.W   #0x0, R15
+   \                     ??clear_process_buffer_1:
+   \   000022   0F9E         CMP.W   R14, R15
+   \   000024   0834         JGE     ??clear_process_buffer_3
+    212                IoT_Process_Buff[row_number][i] = NULL_CHAR;
+   \   000026   0B4D         MOV.W   R13, R11
+   \   000028   5B0E         RLAM.W  #0x4, R11
+   \   00002A   5B0A         RLAM.W  #0x3, R11
+   \   00002C   0B5F         ADD.W   R15, R11
+   \   00002E   CB43....     MOV.B   #0x0, IoT_Process_Buff(R11)
+    213              }
+   \   000032   1F53         ADD.W   #0x1, R15
+   \   000034   F63F         JMP     ??clear_process_buffer_1
+    214            }
+    215          }
+   \                     ??clear_process_buffer_3:
+   \   000036   1A17         POPM.W  #0x2, R11
+   \   000038   1001         RETA
+
+   \                                 In  segment CODE, align 2
+    216          void load_TX_Out_buff_clr_P_Buff_1_and_kick_off(char outgoing_ISR){
+   \                     load_TX_Out_buff_clr_P_Buff_1_and_kick_off:
+    217            //assumption: always copying from process buffer (32) to outgoing buffer (32)
+    218          
+    219              if(outgoing_ISR == UCA1_TX){
+   \   000000   4C93         CMP.B   #0x0, R12
+   \   000002   1C20         JNE     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_2
+    220                for(int i = 0; i < LARGE_RING_SIZE; i++){ //copy to outgoing and null buffer ONE  //NOTE: MISTAKE: incorrect length of for loop overwrote second buffer
+   \   000004   0F43         MOV.W   #0x0, R15
+   \                     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_0:
+   \   000006   3F901900     CMP.W   #0x19, R15
+   \   00000A   0534         JGE     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_3
+    221                  USB_Tx_Outgoing_Buff[i] = USB_Process_Buff[P_BUFF_1][i];
+   \   00000C   DF4F........ MOV.B   USB_Process_Buff(R15), USB_Tx_Outgoing_Buff(R15)
+    222                }
+   \   000012   1F53         ADD.W   #0x1, R15
+   \   000014   F83F         JMP     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_0
+    223                msg_recieved_from_PC = FALSE;
+   \                     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_3:
+   \   000016   C243....     MOV.B   #0x0, &msg_recieved_from_PC
+    224                UCA1_index = 0;
+   \   00001A   C243....     MOV.B   #0x0, &UCA1_index
+    225                UCA1IE |= UCTXIE; // enable the Tx interupt
+   \   00001E   A2D39A05     BIS.W   #0x2, &0x59a
+    226                UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
+   \   000022   5F42....     MOV.B   &UCA1_index, R15
+   \   000026   4E4F         MOV.B   R15, R14
+   \   000028   5E53         ADD.B   #0x1, R14
+   \   00002A   C24E....     MOV.B   R14, &UCA1_index
+   \   00002E   4F4F         MOV.B   R15, R15
+   \   000030   5F4F....     MOV.B   USB_Tx_Outgoing_Buff(R15), R15
+   \   000034   4F4F         MOV.B   R15, R15
+   \   000036   824F8E05     MOV.W   R15, &0x58e
+   \   00003A   1001         RETA
+    227              }else if(outgoing_ISR == UCA0_TX){
+   \                     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_2:
+   \   00003C   5C93         CMP.B   #0x1, R12
+   \   00003E   1B20         JNE     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_4
+    228                for(int i = 0; i < LARGE_RING_SIZE_32; i++){ //copy to outgoing and null buffer ONE
+   \   000040   0F43         MOV.W   #0x0, R15
+   \                     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_1:
+   \   000042   3F902000     CMP.W   #0x20, R15
+   \   000046   0534         JGE     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_5
+    229                  IoT_Tx_Outgoing_Buff[i] = USB_Process_Buff[P_BUFF_1][i];
+   \   000048   DF4F........ MOV.B   USB_Process_Buff(R15), IoT_Tx_Outgoing_Buff(R15)
+    230                }
+   \   00004E   1F53         ADD.W   #0x1, R15
+   \   000050   F83F         JMP     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_1
+    231                msg_recieved_from_PC = FALSE;
+   \                     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_5:
+   \   000052   C243....     MOV.B   #0x0, &msg_recieved_from_PC
+    232                UCA0_index = 0;
+   \   000056   C243....     MOV.B   #0x0, &UCA0_index
+    233                UCA0IE |= UCTXIE; // enable the Tx interupt
+   \   00005A   A2D31A05     BIS.W   #0x2, &0x51a
+    234                UCA0TXBUF = IoT_Tx_Outgoing_Buff[UCA0_index++];
+   \   00005E   5F42....     MOV.B   &UCA0_index, R15
+   \   000062   4E4F         MOV.B   R15, R14
+   \   000064   5E53         ADD.B   #0x1, R14
+   \   000066   C24E....     MOV.B   R14, &UCA0_index
+   \   00006A   4F4F         MOV.B   R15, R15
+   \   00006C   5F4F....     MOV.B   IoT_Tx_Outgoing_Buff(R15), R15
+   \   000070   4F4F         MOV.B   R15, R15
+   \   000072   824F0E05     MOV.W   R15, &0x50e
+    235              }
+    236          }
+   \                     ??load_TX_Out_buff_clr_P_Buff_1_and_kick_off_4:
+   \   000076   1001         RETA
+   \   000078                REQUIRE _A_UCA1IE_L
+   \   000078                REQUIRE _A_UCA1TXBUF_L
+   \   000078                REQUIRE _A_UCA0IE_L
+   \   000078                REQUIRE _A_UCA0TXBUF_L
+    237          
+    238          ////// functions below are for messages comming back to IoT
+    239          
+
+   \                                 In  segment CODE, align 2
+    240          void RX_IoT_Process_Buff(void){
+   \                     RX_IoT_Process_Buff:
+    241          
+    242            if(iot_rx_ring_rd != iot_rx_ring_wr){//new character ready from ring buffer
+   \   000000   9292........ CMP.W   &iot_rx_ring_wr, &iot_rx_ring_rd
+   \   000006   1424         JEQ     ??RX_IoT_Process_Buff_2
+    243          
+    244               wraparound_check_start = TRUE;
+   \   000008   D243....     MOV.B   #0x1, &wraparound_check_start
+    245          
+    246              //grab the character, and null the ring buffer
+    247              IoT_Process_Buff[P_BUFF_1][iot_process_buff_wr++] = IoT_Rx_Ring_Buff[iot_rx_ring_rd];
+   \   00000C   1F42....     MOV.W   &iot_process_buff_wr, R15
+   \   000010   0E4F         MOV.W   R15, R14
+   \   000012   1E53         ADD.W   #0x1, R14
+   \   000014   824E....     MOV.W   R14, &iot_process_buff_wr
+   \   000018   1E42....     MOV.W   &iot_rx_ring_rd, R14
+   \   00001C   DF4E........ MOV.B   IoT_Rx_Ring_Buff(R14), IoT_Process_Buff(R15)
+    248              IoT_Rx_Ring_Buff[iot_rx_ring_rd++] = NULL_CHAR;
+   \   000022   1F42....     MOV.W   &iot_rx_ring_rd, R15
+   \   000026   CF43....     MOV.B   #0x0, IoT_Rx_Ring_Buff(R15)
+   \   00002A   9253....     ADD.W   #0x1, &iot_rx_ring_rd
+   \   00002E   213C         JMP     ??RX_IoT_Process_Buff_1
+    249          
+    250            }else if ((iot_rx_ring_rd == iot_rx_ring_wr) && (wr_wrap_around_rd == 0)){ //reached the end of the
+   \                     ??RX_IoT_Process_Buff_2:
+   \   000030   9292........ CMP.W   &iot_rx_ring_wr, &iot_rx_ring_rd
+   \   000036   1D20         JNE     ??RX_IoT_Process_Buff_1
+   \   000038   C293....     CMP.B   #0x0, &wr_wrap_around_rd
+   \   00003C   1A20         JNE     ??RX_IoT_Process_Buff_1
+    251              wraparound_check_start = FALSE;
+   \   00003E   C243....     MOV.B   #0x0, &wraparound_check_start
+    252              IoT_Process_Buff[P_BUFF_1][iot_process_buff_wr] = IoT_Rx_Ring_Buff[iot_rx_ring_rd];
+   \   000042   1F42....     MOV.W   &iot_process_buff_wr, R15
+   \   000046   1E42....     MOV.W   &iot_rx_ring_rd, R14
+   \   00004A   DF4E........ MOV.B   IoT_Rx_Ring_Buff(R14), IoT_Process_Buff(R15)
+    253              IoT_Rx_Ring_Buff[iot_rx_ring_rd] = NULL_CHAR;
+   \   000050   1F42....     MOV.W   &iot_rx_ring_rd, R15
+   \   000054   CF43....     MOV.B   #0x0, IoT_Rx_Ring_Buff(R15)
+    254              iot_process_buff_wr = RESET;
+   \   000058   8243....     MOV.W   #0x0, &iot_process_buff_wr
+    255          
+    256              //COPY EVERYTHING TO BUFF 2
+    257              for(int i = 0; i<P_BUFF_SIZE_128; i++){
+   \   00005C   0F43         MOV.W   #0x0, R15
+   \                     ??RX_IoT_Process_Buff_0:
+   \   00005E   3F908000     CMP.W   #0x80, R15
+   \   000062   0534         JGE     ??RX_IoT_Process_Buff_3
+    258                IoT_Process_Buff[P_BUFF_2][i] = IoT_Process_Buff[P_BUFF_1][i];  //copying EVERYTHING to TWO buffers
+   \   000064   DF4F........ MOV.B   IoT_Process_Buff(R15), IoT_Process_Buff + 128(R15)
+    259              }
+   \   00006A   1F53         ADD.W   #0x1, R15
+   \   00006C   F83F         JMP     ??RX_IoT_Process_Buff_0
+    260              iot_ring_to_process_buffer_complete = TRUE;
+   \                     ??RX_IoT_Process_Buff_3:
+   \   00006E   D243....     MOV.B   #0x1, &iot_ring_to_process_buffer_complete
+    261            }
+    262          
+    263            //cycle rd around ring
+    264            if (iot_rx_ring_rd >= (sizeof(IoT_Rx_Ring_Buff))){
+   \                     ??RX_IoT_Process_Buff_1:
+   \   000072   B2908000.... CMP.W   #0x80, &iot_rx_ring_rd
+   \   000078   0228         JNC     ??RX_IoT_Process_Buff_4
+    265                iot_rx_ring_rd = RESET;
+   \   00007A   8243....     MOV.W   #0x0, &iot_rx_ring_rd
+    266              }
+    267          
+    268             //decrement wrap around valye each time rd overtakes wr
+    269            if((wr_wrap_around_rd > 0) && (iot_rx_ring_rd == (iot_rx_ring_wr + 1))){
+   \                     ??RX_IoT_Process_Buff_4:
+   \   00007E   C293....     CMP.B   #0x0, &wr_wrap_around_rd
+   \   000082   0824         JEQ     ??RX_IoT_Process_Buff_5
+   \   000084   1F42....     MOV.W   &iot_rx_ring_wr, R15
+   \   000088   1F53         ADD.W   #0x1, R15
+   \   00008A   829F....     CMP.W   R15, &iot_rx_ring_rd
+   \   00008E   0220         JNE     ??RX_IoT_Process_Buff_5
+    270                wr_wrap_around_rd--;
+   \   000090   F253....     ADD.B   #0xff, &wr_wrap_around_rd
+    271              }
+    272          
+    273            if(iot_ring_to_process_buffer_complete){
+   \                     ??RX_IoT_Process_Buff_5:
+   \   000094   C293....     CMP.B   #0x0, &iot_ring_to_process_buffer_complete
+   \   000098   1824         JEQ     ??RX_IoT_Process_Buff_6
+    274              //send straight back to PC
+    275              //use this just to see what IoT is seeing
+    276              iot_ring_to_process_buffer_complete = FALSE;
+   \   00009A   C243....     MOV.B   #0x0, &iot_ring_to_process_buffer_complete
+    277              ok_to_parse_recieved_iot_commands = TRUE;
+   \   00009E   D243....     MOV.B   #0x1, &ok_to_parse_recieved_iot_commands
+    278              msg_recieved_from_IoT = FALSE;
+   \   0000A2   C243....     MOV.B   #0x0, &msg_recieved_from_IoT
+    279          
+    280              if((IoT_Process_Buff[P_BUFF_2][0] == 'A') && (IoT_Process_Buff[P_BUFF_2][1] == 'T')){ //IoT acked AT+NSTCP command
+   \   0000A6   F2904100.... CMP.B   #0x41, &IoT_Process_Buff + 128
+   \   0000AC   0E20         JNE     ??RX_IoT_Process_Buff_6
+   \   0000AE   F2905400.... CMP.B   #0x54, &IoT_Process_Buff + 129
+   \   0000B4   0A20         JNE     ??RX_IoT_Process_Buff_6
+    281                if((IoT_Process_Buff[P_BUFF_2][18] == 'C') && (IoT_Process_Buff[P_BUFF_2][19] == 'O')){
+   \   0000B6   F2904300.... CMP.B   #0x43, &IoT_Process_Buff + 146
+   \   0000BC   0620         JNE     ??RX_IoT_Process_Buff_6
+   \   0000BE   F2904F00.... CMP.B   #0x4f, &IoT_Process_Buff + 147
+   \   0000C4   0220         JNE     ??RX_IoT_Process_Buff_6
+    282                  wifi_connected = TRUE;
+   \   0000C6   D243....     MOV.B   #0x1, &wifi_connected
+    283                }
+    284              }
+    285          
+    286              //            check boundaries of ring and process rd ptrs
+    287              //       NOT checking if wr wrapped around already
+    288            }
+    289          }
+   \                     ??RX_IoT_Process_Buff_6:
+   \   0000CA   1001         RETA
+    290          
+    291          //this is JUST receiving from IoT process buffer
+
+   \                                 In  segment CODE, align 2
+    292          void parse_commands_from_IoT(void){
+   \                     parse_commands_from_IoT:
+    293          
+    294            //list of commands, parse what's recieved FROM IoT module here
+    295            // will be returning from IoT module(my commands that I send to the car)
+    296            //if(IoT_Process_Buff[P_BUFF_2][0] == '^'){
+    297            for(int i = 0; i <P_BUFF_SIZE_128; i++){
+   \   000000   0F43         MOV.W   #0x0, R15
+   \                     ??parse_commands_from_IoT_1:
+   \   000002   3F908000     CMP.W   #0x80, R15
+   \   000006   3734         JGE     ??parse_commands_from_IoT_4
+    298              if(IoT_Process_Buff[P_BUFF_1][i] == '^'){
+   \   000008   FF905E00.... CMP.B   #0x5e, IoT_Process_Buff(R15)
+   \   00000E   3120         JNE     ??parse_commands_from_IoT_11
+    299                for (int j = i+1, k = 0; j < P_BUFF_SIZE_128; j++, k++){
+   \   000010   1F53         ADD.W   #0x1, R15
+   \   000012   0E43         MOV.W   #0x0, R14
+   \                     ??parse_commands_from_IoT_0:
+   \   000014   3F908000     CMP.W   #0x80, R15
+   \   000018   2E34         JGE     ??parse_commands_from_IoT_4
+    300                  if(IoT_Process_Buff[P_BUFF_1][j] != CARRIAGE_RETURN){
+   \   00001A   FF900D00.... CMP.B   #0xd, IoT_Process_Buff(R15)
+   \   000020   1E24         JEQ     ??parse_commands_from_IoT_12
+    301                    if(IoT_Process_Buff[P_BUFF_1][j] != '$'){
+   \   000022   FF902400.... CMP.B   #0x24, IoT_Process_Buff(R15)
+   \   000028   0E24         JEQ     ??parse_commands_from_IoT_13
+    302                      if(command_argument_found == FALSE){
+   \   00002A   C293....     CMP.B   #0x0, &command_argument_found
+   \   00002E   0420         JNE     ??parse_commands_from_IoT_14
+    303                        current_command[0][k] = IoT_Process_Buff[P_BUFF_1][j];
+   \   000030   DE4F........ MOV.B   IoT_Process_Buff(R15), current_command(R14)
+   \   000036   1A3C         JMP     ??parse_commands_from_IoT_5
+    304                      }else if(command_argument_found == TRUE){
+   \                     ??parse_commands_from_IoT_14:
+   \   000038   D293....     CMP.B   #0x1, &command_argument_found
+   \   00003C   1720         JNE     ??parse_commands_from_IoT_5
+    305                        current_command[1][k] = IoT_Process_Buff[P_BUFF_1][j];
+   \   00003E   DE4F........ MOV.B   IoT_Process_Buff(R15), current_command + 25(R14)
+   \   000044   133C         JMP     ??parse_commands_from_IoT_5
+    306                      }
+    307                    }else if(IoT_Process_Buff[P_BUFF_1][j] == '$'){
+   \                     ??parse_commands_from_IoT_13:
+   \   000046   FF902400.... CMP.B   #0x24, IoT_Process_Buff(R15)
+   \   00004C   0F20         JNE     ??parse_commands_from_IoT_5
+    308                      command_argument_found = TRUE;
+   \   00004E   D243....     MOV.B   #0x1, &command_argument_found
+    309                      j = j +1;
+   \   000052   1F53         ADD.W   #0x1, R15
+    310                      k = 0;
+   \   000054   0E43         MOV.W   #0x0, R14
+    311                      current_command[1][k] = IoT_Process_Buff[P_BUFF_1][j];
+   \   000056   DE4F........ MOV.B   IoT_Process_Buff(R15), current_command + 25(R14)
+   \   00005C   073C         JMP     ??parse_commands_from_IoT_5
+    312                    }
+    313                  }else if(IoT_Process_Buff[P_BUFF_1][j] == CARRIAGE_RETURN){
+   \                     ??parse_commands_from_IoT_12:
+   \   00005E   FF900D00.... CMP.B   #0xd, IoT_Process_Buff(R15)
+   \   000064   0320         JNE     ??parse_commands_from_IoT_5
+    314                    command_argument_found = FALSE;
+   \   000066   C243....     MOV.B   #0x0, &command_argument_found
+    315                    break;
+   \   00006A   053C         JMP     ??parse_commands_from_IoT_4
+    316                  }
+    317                }
+   \                     ??parse_commands_from_IoT_5:
+   \   00006C   1F53         ADD.W   #0x1, R15
+   \   00006E   1E53         ADD.W   #0x1, R14
+   \   000070   D13F         JMP     ??parse_commands_from_IoT_0
+    318                break;
+    319              }
+    320            }
+   \                     ??parse_commands_from_IoT_11:
+   \   000072   1F53         ADD.W   #0x1, R15
+   \   000074   C63F         JMP     ??parse_commands_from_IoT_1
+    321          
+    322            //list of commands starts here
+    323            //parse two commands
+    324            if(!(strcmp(current_command[0], "Green"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_4:
+   \   000076   3D40....     MOV.W   #`?<Constant "Green">`, R13
+   \   00007A   3C40....     MOV.W   #current_command, R12
+   \   00007E   ........     CALLA   #strcmp
+   \   000082   0C93         CMP.W   #0x0, R12
+   \   000084   0320         JNE     ??parse_commands_from_IoT_15
+    325              GREEN_LED_TOGGLE();
+   \   000086   F2E040004302 XOR.B   #0x40, &0x243
+    326            }
+    327            if(!(strcmp(current_command[0], "Red"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_15:
+   \   00008C   3D40....     MOV.W   #`?<Constant "Red">`, R13
+   \   000090   3C40....     MOV.W   #current_command, R12
+   \   000094   ........     CALLA   #strcmp
+   \   000098   0C93         CMP.W   #0x0, R12
+   \   00009A   0220         JNE     ??parse_commands_from_IoT_16
+    328              RED_LED_TOGGLE();
+   \   00009C   D2E30202     XOR.B   #0x1, &0x202
+    329            }
+    330            if(!(strncmp(current_command[0], "Forward", 7))){
+                                ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_16:
+   \   0000A0   3E400700     MOV.W   #0x7, R14
+   \   0000A4   3D40....     MOV.W   #`?<Constant "Forward">`, R13
+   \   0000A8   3C40....     MOV.W   #current_command, R12
+   \   0000AC   ........     CALLA   #strncmp
+   \   0000B0   0C93         CMP.W   #0x0, R12
+   \   0000B2   0720         JNE     ??parse_commands_from_IoT_17
+    331          //    if(current_command[1][0] != '\0'){
+    332                forward(current_command[1][0], STRAIGHT, 0); //indefinite for now
+   \   0000B4   4E43         MOV.B   #0x0, R14
+   \   0000B6   4D43         MOV.B   #0x0, R13
+   \   0000B8   5C42....     MOV.B   &current_command + 25, R12
+   \   0000BC   4C4C         MOV.B   R12, R12
+   \   0000BE   ........     CALLA   #forward
+    333          //    }else if (current_command[1][0] == '\0'){
+    334          //      forward(MEDIUM, STRAIGHT, 0); //indefinite for now
+    335          
+    336            }
+    337            if(!(strcmp(current_command[0], "Reverse"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_17:
+   \   0000C2   3D40....     MOV.W   #`?<Constant "Reverse">`, R13
+   \   0000C6   3C40....     MOV.W   #current_command, R12
+   \   0000CA   ........     CALLA   #strcmp
+   \   0000CE   0C93         CMP.W   #0x0, R12
+   \   0000D0   0420         JNE     ??parse_commands_from_IoT_18
+    338              reverse(MEDIUM);
+   \   0000D2   3C40255B     MOV.W   #0x5b25, R12
+   \   0000D6   ........     CALLA   #reverse
+    339            }
+    340            if(!(strncmp(current_command[0], "PL", 2))){
+                                ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_18:
+   \   0000DA   2E43         MOV.W   #0x2, R14
+   \   0000DC   3D40....     MOV.W   #`?<Constant "PL">`, R13
+   \   0000E0   3C40....     MOV.W   #current_command, R12
+   \   0000E4   ........     CALLA   #strncmp
+   \   0000E8   0C93         CMP.W   #0x0, R12
+   \   0000EA   1320         JNE     ??parse_commands_from_IoT_6
+    341              if(current_command[1][0] == 'S'){
+   \   0000EC   F2905300.... CMP.B   #0x53, &current_command + 25
+   \   0000F2   0620         JNE     ??parse_commands_from_IoT_19
+    342                pivot(LEFT_PIVOT, PIVOT);
+   \   0000F4   3D40384A     MOV.W   #0x4a38, R13
+   \   0000F8   4C43         MOV.B   #0x0, R12
+   \   0000FA   ........     CALLA   #pivot
+   \   0000FE   093C         JMP     ??parse_commands_from_IoT_6
+    343              }else if(current_command[1][0] == 'H'){
+   \                     ??parse_commands_from_IoT_19:
+   \   000100   F2904800.... CMP.B   #0x48, &current_command + 25
+   \   000106   0520         JNE     ??parse_commands_from_IoT_6
+    344              pivot(LEFT_PIVOT, MEDIUM);}
+   \   000108   3D40255B     MOV.W   #0x5b25, R13
+   \   00010C   4C43         MOV.B   #0x0, R12
+   \   00010E   ........     CALLA   #pivot
+    345            }
+    346            if(!(strncmp(current_command[0], "PR", 2))){
+                                ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_6:
+   \   000112   2E43         MOV.W   #0x2, R14
+   \   000114   3D40....     MOV.W   #`?<Constant "PR">`, R13
+   \   000118   3C40....     MOV.W   #current_command, R12
+   \   00011C   ........     CALLA   #strncmp
+   \   000120   0C93         CMP.W   #0x0, R12
+   \   000122   1320         JNE     ??parse_commands_from_IoT_7
+    347              if(current_command[1][0] == 'S'){
+   \   000124   F2905300.... CMP.B   #0x53, &current_command + 25
+   \   00012A   0620         JNE     ??parse_commands_from_IoT_20
+    348                pivot(RIGHT_PIVOT, PIVOT);
+   \   00012C   3D40384A     MOV.W   #0x4a38, R13
+   \   000130   5C43         MOV.B   #0x1, R12
+   \   000132   ........     CALLA   #pivot
+   \   000136   093C         JMP     ??parse_commands_from_IoT_7
+    349              }else if(current_command[1][0] == 'H'){
+   \                     ??parse_commands_from_IoT_20:
+   \   000138   F2904800.... CMP.B   #0x48, &current_command + 25
+   \   00013E   0520         JNE     ??parse_commands_from_IoT_7
+    350              pivot(RIGHT_PIVOT, MEDIUM);}
+   \   000140   3D40255B     MOV.W   #0x5b25, R13
+   \   000144   5C43         MOV.B   #0x1, R12
+   \   000146   ........     CALLA   #pivot
+    351            }
+    352          
+    353            if(!(strcmp(current_command[0], "STOP"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_7:
+   \   00014A   3D40....     MOV.W   #`?<Constant "STOP">`, R13
+   \   00014E   3C40....     MOV.W   #current_command, R12
+   \   000152   ........     CALLA   #strcmp
+   \   000156   0C93         CMP.W   #0x0, R12
+   \   000158   0220         JNE     ??parse_commands_from_IoT_21
+    354              stop_car();
+   \   00015A   ........     CALLA   #stop_car
+    355            }
+    356            if(!(strcmp(current_command[0], "Backlight"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_21:
+   \   00015E   3D40....     MOV.W   #`?<Constant "Backlight">`, R13
+   \   000162   3C40....     MOV.W   #current_command, R12
+   \   000166   ........     CALLA   #strcmp
+   \   00016A   0C93         CMP.W   #0x0, R12
+   \   00016C   0320         JNE     ??parse_commands_from_IoT_22
+    357              BACKLIGHT_TOGGLE();
+   \   00016E   F2E010004502 XOR.B   #0x10, &0x245
+    358            }
+    359            if(!(strcmp(current_command[0], "ADC"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_22:
+   \   000174   3D40....     MOV.W   #`?<Constant "ADC">`, R13
+   \   000178   3C40....     MOV.W   #current_command, R12
+   \   00017C   ........     CALLA   #strcmp
+   \   000180   0C93         CMP.W   #0x0, R12
+   \   000182   1420         JNE     ??parse_commands_from_IoT_8
+    360              if(activate_adc_readings == TRUE){
+   \   000184   D293....     CMP.B   #0x1, &activate_adc_readings
+   \   000188   0A20         JNE     ??parse_commands_from_IoT_23
+    361                activate_adc_readings = FALSE;
+   \   00018A   C243....     MOV.B   #0x0, &activate_adc_readings
+    362                IR_LED_OFF();
+   \   00018E   E2C30302     BIC.B   #0x2, &0x203
+    363                GREEN_LED_OFF();
+   \   000192   F2C040004302 BIC.B   #0x40, &0x243
+    364                RED_LED_OFF();
+   \   000198   D2C30202     BIC.B   #0x1, &0x202
+   \   00019C   073C         JMP     ??parse_commands_from_IoT_8
+    365              }else if (activate_adc_readings == FALSE){
+   \                     ??parse_commands_from_IoT_23:
+   \   00019E   C293....     CMP.B   #0x0, &activate_adc_readings
+   \   0001A2   0420         JNE     ??parse_commands_from_IoT_8
+    366                activate_adc_readings = TRUE;
+   \   0001A4   D243....     MOV.B   #0x1, &activate_adc_readings
+    367                IR_LED_ON();
+   \   0001A8   E2D30302     BIS.B   #0x2, &0x203
+    368              }
+    369            }
+    370            if(!(strcmp(current_command[0], "Bang"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_8:
+   \   0001AC   3D40....     MOV.W   #`?<Constant "Bang">`, R13
+   \   0001B0   3C40....     MOV.W   #current_command, R12
+   \   0001B4   ........     CALLA   #strcmp
+   \   0001B8   0C93         CMP.W   #0x0, R12
+   \   0001BA   1D20         JNE     ??parse_commands_from_IoT_9
+    371              if(bang == TRUE){
+   \   0001BC   D293....     CMP.B   #0x1, &bang
+   \   0001C0   0920         JNE     ??parse_commands_from_IoT_24
+    372                bang = FALSE;
+   \   0001C2   C243....     MOV.B   #0x0, &bang
+    373                once_per_toggle = TRUE;
+   \   0001C6   D243....     MOV.B   #0x1, &once_per_toggle
+    374                speed_global = 0;
+   \   0001CA   8243....     MOV.W   #0x0, &speed_global
+    375                stop_car();
+   \   0001CE   ........     CALLA   #stop_car
+   \   0001D2   113C         JMP     ??parse_commands_from_IoT_9
+    376              }else if (bang == FALSE){
+   \                     ??parse_commands_from_IoT_24:
+   \   0001D4   C293....     CMP.B   #0x0, &bang
+   \   0001D8   0E20         JNE     ??parse_commands_from_IoT_9
+    377                bang = TRUE;
+   \   0001DA   D243....     MOV.B   #0x1, &bang
+    378                if(once_per_toggle){
+   \   0001DE   C293....     CMP.B   #0x0, &once_per_toggle
+   \   0001E2   0924         JEQ     ??parse_commands_from_IoT_9
+    379                  once_per_toggle = FALSE;
+   \   0001E4   C243....     MOV.B   #0x0, &once_per_toggle
+    380                  speed_global = SLOW;
+   \   0001E8   B240E02E.... MOV.W   #0x2ee0, &speed_global
+    381                  current_state = ON_LINE;
+   \   0001EE   D243....     MOV.B   #0x1, &current_state
+    382                  previous_state = ON_LINE;
+   \   0001F2   D243....     MOV.B   #0x1, &previous_state
+    383                }
+    384              }
+    385            }
+    386          
+    387            if(!(strcmp(current_command[0], "ThreshUP"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_9:
+   \   0001F6   3D40....     MOV.W   #`?<Constant "ThreshUP">`, R13
+   \   0001FA   3C40....     MOV.W   #current_command, R12
+   \   0001FE   ........     CALLA   #strcmp
+   \   000202   0C93         CMP.W   #0x0, R12
+   \   000204   0720         JNE     ??parse_commands_from_IoT_25
+    388              if(black_line_edge_threshold <= 670){
+   \   000206   B2909F02.... CMP.W   #0x29f, &black_line_edge_threshold
+   \   00020C   0334         JGE     ??parse_commands_from_IoT_25
+    389                black_line_edge_threshold = black_line_edge_threshold + 20;
+   \   00020E   B2501400.... ADD.W   #0x14, &black_line_edge_threshold
+    390              }
+    391            }
+    392            if(!(strcmp(current_command[0], "ThreshDOWN"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_25:
+   \   000214   3D40....     MOV.W   #`?<Constant "ThreshDOWN">`, R13
+   \   000218   3C40....     MOV.W   #current_command, R12
+   \   00021C   ........     CALLA   #strcmp
+   \   000220   0C93         CMP.W   #0x0, R12
+   \   000222   0620         JNE     ??parse_commands_from_IoT_26
+    393              if(black_line_edge_threshold >= 0){
+   \   000224   8293....     CMP.W   #0x0, &black_line_edge_threshold
+   \   000228   0338         JL      ??parse_commands_from_IoT_26
+    394                black_line_edge_threshold = black_line_edge_threshold - 20;
+   \   00022A   B250ECFF.... ADD.W   #0xffec, &black_line_edge_threshold
+    395              }
+    396            }
+    397            if(!(strcmp(current_command[0], "G_speedUP"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_26:
+   \   000230   3D40....     MOV.W   #`?<Constant "G_speedUP">`, R13
+   \   000234   3C40....     MOV.W   #current_command, R12
+   \   000238   ........     CALLA   #strcmp
+   \   00023C   0C93         CMP.W   #0x0, R12
+   \   00023E   0720         JNE     ??parse_commands_from_IoT_27
+    398              if(speed_global < 50000){
+   \   000240   B29050C3.... CMP.W   #0xc350, &speed_global
+   \   000246   032C         JC      ??parse_commands_from_IoT_27
+    399                speed_global = speed_global + 5000;
+   \   000248   B2508813.... ADD.W   #0x1388, &speed_global
+    400              }
+    401            }
+    402            if(!(strcmp(current_command[0], "G_speedDOWN"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_27:
+   \   00024E   3D40....     MOV.W   #`?<Constant "G_speedDOWN">`, R13
+   \   000252   3C40....     MOV.W   #current_command, R12
+   \   000256   ........     CALLA   #strcmp
+   \   00025A   0C93         CMP.W   #0x0, R12
+   \   00025C   0620         JNE     ??parse_commands_from_IoT_28
+    403              if(speed_global > 0){
+   \   00025E   8293....     CMP.W   #0x0, &speed_global
+   \   000262   0324         JEQ     ??parse_commands_from_IoT_28
+    404                speed_global = speed_global - 5000;
+   \   000264   B25078EC.... ADD.W   #0xec78, &speed_global
+    405              }
+    406            }
+    407          
+    408            if(!(strcmp(current_command[0], "s_correctUP"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_28:
+   \   00026A   3D40....     MOV.W   #`?<Constant "s_correctUP">`, R13
+   \   00026E   3C40....     MOV.W   #current_command, R12
+   \   000272   ........     CALLA   #strcmp
+   \   000276   0C93         CMP.W   #0x0, R12
+   \   000278   0720         JNE     ??parse_commands_from_IoT_29
+    409              if(speed_correction <= 50000){
+   \   00027A   B29051C3.... CMP.W   #0xc351, &speed_correction
+   \   000280   032C         JC      ??parse_commands_from_IoT_29
+    410                speed_correction = speed_correction + 2000;
+   \   000282   B250D007.... ADD.W   #0x7d0, &speed_correction
+    411              }
+    412            }
+    413            if(!(strcmp(current_command[0], "s_correctDOWN"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+   \                     ??parse_commands_from_IoT_29:
+   \   000288   3D40....     MOV.W   #`?<Constant "s_correctDOWN">`, R13
+   \   00028C   3C40....     MOV.W   #current_command, R12
+   \   000290   ........     CALLA   #strcmp
+   \   000294   0C93         CMP.W   #0x0, R12
+   \   000296   0320         JNE     ??parse_commands_from_IoT_30
+    414              if(speed_correction >= 0){
+                                         ^
+Warning[Pe186]: pointless comparison of unsigned integer with zero
+    415                speed_correction = speed_correction - 2000;
+   \   000298   B25030F8.... ADD.W   #0xf830, &speed_correction
+    416              }
+    417            }
+    418          
+    419            if(!(strcmp(current_command[0], "PID"))){
+                               ^
+Warning[Pe167]: argument of type "unsigned char *" is incompatible with
+          parameter of type "char const *"
+
+      IoT_Process_Buff[P_BUFF_1][iot_process_buff_wr++] = IoT_Rx_Ring_Buff[iot_rx_ring_rd];
+      ^
+"C:\Users\nopassword\Desktop\ECE_306\Project 06\init_serial.c",247  Warning[Pa082]: 
+          undefined behavior: the order of volatile accesses is undefined in
+          this statement
+
+      IoT_Process_Buff[P_BUFF_1][iot_process_buff_wr] = IoT_Rx_Ring_Buff[iot_rx_ring_rd];
+      ^
+"C:\Users\nopassword\Desktop\ECE_306\Project 06\init_serial.c",252  Warning[Pa082]: 
+          undefined behavior: the order of volatile accesses is undefined in
+          this statement
+   \                     ??parse_commands_from_IoT_30:
+   \   00029E   3D40....     MOV.W   #`?<Constant "PID">`, R13
+   \   0002A2   3C40....     MOV.W   #current_command, R12
+   \   0002A6   ........     CALLA   #strcmp
+   \   0002AA   0C93         CMP.W   #0x0, R12
+   \   0002AC   0D20         JNE     ??parse_commands_from_IoT_10
+    420              if(PID_control_enabled == TRUE){
+   \   0002AE   D293....     CMP.B   #0x1, &PID_control_enabled
+   \   0002B2   0520         JNE     ??parse_commands_from_IoT_31
+    421                PID_control_enabled = FALSE;
+   \   0002B4   C243....     MOV.B   #0x0, &PID_control_enabled
+    422                stop_car();
+   \   0002B8   ........     CALLA   #stop_car
+   \   0002BC   053C         JMP     ??parse_commands_from_IoT_10
+    423              }else if (PID_control_enabled == FALSE){
+   \                     ??parse_commands_from_IoT_31:
+   \   0002BE   C293....     CMP.B   #0x0, &PID_control_enabled
+   \   0002C2   0220         JNE     ??parse_commands_from_IoT_10
+    424                PID_control_enabled = TRUE;
+   \   0002C4   D243....     MOV.B   #0x1, &PID_control_enabled
+    425              }
+    426            }
+    427          
+    428            //clear current command and process buffer////
+    429            for(int i = 0; i < LARGE_RING_SIZE; i++){
+   \                     ??parse_commands_from_IoT_10:
+   \   0002C8   0F43         MOV.W   #0x0, R15
+   \                     ??parse_commands_from_IoT_2:
+   \   0002CA   3F901900     CMP.W   #0x19, R15
+   \   0002CE   0634         JGE     ??parse_commands_from_IoT_32
+    430              current_command[0][i] = NULL_CHAR;
+   \   0002D0   CF43....     MOV.B   #0x0, current_command(R15)
+    431              current_command[1][i] = NULL_CHAR;
+   \   0002D4   CF43....     MOV.B   #0x0, current_command + 25(R15)
+    432            }
+   \   0002D8   1F53         ADD.W   #0x1, R15
+   \   0002DA   F73F         JMP     ??parse_commands_from_IoT_2
+    433            ok_to_parse_recieved_iot_commands = FALSE;
+   \                     ??parse_commands_from_IoT_32:
+   \   0002DC   C243....     MOV.B   #0x0, &ok_to_parse_recieved_iot_commands
+    434            //FIX THIS???
+    435            clear_process_buffer(UCA0_TX, P_BUFF_1, P_BUFF_SIZE_128);
+   \   0002E0   3E408000     MOV.W   #0x80, R14
+   \   0002E4   0D43         MOV.W   #0x0, R13
+   \   0002E6   5C43         MOV.B   #0x1, R12
+   \   0002E8   ........     CALLA   #clear_process_buffer
+    436          }
+   \   0002EC   1001         RETA
+   \   0002EE                REQUIRE _A_PCOUT_L
+   \   0002EE                REQUIRE _A_PAOUT_L
+   \   0002EE                REQUIRE _A_PCDIR_L
+    437          //}
+    438          
+    439          //char str1[20] = "C programming";
+    440          //char str2[20];
+    441          //
+    442          //// copying str1 to str2
+    443          //strcpy(str2, str1);
+    444          //
+    445          //const char *message
+    446          
+
+   \                                 In  segment CODE, align 2
+    447          void TX_message_USB_UCA1(volatile char message[]){
+   \                     TX_message_USB_UCA1:
+    448            // The while loop will stall as long as the Flag is not set (pump wasn't primed)[port is busy]
+    449          //  while (!(UCA1IFG & UCTXIFG)); // USCI_A1 TX buffer ready?
+    450            //  UCA1TXBUF = character;
+    451            //if(startup_okay_to_TX){
+    452              UCA1_index = 0;
+   \   000000   C243....     MOV.B   #0x0, &UCA1_index
+    453              
+    454              for(int i = 0; i < sizeof(message); i++){
+   \   000004   0F43         MOV.W   #0x0, R15
+   \                     ??TX_message_USB_UCA1_0:
+   \   000006   2F93         CMP.W   #0x2, R15
+   \   000008   062C         JC      ??TX_message_USB_UCA1_2
+    455                USB_Tx_Outgoing_Buff[i] = message[i];
+   \   00000A   0E4C         MOV.W   R12, R14
+   \   00000C   0E5F         ADD.W   R15, R14
+   \   00000E   EF4E....     MOV.B   @R14, USB_Tx_Outgoing_Buff(R15)
+    456              }
+   \   000012   1F53         ADD.W   #0x1, R15
+   \   000014   F83F         JMP     ??TX_message_USB_UCA1_0
+    457              
+    458              for(int i = sizeof(message); i < sizeof(USB_Tx_Outgoing_Buff); i++){
+   \                     ??TX_message_USB_UCA1_2:
+   \   000016   2F43         MOV.W   #0x2, R15
+   \                     ??TX_message_USB_UCA1_1:
+   \   000018   3F902000     CMP.W   #0x20, R15
+   \   00001C   042C         JC      ??TX_message_USB_UCA1_3
+    459                USB_Tx_Outgoing_Buff[i] = NULL_CHAR;
+   \   00001E   CF43....     MOV.B   #0x0, USB_Tx_Outgoing_Buff(R15)
+    460              }
+   \   000022   1F53         ADD.W   #0x1, R15
+   \   000024   F93F         JMP     ??TX_message_USB_UCA1_1
+    461              
+    462          //    strncpy(USB_Tx_Outgoing_Buff, message, 10);
+    463              UCA1IE |= UCTXIE; // enable the Tx interupt
+   \                     ??TX_message_USB_UCA1_3:
+   \   000026   A2D39A05     BIS.W   #0x2, &0x59a
+    464              UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
+   \   00002A   5F42....     MOV.B   &UCA1_index, R15
+   \   00002E   4E4F         MOV.B   R15, R14
+   \   000030   5E53         ADD.B   #0x1, R14
+   \   000032   C24E....     MOV.B   R14, &UCA1_index
+   \   000036   4F4F         MOV.B   R15, R15
+   \   000038   5F4F....     MOV.B   USB_Tx_Outgoing_Buff(R15), R15
+   \   00003C   4F4F         MOV.B   R15, R15
+   \   00003E   824F8E05     MOV.W   R15, &0x58e
+    465            //}
+    466          }
+   \   000042   1001         RETA
+   \   000044                REQUIRE _A_UCA1IE_L
+   \   000044                REQUIRE _A_UCA1TXBUF_L
+    467          
+
+   \                                 In  segment CODE, align 2
+    468          void TX_message_IoT_UCA0(const char *message){
+   \                     TX_message_IoT_UCA0:
+    469            // The while loop will stall as long as the Flag is not set (pump wasn't primed)[port is busy]
+    470            //  while (!(UCA1IFG & UCTXIFG)); // USCI_A1 TX buffer ready?
+    471            //  UCA1TXBUF = character;
+    472            //if(startup_okay_to_TX){ // prevent transmitting until something is recieved in RXBUF
+    473              UCA0_index = 0;
+   \   000000   C243....     MOV.B   #0x0, &UCA0_index
+    474              for(int i = 0; i<17; i++){
+   \   000004   0F43         MOV.W   #0x0, R15
+   \                     ??TX_message_IoT_UCA0_0:
+   \   000006   3F901100     CMP.W   #0x11, R15
+   \   00000A   0534         JGE     ??TX_message_IoT_UCA0_1
+    475                IoT_Tx_Outgoing_Buff[i] = *message;
+   \   00000C   EF4C....     MOV.B   @R12, IoT_Tx_Outgoing_Buff(R15)
+    476                message++;
+   \   000010   1C53         ADD.W   #0x1, R12
+    477              }
+   \   000012   1F53         ADD.W   #0x1, R15
+   \   000014   F83F         JMP     ??TX_message_IoT_UCA0_0
+    478              //strncpy(IoT_Tx_Outgoing_Buff, message, sizeof(message));
+    479              UCA0IE |= UCTXIE; // enable the Tx interupt
+   \                     ??TX_message_IoT_UCA0_1:
+   \   000016   A2D31A05     BIS.W   #0x2, &0x51a
+    480              UCA0TXBUF = IoT_Tx_Outgoing_Buff[UCA0_index++];
+   \   00001A   5F42....     MOV.B   &UCA0_index, R15
+   \   00001E   4E4F         MOV.B   R15, R14
+   \   000020   5E53         ADD.B   #0x1, R14
+   \   000022   C24E....     MOV.B   R14, &UCA0_index
+   \   000026   4F4F         MOV.B   R15, R15
+   \   000028   5F4F....     MOV.B   IoT_Tx_Outgoing_Buff(R15), R15
+   \   00002C   4F4F         MOV.B   R15, R15
+   \   00002E   824F0E05     MOV.W   R15, &0x50e
+    481            //}
+    482          }
+   \   000032   1001         RETA
+   \   000034                REQUIRE _A_UCA0IE_L
+   \   000034                REQUIRE _A_UCA0TXBUF_L
+
+   \                                 In  segment DATA16_ID, align 1, align-sorted
+   \                     `?<Initializer for once_per_toggle>`:
+   \   000000   01           DC8 1
+
+   \                                 In  segment DATA16_ID, align 2, align-sorted
+   \                     `?<Initializer for black_line_edge_threshold>`:
+   \   000000   2602         DC16 550
+
+   \                                 In  segment DATA16_ID, align 2, align-sorted
+   \                     `?<Initializer for speed_correction>`:
+   \   000000   1027         DC16 10000
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Green">`:
+   \   000000   477265656E00 DC8 "Green"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Red">`:
+   \   000000   52656400     DC8 "Red"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Forward">`:
+   \   000000   466F72776172 DC8 "Forward"
+   \            6400        
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Reverse">`:
+   \   000000   526576657273 DC8 "Reverse"
+   \            6500        
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "PL">`:
+   \   000000   504C00       DC8 "PL"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "PR">`:
+   \   000000   505200       DC8 "PR"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "STOP">`:
+   \   000000   53544F5000   DC8 "STOP"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Backlight">`:
+   \   000000   4261636B6C69 DC8 "Backlight"
+   \            67687400    
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "ADC">`:
+   \   000000   41444300     DC8 "ADC"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "Bang">`:
+   \   000000   42616E6700   DC8 "Bang"
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "ThreshUP">`:
+   \   000000   546872657368 DC8 "ThreshUP"
+   \            555000      
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "ThreshDOWN">`:
+   \   000000   546872657368 DC8 "ThreshDOWN"
+   \            444F574E00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "G_speedUP">`:
+   \   000000   475F73706565 DC8 "G_speedUP"
+   \            64555000    
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "G_speedDOWN">`:
+   \   000000   475F73706565 DC8 "G_speedDOWN"
+   \            64444F574E00
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "s_correctUP">`:
+   \   000000   735F636F7272 DC8 "s_correctUP"
+   \            656374555000
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "s_correctDOWN">`:
+   \   000000   735F636F7272 DC8 "s_correctDOWN"
+   \            656374444F57
+   \            4E00        
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "PID">`:
+   \   000000   50494400     DC8 "PID"
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Init_Serial_UCA0
+      4   Init_Serial_UCA1
+      4   RX_IoT_Process_Buff
+      4   RX_USB_Process_Buff
+        4   -> clear_process_buffer
+        4   -> load_TX_Out_buff_clr_P_Buff_1_and_kick_off
+        4   -> strip_carat_before_IoT
+      4   TX_message_IoT_UCA0
+      4   TX_message_USB_UCA1
+      8   clear_process_buffer
+      4   load_TX_Out_buff_clr_P_Buff_1_and_kick_off
+      4   parse_commands_from_IoT
+        4   -> clear_process_buffer
+        4   -> forward
+        4   -> pivot
+        4   -> reverse
+        4   -> stop_car
+        4   -> strcmp
+        4   -> strncmp
+      4   strip_carat_before_IoT
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ?<Constant "ADC">
+      10  ?<Constant "Backlight">
+       5  ?<Constant "Bang">
+       8  ?<Constant "Forward">
+      12  ?<Constant "G_speedDOWN">
+      10  ?<Constant "G_speedUP">
+       6  ?<Constant "Green">
+       4  ?<Constant "PID">
+       3  ?<Constant "PL">
+       3  ?<Constant "PR">
+       4  ?<Constant "Red">
+       8  ?<Constant "Reverse">
+       5  ?<Constant "STOP">
+      11  ?<Constant "ThreshDOWN">
+       9  ?<Constant "ThreshUP">
+      14  ?<Constant "s_correctDOWN">
+      12  ?<Constant "s_correctUP">
+       2  ?<Initializer for black_line_edge_threshold>
+       1  ?<Initializer for once_per_toggle>
+       2  ?<Initializer for speed_correction>
+      96  Init_Serial_UCA0
+     100  Init_Serial_UCA1
+     256  IoT_Process_Buff
+     128  IoT_Rx_Ring_Buff
+      32  IoT_Tx_Outgoing_Buff
+     204  RX_IoT_Process_Buff
+     156  RX_USB_Process_Buff
+      52  TX_message_IoT_UCA0
+      68  TX_message_USB_UCA1
+      64  USB_Process_Buff
+      32  USB_Rx_Ring_Buff
+      32  USB_Tx_Outgoing_Buff
+       2  _A_PAOUT_L
+       2  _A_PCDIR_L
+       2  _A_PCOUT_L
+       2  _A_UCA0BRW_L
+       2  _A_UCA0CTLW0_L
+       2  _A_UCA0IE_L
+       2  _A_UCA0MCTLW_L
+       2  _A_UCA0TXBUF_L
+       2  _A_UCA1BRW_L
+       2  _A_UCA1CTLW0_L
+       2  _A_UCA1IE_L
+       2  _A_UCA1MCTLW_L
+       2  _A_UCA1TXBUF_L
+       1  bang
+       2  black_line_edge_threshold
+      58  clear_process_buffer
+       1  command_argument_found
+      50  current_command
+       2  iot_process_buff_wr
+       1  iot_ring_to_process_buffer_complete
+       2  iot_rx_ring_rd
+       2  iot_rx_ring_wr
+     120  load_TX_Out_buff_clr_P_Buff_1_and_kick_off
+       1  ok_to_parse_recieved_iot_commands
+       1  once_per_toggle
+     750  parse_commands_from_IoT
+       2  speed_correction
+      20  strip_carat_before_IoT
+       2  usb_process_buff_wr
+       1  usb_ring_to_process_buffer_complete
+       2  usb_rx_ring_rd
+       2  usb_rx_ring_wr
+       1  wifi_connected
+
+ 
+ 1 624 bytes in segment CODE
+    26 bytes in segment DATA16_AN
+   128 bytes in segment DATA16_C
+     5 bytes in segment DATA16_I
+     5 bytes in segment DATA16_ID
+   612 bytes in segment DATA16_Z
+ 
+ 1 624 bytes of CODE  memory
+   133 bytes of CONST memory
+   617 bytes of DATA  memory (+ 26 bytes shared)
+
+Errors: none
+Warnings: 20

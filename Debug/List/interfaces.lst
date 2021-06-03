@@ -1,0 +1,418 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:15
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\interfaces.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW9954.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\interfaces.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\interfaces.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\interfaces.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\interfaces.c
+      1          #include  "functions.h"
+      2          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x454
+   \   union <unnamed> _A_TB3CCR1_L
+   \                     _A_TB3CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x456
+   \   union <unnamed> _A_TB3CCR2_L
+   \                     _A_TB3CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x458
+   \   union <unnamed> _A_TB3CCR3_L
+   \                     _A_TB3CCR3_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x45a
+   \   union <unnamed> _A_TB3CCR4_L
+   \                     _A_TB3CCR4_L:
+   \   000000                DS8 2
+      3          #include <string.h>
+      4          #include <stdio.h>
+      5          #include <stdlib.h>
+      6          #include "macros.h"
+      7          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      8          extern unsigned int speed_L_component = 0;
+   \                     speed_L_component:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      9          extern unsigned int speed_R_component = 0;
+   \                     speed_R_component:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     10          extern unsigned int speed_dual_component = 0;
+   \                     speed_dual_component:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     11          extern unsigned int L_wheel_speed = 0;
+   \                     L_wheel_speed:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     12          extern unsigned int R_wheel_speed = 0;
+   \                     R_wheel_speed:
+   \   000000                DS8 2
+     13          extern unsigned int set_R_F, set_R_R, set_L_F, set_L_R;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     14          unsigned int speed_global = WHEEL_OFF;
+   \                     speed_global:
+   \   000000                DS8 2
+     15          extern volatile char from_forward;
+     16          extern volatile char from_reverse;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     17          char interface_bools;
+   \                     interface_bools:
+   \   000000                DS8 1
+     18          extern volatile int time_seconds;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     19          volatile int FET_delay_timer = 0;
+   \                     FET_delay_timer:
+   \   000000                DS8 2
+     20          //#define accelerate/decelerate   (0x0)
+     21          //#define unused   (0x1)
+     22          //#define unused   (0x2)
+     23          //#define unused   (0x3)
+     24          //#define unused   (0x4)
+     25          //#define unused   (0x5)
+     26          //#define unused   (0x6)
+     27          //#define unused   (0x7)
+     28          
+     29          
+     30          
+     31          /*TODO:
+     32          
+     33          forward(speed, direction) //this function will set the speed
+     34          accelerate_decelerate(direction) //this function will make incremental changes to current speed
+     35          spin(speed, direction) //will utilize both forward and reverse of oppisite wheels
+     36          reverse(speed, direction)
+     37          
+     38          TODO: gradual acc_dec using timer on order of mSec which increase/decrease wheel speeds in small increments
+     39          
+     40          */
+     41          
+     42          /*
+     43          //char assign_PWM_values_with_error_check(void){
+     44          //  char forward_and_reverse_FETS_enabled = 0;
+     45          //
+     46          //  //P6OUT &= ~R_REVERSE
+     47          //  if(RIGHT_REVERSE_SPEED == 0){
+     48          //    RIGHT_FORWARD_SPEED = R_wheel_speed;
+     49          //  }
+     50          //  if(LEFT_REVERSE_SPEED == 0){
+     51          //    LEFT_FORWARD_SPEED = L_wheel_speed;
+     52          //  }
+     53          //  if(RIGHT_FORWARD_SPEED == 0){
+     54          //    RIGHT_REVERSE_SPEED = R_wheel_speed;
+     55          //  }
+     56          //  if(LEFT_FORWARD_SPEED == 0){
+     57          //    LEFT_REVERSE_SPEED = L_wheel_speed;
+     58          //  }
+     59          //
+     60          //  if (((RIGHT_FORWARD_SPEED > 0) && (RIGHT_REVERSE_SPEED > 0)) || ((LEFT_FORWARD_SPEED > 0) && (LEFT_REVERSE_SPEED > 0))){
+     61          //    forward_and_reverse_FETS_enabled = 1;
+     62          //  }
+     63          //  return forward_and_reverse_FETS_enabled;
+     64          //}
+     65          */
+     66          
+
+   \                                 In  segment CODE, align 2
+     67          void forward(int speed){
+   \                     forward:
+   \   000000   0A12         PUSH.W  R10
+     68          //    Hand over these volatiles to a temporary local in order to get rid of this warning:
+     69          //    -Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
+     70            int Left_Reverse_Speed = LEFT_REVERSE_SPEED;
+   \   000002   1F425A04     MOV.W   &0x45a, R15
+     71            int Right_Reverse_Speed = RIGHT_REVERSE_SPEED;
+   \   000006   1E425804     MOV.W   &0x458, R14
+     72            //int t_seconds = time_seconds;
+     73          
+     74            //initialize these to zero when only going straight
+     75            speed_dual_component = 0;
+   \   00000A   8243....     MOV.W   #0x0, &speed_dual_component
+     76            speed_L_component = 0;
+   \   00000E   8243....     MOV.W   #0x0, &speed_L_component
+     77            speed_R_component = 0;
+   \   000012   8243....     MOV.W   #0x0, &speed_R_component
+     78            L_wheel_speed = 0;
+   \   000016   8243....     MOV.W   #0x0, &L_wheel_speed
+     79            R_wheel_speed = 0;
+   \   00001A   8243....     MOV.W   #0x0, &R_wheel_speed
+     80          
+     81          
+     82            if(Left_Reverse_Speed | Right_Reverse_Speed){
+   \   00001E   0D4F         MOV.W   R15, R13
+   \   000020   0DDE         BIS.W   R14, R13
+   \   000022   0D93         CMP.W   #0x0, R13
+   \   000024   0B24         JEQ     ??forward_3
+     83              LEFT_REVERSE_SPEED = WHEEL_OFF;
+   \   000026   82435A04     MOV.W   #0x0, &0x45a
+     84              RIGHT_REVERSE_SPEED = WHEEL_OFF;
+   \   00002A   82435804     MOV.W   #0x0, &0x458
+     85          
+     86              from_forward = TRUE;
+   \   00002E   D243....     MOV.B   #0x1, &from_forward
+     87          
+     88          //    BACKLIGHT_TOGGLE(); // debug
+     89          
+     90              //come back a second later and set the other speeds
+     91              FET_delay_timer += time_seconds; //turn on a one second timer, handled in TB2 CCR1
+                     ^
+Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined
+          in this statement
+   \   000032   1D42....     MOV.W   &time_seconds, R13
+   \   000036   825D....     ADD.W   R13, &FET_delay_timer
+   \   00003A   213C         JMP     ??forward_0
+     92          
+     93            }else if(!Left_Reverse_Speed | !Right_Reverse_Speed){
+   \                     ??forward_3:
+   \   00003C   0F93         CMP.W   #0x0, R15
+   \   00003E   0220         JNE     ??forward_4
+   \   000040   5D43         MOV.B   #0x1, R13
+   \   000042   013C         JMP     ??forward_1
+   \                     ??forward_4:
+   \   000044   4D43         MOV.B   #0x0, R13
+   \                     ??forward_1:
+   \   000046   0E93         CMP.W   #0x0, R14
+   \   000048   0220         JNE     ??forward_5
+   \   00004A   5A43         MOV.B   #0x1, R10
+   \   00004C   013C         JMP     ??forward_2
+   \                     ??forward_5:
+   \   00004E   4A43         MOV.B   #0x0, R10
+   \                     ??forward_2:
+   \   000050   4DDA         BIS.B   R10, R13
+   \   000052   4D93         CMP.B   #0x0, R13
+   \   000054   1424         JEQ     ??forward_0
+     94          
+     95              speed_dual_component = speed;
+   \   000056   824C....     MOV.W   R12, &speed_dual_component
+     96              L_wheel_speed = (speed_dual_component + speed_L_component);
+   \   00005A   1D42....     MOV.W   &speed_dual_component, R13
+   \   00005E   1D52....     ADD.W   &speed_L_component, R13
+   \   000062   824D....     MOV.W   R13, &L_wheel_speed
+     97              R_wheel_speed = (speed_dual_component + speed_R_component);
+   \   000066   1D42....     MOV.W   &speed_dual_component, R13
+   \   00006A   1D52....     ADD.W   &speed_R_component, R13
+   \   00006E   824D....     MOV.W   R13, &R_wheel_speed
+     98          
+     99              LEFT_FORWARD_SPEED = L_wheel_speed;
+   \   000072   9242....5604 MOV.W   &L_wheel_speed, &0x456
+    100              RIGHT_FORWARD_SPEED = R_wheel_speed;
+   \   000078   9242....5404 MOV.W   &R_wheel_speed, &0x454
+    101            }
+    102          }
+   \                     ??forward_0:
+   \   00007E   3A41         POP.W   R10
+   \   000080   1001         RETA
+   \   000082                REQUIRE _A_TB3CCR4_L
+   \   000082                REQUIRE _A_TB3CCR3_L
+   \   000082                REQUIRE _A_TB3CCR2_L
+   \   000082                REQUIRE _A_TB3CCR1_L
+    103          
+
+   \                                 In  segment CODE, align 2
+    104          void reverse(int speed){
+   \                     reverse:
+   \   000000   0A12         PUSH.W  R10
+    105          //    Hand over these volatiles to a temporary local in order to get rid of this warning:
+    106          //    -Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
+    107            int Left_Forward_Speed = LEFT_FORWARD_SPEED;
+   \   000002   1F425604     MOV.W   &0x456, R15
+    108            int Right_Forward_Speed = RIGHT_FORWARD_SPEED;
+   \   000006   1E425404     MOV.W   &0x454, R14
+    109          
+    110            speed_dual_component = 0;
+   \   00000A   8243....     MOV.W   #0x0, &speed_dual_component
+    111            speed_L_component = 0;
+   \   00000E   8243....     MOV.W   #0x0, &speed_L_component
+    112            speed_R_component = 0;
+   \   000012   8243....     MOV.W   #0x0, &speed_R_component
+    113            L_wheel_speed = 0;
+   \   000016   8243....     MOV.W   #0x0, &L_wheel_speed
+    114            R_wheel_speed = 0;
+   \   00001A   8243....     MOV.W   #0x0, &R_wheel_speed
+    115          
+    116            if(Left_Forward_Speed | Right_Forward_Speed){
+   \   00001E   0D4F         MOV.W   R15, R13
+   \   000020   0DDE         BIS.W   R14, R13
+   \   000022   0D93         CMP.W   #0x0, R13
+   \   000024   0B24         JEQ     ??reverse_3
+    117              LEFT_FORWARD_SPEED = WHEEL_OFF;
+   \   000026   82435604     MOV.W   #0x0, &0x456
+    118              RIGHT_FORWARD_SPEED = WHEEL_OFF;
+   \   00002A   82435404     MOV.W   #0x0, &0x454
+    119          
+    120              from_reverse = TRUE;
+   \   00002E   D243....     MOV.B   #0x1, &from_reverse
+    121          
+    122          //    BACKLIGHT_TOGGLE(); // debug
+    123          
+    124              FET_delay_timer += time_seconds;
+                     ^
+Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined
+          in this statement
+   \   000032   1D42....     MOV.W   &time_seconds, R13
+   \   000036   825D....     ADD.W   R13, &FET_delay_timer
+   \   00003A   213C         JMP     ??reverse_0
+    125          
+    126            }else if(!Left_Forward_Speed | !Right_Forward_Speed){
+   \                     ??reverse_3:
+   \   00003C   0F93         CMP.W   #0x0, R15
+   \   00003E   0220         JNE     ??reverse_4
+   \   000040   5D43         MOV.B   #0x1, R13
+   \   000042   013C         JMP     ??reverse_1
+   \                     ??reverse_4:
+   \   000044   4D43         MOV.B   #0x0, R13
+   \                     ??reverse_1:
+   \   000046   0E93         CMP.W   #0x0, R14
+   \   000048   0220         JNE     ??reverse_5
+   \   00004A   5A43         MOV.B   #0x1, R10
+   \   00004C   013C         JMP     ??reverse_2
+   \                     ??reverse_5:
+   \   00004E   4A43         MOV.B   #0x0, R10
+   \                     ??reverse_2:
+   \   000050   4DDA         BIS.B   R10, R13
+   \   000052   4D93         CMP.B   #0x0, R13
+   \   000054   1424         JEQ     ??reverse_0
+    127          
+    128              speed_dual_component = speed;
+   \   000056   824C....     MOV.W   R12, &speed_dual_component
+    129              L_wheel_speed = (speed_dual_component + speed_L_component);
+   \   00005A   1D42....     MOV.W   &speed_dual_component, R13
+   \   00005E   1D52....     ADD.W   &speed_L_component, R13
+   \   000062   824D....     MOV.W   R13, &L_wheel_speed
+    130              R_wheel_speed = (speed_dual_component + speed_R_component);
+   \   000066   1D42....     MOV.W   &speed_dual_component, R13
+   \   00006A   1D52....     ADD.W   &speed_R_component, R13
+   \   00006E   824D....     MOV.W   R13, &R_wheel_speed
+    131          
+    132              LEFT_REVERSE_SPEED = L_wheel_speed;
+   \   000072   9242....5A04 MOV.W   &L_wheel_speed, &0x45a
+    133              RIGHT_REVERSE_SPEED = R_wheel_speed;
+   \   000078   9242....5804 MOV.W   &R_wheel_speed, &0x458
+    134            }
+    135          }
+   \                     ??reverse_0:
+   \   00007E   3A41         POP.W   R10
+   \   000080   1001         RETA
+   \   000082                REQUIRE _A_TB3CCR2_L
+   \   000082                REQUIRE _A_TB3CCR1_L
+   \   000082                REQUIRE _A_TB3CCR4_L
+   \   000082                REQUIRE _A_TB3CCR3_L
+    136          
+
+   \                                 In  segment CODE, align 2
+    137          void stop_car(void){
+   \                     stop_car:
+    138            RIGHT_FORWARD_SPEED = WHEEL_OFF;
+   \   000000   82435404     MOV.W   #0x0, &0x454
+    139            LEFT_FORWARD_SPEED = WHEEL_OFF;
+   \   000004   82435604     MOV.W   #0x0, &0x456
+    140            RIGHT_REVERSE_SPEED = WHEEL_OFF;
+   \   000008   82435804     MOV.W   #0x0, &0x458
+    141            LEFT_REVERSE_SPEED = WHEEL_OFF;
+   \   00000C   82435A04     MOV.W   #0x0, &0x45a
+    142          }
+   \   000010   1001         RETA
+   \   000012                REQUIRE _A_TB3CCR1_L
+   \   000012                REQUIRE _A_TB3CCR2_L
+   \   000012                REQUIRE _A_TB3CCR3_L
+   \   000012                REQUIRE _A_TB3CCR4_L
+    143          
+
+   \                                 In  segment CODE, align 2
+    144          void change_velocity(int magnitude, char acc_dec){
+   \                     change_velocity:
+    145          //TODO: implement this
+    146          }
+   \   000000   1001         RETA
+    147          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   change_velocity
+      6   forward
+      6   reverse
+      4   stop_car
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  FET_delay_timer
+       2  L_wheel_speed
+       2  R_wheel_speed
+       2  _A_TB3CCR1_L
+       2  _A_TB3CCR2_L
+       2  _A_TB3CCR3_L
+       2  _A_TB3CCR4_L
+       2  change_velocity
+     130  forward
+       1  interface_bools
+     130  reverse
+       2  speed_L_component
+       2  speed_R_component
+       2  speed_dual_component
+       2  speed_global
+      18  stop_car
+
+ 
+ 280 bytes in segment CODE
+   8 bytes in segment DATA16_AN
+  15 bytes in segment DATA16_Z
+ 
+ 280 bytes of CODE memory
+  15 bytes of DATA memory (+ 8 bytes shared)
+
+Errors: none
+Warnings: 2

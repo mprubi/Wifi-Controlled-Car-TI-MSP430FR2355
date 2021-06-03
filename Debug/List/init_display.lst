@@ -1,0 +1,181 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:49
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\init_display.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW81ED.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\init_display.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\init_display.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\init_display.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\init_display.c
+      1          //------------------------------------------------------------------------------
+      2          //
+      3          //  Description: Initializations file
+      4          //
+      5          //
+      6          //  Mark Rubianes
+      7          //  Jan 2021
+      8          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+      9          //------------------------------------------------------------------------------
+     10          
+     11          #include  "functions.h"
+     12          #include  "msp430.h"
+     13          #include <string.h>
+     14          #include "macros.h"
+     15          
+     16          extern char display_line[4][11];
+     17          extern char *display[4];
+     18          extern volatile unsigned char update_display;
+     19          extern volatile unsigned char display_changed;
+     20          
+
+   \                                 In  segment CODE, align 2
+     21          void Init_Display(void){
+   \                     Init_Display:
+   \   000000   0A12         PUSH.W  R10
+     22          //------------------------------------------------------------------------------
+     23            int i;
+     24          
+     25            for(i=0;i<11;i++){
+   \   000002   0A43         MOV.W   #0x0, R10
+   \                     ??Init_Display_0:
+   \   000004   3A900B00     CMP.W   #0xb, R10
+   \   000008   0A34         JGE     ??Init_Display_1
+     26              display_line[0][i] = RESET_STATE;
+   \   00000A   CA43....     MOV.B   #0x0, display_line(R10)
+     27              display_line[1][i] = RESET_STATE;
+   \   00000E   CA43....     MOV.B   #0x0, display_line + 11(R10)
+     28              display_line[2][i] = RESET_STATE;
+   \   000012   CA43....     MOV.B   #0x0, display_line + 22(R10)
+     29              display_line[3][i] = RESET_STATE;
+   \   000016   CA43....     MOV.B   #0x0, display_line + 33(R10)
+     30            }
+   \   00001A   1A53         ADD.W   #0x1, R10
+   \   00001C   F33F         JMP     ??Init_Display_0
+     31            display_line[0][10] = 0;
+   \                     ??Init_Display_1:
+   \   00001E   C243....     MOV.B   #0x0, &display_line + 10
+     32            display_line[1][10] = 0;
+   \   000022   C243....     MOV.B   #0x0, &display_line + 21
+     33            display_line[2][10] = 0;
+   \   000026   C243....     MOV.B   #0x0, &display_line + 32
+     34            display_line[3][10] = 0;
+   \   00002A   C243....     MOV.B   #0x0, &display_line + 43
+     35          
+     36            display[0] = &display_line[0][0];
+   \   00002E   B240........ MOV.W   #display_line, &display
+     37            display[1] = &display_line[1][0];
+   \   000034   B240........ MOV.W   #display_line + 11, &display + 2
+     38            display[2] = &display_line[2][0];
+   \   00003A   B240........ MOV.W   #display_line + 22, &display + 4
+     39            display[3] = &display_line[3][0];
+   \   000040   B240........ MOV.W   #display_line + 33, &display + 6
+     40            update_display = 0;
+   \   000046   C243....     MOV.B   #0x0, &update_display
+     41          
+     42            //Startup  display message
+     43            strcpy(display_line[0], "          ");
+   \   00004A   3D40....     MOV.W   #`?<Constant "          ">`, R13
+   \   00004E   3C40....     MOV.W   #display_line, R12
+   \   000052   ........     CALLA   #strcpy
+     44            update_string(display_line[0], 0);
+   \   000056   0D43         MOV.W   #0x0, R13
+   \   000058   ........     CALLA   #update_string
+     45            strcpy(display_line[1], "          ");
+   \   00005C   3D40....     MOV.W   #`?<Constant "          ">`, R13
+   \   000060   3C40....     MOV.W   #display_line + 11, R12
+   \   000064   ........     CALLA   #strcpy
+     46            update_string(display_line[1], 1);
+   \   000068   1D43         MOV.W   #0x1, R13
+   \   00006A   3C40....     MOV.W   #display_line + 11, R12
+   \   00006E   ........     CALLA   #update_string
+     47            strcpy(display_line[2], "          ");
+   \   000072   3D40....     MOV.W   #`?<Constant "          ">`, R13
+   \   000076   3C40....     MOV.W   #display_line + 22, R12
+   \   00007A   ........     CALLA   #strcpy
+     48            update_string(display_line[2], 2);
+   \   00007E   2D43         MOV.W   #0x2, R13
+   \   000080   3C40....     MOV.W   #display_line + 22, R12
+   \   000084   ........     CALLA   #update_string
+     49            strcpy(display_line[3], "          ");
+   \   000088   3D40....     MOV.W   #`?<Constant "          ">`, R13
+   \   00008C   3C40....     MOV.W   #display_line + 33, R12
+   \   000090   ........     CALLA   #strcpy
+     50            update_string(display_line[3], 3);
+   \   000094   3D400300     MOV.W   #0x3, R13
+   \   000098   3C40....     MOV.W   #display_line + 33, R12
+   \   00009C   ........     CALLA   #update_string
+     51          
+     52            display_changed = 1;
+   \   0000A0   D243....     MOV.B   #0x1, &display_changed
+     53          
+     54            enable_display_update();  //removed as per HW 6 suggestions ??
+   \   0000A4   ........     CALLA   #enable_display_update
+     55            //Display_Update(3,2,1,0);
+     56          //------------------------------------------------------------------------------
+     57          
+     58          }
+   \   0000A8   3A41         POP.W   R10
+   \   0000AA   1001         RETA
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "          ">`:
+   \   000000   202020202020 DC8 "          "
+   \            2020202000  
+     59          
+     60          
+     61          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      6   Init_Display
+        6   -> enable_display_update
+        6   -> strcpy
+        6   -> update_string
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      11  ?<Constant "          ">
+     172  Init_Display
+
+ 
+ 172 bytes in segment CODE
+  11 bytes in segment DATA16_C
+ 
+ 172 bytes of CODE  memory
+  11 bytes of CONST memory
+
+Errors: none
+Warnings: none

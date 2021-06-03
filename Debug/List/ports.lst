@@ -1,0 +1,783 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           19/Apr/2021  13:03:17
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  C:\Users\nopassword\Desktop\ECE_306\Project 06\ports.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EWA13E.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\ports.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List\ports.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj\ports.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\ports.c
+      1          //------------------------------------------------------------------------------
+      2          //
+      3          //  Description: Source file that contains function definitions for
+      4          //                     initializing ports of MSP4300
+      5          //
+      6          //  Mark Rubianes
+      7          //  Jan 2021
+      8          //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.11.2)
+      9          //------------------------------------------------------------------------------
+     10          
+     11          #include  "functions.h"
+     12          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x204
+   \   union <unnamed> _A_PADIR_L
+   \                     _A_PADIR_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x206
+   \   union <unnamed> _A_PAREN_L
+   \                     _A_PAREN_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x20a
+   \   union <unnamed> _A_PASEL0_L
+   \                     _A_PASEL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x20c
+   \   union <unnamed> _A_PASEL1_L
+   \                     _A_PASEL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x216
+   \   union <unnamed> _A_PASELC_L
+   \                     _A_PASELC_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x218
+   \   union <unnamed> _A_PAIES_L
+   \                     _A_PAIES_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x21a
+   \   union <unnamed> _A_PAIE_L
+   \                     _A_PAIE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x21c
+   \   union <unnamed> _A_PAIFG_L
+   \                     _A_PAIFG_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x222
+   \   union <unnamed> _A_PBOUT_L
+   \                     _A_PBOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x224
+   \   union <unnamed> _A_PBDIR_L
+   \                     _A_PBDIR_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x226
+   \   union <unnamed> _A_PBREN_L
+   \                     _A_PBREN_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x22a
+   \   union <unnamed> _A_PBSEL0_L
+   \                     _A_PBSEL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x22c
+   \   union <unnamed> _A_PBSEL1_L
+   \                     _A_PBSEL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x238
+   \   union <unnamed> _A_PBIES_L
+   \                     _A_PBIES_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x23a
+   \   union <unnamed> _A_PBIE_L
+   \                     _A_PBIE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x23c
+   \   union <unnamed> _A_PBIFG_L
+   \                     _A_PBIFG_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x244
+   \   union <unnamed> _A_PCDIR_L
+   \                     _A_PCDIR_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x24a
+   \   union <unnamed> _A_PCSEL0_L
+   \                     _A_PCSEL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x24c
+   \   union <unnamed> _A_PCSEL1_L
+   \                     _A_PCSEL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x454
+   \   union <unnamed> _A_TB3CCR1_L
+   \                     _A_TB3CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x456
+   \   union <unnamed> _A_TB3CCR2_L
+   \                     _A_TB3CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x458
+   \   union <unnamed> _A_TB3CCR3_L
+   \                     _A_TB3CCR3_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x45a
+   \   union <unnamed> _A_TB3CCR4_L
+   \                     _A_TB3CCR4_L:
+   \   000000                DS8 2
+     13          #include <string.h>
+     14          #include "macros.h"
+     15          
+
+   \                                 In  segment CODE, align 2
+     16          void Init_Ports(void){  // Initialize Ports
+   \                     Init_Ports:
+     17            init_port_6();
+   \   000000   ........     CALLA   #init_port_6
+     18            init_port_1();
+   \   000004   ........     CALLA   #init_port_1
+     19            init_port_2();
+   \   000008   ........     CALLA   #init_port_2
+     20            init_port_3();
+   \   00000C   ........     CALLA   #init_port_3
+     21            init_port_4();
+   \   000010   ........     CALLA   #init_port_4
+     22            init_port_5();
+   \   000014   ........     CALLA   #init_port_5
+     23          }
+   \   000018   1001         RETA
+     24          
+
+   \                                 In  segment CODE, align 2
+     25          void init_port_1(void){
+   \                     init_port_1:
+     26            // Port 1 Pins
+     27            // RED_LED    (0x01) // 0 RED LED 0
+     28            // A1_SEEED   (0x02) // 1 A1_SEEED
+     29            // V_DETECT_L (0x04) // 2 V_DETECT_L
+     30            // V_DETECT_R (0x08) // 3 V_DETECT_R
+     31            // A4_SEEED   (0x10) // 4 A4_SEEED
+     32            // V_THUMB    (0x20) // 5 V_THUMB
+     33            // UCA0RXD    (0x40) // 6 Back Channel UCA0RXD
+     34            // UCA0TXD    (0x80) // 7 Back Channel UCA0TXD
+     35          
+     36            P1OUT = 0x00; // P1 set Low
+   \   000000   C2430202     MOV.B   #0x0, &0x202
+     37            P1DIR = 0x00; // Set P1 direction to input
+   \   000004   C2430402     MOV.B   #0x0, &0x204
+     38          
+     39            //Pin 0
+     40            P1SEL0 &= ~RED_LED; // P1_0 GPIO operation
+   \   000008   D2C30A02     BIC.B   #0x1, &0x20a
+     41            P1SEL1 &= ~RED_LED; // P1_0 GPIO operation
+   \   00000C   D2C30C02     BIC.B   #0x1, &0x20c
+     42            P1OUT &= ~RED_LED; // Initial Value = Low / Off
+   \   000010   D2C30202     BIC.B   #0x1, &0x202
+     43            P1DIR |= RED_LED; // Direction = Output
+   \   000014   D2D30402     BIS.B   #0x1, &0x204
+     44          
+     45            //Pin 1
+     46          //  P1SEL0 |= A1_SEEED; //
+     47          //  P1SEL1 |= A1_SEEED; //
+     48            P1SELC |= A1_SEEED; //
+   \   000018   E2D31602     BIS.B   #0x2, &0x216
+     49          
+     50            //Pin 2
+     51          //  P1SEL0 |= V_DETECT_L; //
+     52          //  P1SEL1 |= V_DETECT_L; //
+     53            P1SELC |= V_DETECT_L; //
+   \   00001C   E2D21602     BIS.B   #0x4, &0x216
+     54          
+     55            //Pin 3
+     56          //  P1SEL0 |= V_DETECT_R; //
+     57          //  P1SEL1 |= V_DETECT_R; //
+     58            P1SELC |= V_DETECT_R; //
+   \   000020   F2D21602     BIS.B   #0x8, &0x216
+     59          
+     60            //Pin4
+     61          //  P1SEL0 |= A4_SEEED; //
+     62          //  P1SEL1 |= A4_SEEED; //
+     63            P1SELC |= A4_SEEED; //
+   \   000024   F2D010001602 BIS.B   #0x10, &0x216
+     64          
+     65            //Pin 5
+     66          //  P1SEL0 |= V_THUMB; //
+     67          //  P1SEL1 |= V_THUMB; //
+     68            P1SELC |= V_THUMB; //
+   \   00002A   F2D020001602 BIS.B   #0x20, &0x216
+     69          
+     70            //Pin 6
+     71            P1SEL0 |= UCA0RXD; // for serial communications to IoT module
+   \   000030   F2D040000A02 BIS.B   #0x40, &0x20a
+     72            P1SEL1 &= ~UCA0RXD; // for serial communications to IoT module
+   \   000036   F2C040000C02 BIC.B   #0x40, &0x20c
+     73          
+     74            //Pin 7
+     75            P1SEL0 |= UCA0TXD; //  for serial communications to IoT module
+   \   00003C   F2D080000A02 BIS.B   #0x80, &0x20a
+     76            P1SEL1 &= ~UCA0TXD; //  for serial communications to IoT module
+   \   000042   F2C080000C02 BIC.B   #0x80, &0x20c
+     77          
+     78          }
+   \   000048   1001         RETA
+   \   00004A                REQUIRE _A_PAOUT_L
+   \   00004A                REQUIRE _A_PADIR_L
+   \   00004A                REQUIRE _A_PASEL0_L
+   \   00004A                REQUIRE _A_PASEL1_L
+   \   00004A                REQUIRE _A_PASELC_L
+     79          
+
+   \                                 In  segment CODE, align 2
+     80          void init_port_2(void){
+   \                     init_port_2:
+     81             // Port 2 Pins
+     82            // P2_0         (0x01) // 0
+     83            // IR_LED       (0x02) // 1 IR LED on/off signal
+     84            // P2_2         (0x04) // 2
+     85            // SW2          (0x08) // 3 SW2
+     86            // IOT_PROG_SEL (0x10) // 4 IOT_PROG_SEL
+     87            // P2_5         (0x20) // 5
+     88            // LFXOUT       (0x40) // 6 XOUTR
+     89            // LFXIN        (0x80) // 7 XINR
+     90          
+     91            P2OUT = 0x00; // P2 set Low
+   \   000000   C2430302     MOV.B   #0x0, &0x203
+     92            P2DIR = 0x00; // Set P2 direction to input
+   \   000004   C2430502     MOV.B   #0x0, &0x205
+     93          
+     94            //0
+     95            P2SEL0 &= ~P2_0; // P2_0 GPIO operation
+   \   000008   D2C30B02     BIC.B   #0x1, &0x20b
+     96            P2SEL1 &= ~P2_0; // P2_0 GPIO operation
+   \   00000C   D2C30D02     BIC.B   #0x1, &0x20d
+     97            P2DIR &= ~P2_0; // Direction = input
+   \   000010   D2C30502     BIC.B   #0x1, &0x205
+     98          
+     99            //1
+    100            P2SEL0 &= ~IR_LED; // IR_LED GPIO operation
+   \   000014   E2C30B02     BIC.B   #0x2, &0x20b
+    101            P2SEL1 &= ~IR_LED; // IR_LED GPIO operation
+   \   000018   E2C30D02     BIC.B   #0x2, &0x20d
+    102            P2OUT &= ~IR_LED; // Initial Value = Low / Off
+   \   00001C   E2C30302     BIC.B   #0x2, &0x203
+    103            P2DIR |= IR_LED; // Direction = output
+   \   000020   E2D30502     BIS.B   #0x2, &0x205
+    104          
+    105            //2
+    106            P2SEL0 &= ~P2_2; // P2_2 GPIO operation
+   \   000024   E2C20B02     BIC.B   #0x4, &0x20b
+    107            P2SEL1 &= ~P2_2; // P2_2 GPIO operation
+   \   000028   E2C20D02     BIC.B   #0x4, &0x20d
+    108            P2DIR &= ~P2_2; // Direction = input
+   \   00002C   E2C20502     BIC.B   #0x4, &0x205
+    109          
+    110            //3
+    111            P2SEL0 &= ~SW2; // SW2 Operation
+   \   000030   F2C20B02     BIC.B   #0x8, &0x20b
+    112            P2SEL1 &= ~SW2; // SW2 Operation
+   \   000034   F2C20D02     BIC.B   #0x8, &0x20d
+    113            P2OUT |= SW2 ; // Configure pullup resistor
+   \   000038   F2D20302     BIS.B   #0x8, &0x203
+    114            P2DIR &= ~SW2; // Direction = input
+   \   00003C   F2C20502     BIC.B   #0x8, &0x205
+    115            P2REN |= SW2 ; // Enable pullup resistor
+   \   000040   F2D20702     BIS.B   #0x8, &0x207
+    116            P2IES |= SW2 ; // P2.0 Hi/Lo edge interrupt
+   \   000044   F2D21902     BIS.B   #0x8, &0x219
+    117            P2IFG &= ~SW2; // Clear all P2.6 interrupt flags
+   \   000048   F2C21D02     BIC.B   #0x8, &0x21d
+    118            P2IE |= SW2 ; // P2.6 interrupt enabled
+   \   00004C   F2D21B02     BIS.B   #0x8, &0x21b
+    119          
+    120            //4
+    121            P2SEL0 &= ~IOT_PROG_SEL; // IOT_PROG_SEL GPIO operation
+   \   000050   F2C010000B02 BIC.B   #0x10, &0x20b
+    122            P2SEL1 &= ~IOT_PROG_SEL; // IOT_PROG_SEL GPIO operation
+   \   000056   F2C010000D02 BIC.B   #0x10, &0x20d
+    123            P2OUT &= ~IOT_PROG_SEL; // Initial Value = Low / Off
+   \   00005C   F2C010000302 BIC.B   #0x10, &0x203
+    124            P2DIR |= IOT_PROG_SEL; // Direction = output
+   \   000062   F2D010000502 BIS.B   #0x10, &0x205
+    125          
+    126            //5
+    127            P2SEL0 &= ~P2_5; // P2_5 GPIO operation
+   \   000068   F2C020000B02 BIC.B   #0x20, &0x20b
+    128            P2SEL1 &= ~P2_5; // P2_5 GPIO operation
+   \   00006E   F2C020000D02 BIC.B   #0x20, &0x20d
+    129            P2DIR &= ~P2_5; // Direction = input
+   \   000074   F2C020000502 BIC.B   #0x20, &0x205
+    130          
+    131            //6
+    132            P2SEL0 &= ~LFXOUT; // LFXOUT Clock operation
+   \   00007A   F2C040000B02 BIC.B   #0x40, &0x20b
+    133            P2SEL1 |= LFXOUT; // LFXOUT Clock operation
+   \   000080   F2D040000D02 BIS.B   #0x40, &0x20d
+    134          
+    135            //7
+    136            P2SEL0 &= ~LFXIN; // LFXIN Clock operation
+   \   000086   F2C080000B02 BIC.B   #0x80, &0x20b
+    137            P2SEL1 |= LFXIN; // LFXIN Clock operation
+   \   00008C   F2D080000D02 BIS.B   #0x80, &0x20d
+    138          
+    139          }
+   \   000092   1001         RETA
+   \   000094                REQUIRE _A_PAOUT_L
+   \   000094                REQUIRE _A_PADIR_L
+   \   000094                REQUIRE _A_PASEL0_L
+   \   000094                REQUIRE _A_PASEL1_L
+   \   000094                REQUIRE _A_PAREN_L
+   \   000094                REQUIRE _A_PAIES_L
+   \   000094                REQUIRE _A_PAIFG_L
+   \   000094                REQUIRE _A_PAIE_L
+    140          
+
+   \                                 In  segment CODE, align 2
+    141          void init_port_3(void){
+   \                     init_port_3:
+    142          
+    143            // Port 3 Pins
+    144            // TEST_PROBE   (0x01) // 0 TEST PROBE
+    145            // OPT_INT      (0x02) // 1 OPT_INT
+    146            // OA2N         (0x04) // 2 Photodiode Circuit
+    147            // OA2P         (0x08) // 3 Photodiode Circuit
+    148            // SMCLK_OUT    (0x10) // 4 SMCLK
+    149            // DAC_CNTL     (0x20) // 5 DAC signal from Processor
+    150            // IOT_LINK     (0x40) // 6 IOT_LINK
+    151            // IOT_RESET    (0x80) // 7 IOT_RESET
+    152          
+    153            P3OUT = 0x00; // p3 set Low
+   \   000000   C2432202     MOV.B   #0x0, &0x222
+    154            P3DIR = 0x00; // Set p3 direction to input
+   \   000004   C2432402     MOV.B   #0x0, &0x224
+    155          
+    156            //0
+    157            P3SEL0 &= ~TEST_PROBE; //
+   \   000008   D2C32A02     BIC.B   #0x1, &0x22a
+    158            P3SEL1 |= TEST_PROBE; //
+   \   00000C   D2D32C02     BIS.B   #0x1, &0x22c
+    159            P3DIR &= ~TEST_PROBE; // Direction = input
+   \   000010   D2C32402     BIC.B   #0x1, &0x224
+    160          
+    161            //1
+    162            P3SEL0 &= ~OPT_INT; // IR_LED GPIO operation
+   \   000014   E2C32A02     BIC.B   #0x2, &0x22a
+    163            P3SEL1 &= ~OPT_INT; // IR_LED GPIO operation
+   \   000018   E2C32C02     BIC.B   #0x2, &0x22c
+    164            P3OUT &= ~OPT_INT; // GPIO Input note: not sure
+   \   00001C   E2C32202     BIC.B   #0x2, &0x222
+    165          
+    166            //2
+    167            P3SEL0 |= OA2N; //
+   \   000020   E2D22A02     BIS.B   #0x4, &0x22a
+    168            P3SEL1 |= OA2N; //
+   \   000024   E2D22C02     BIS.B   #0x4, &0x22c
+    169          
+    170            //3
+    171            P3SEL0 |= OA2P; //
+   \   000028   F2D22A02     BIS.B   #0x8, &0x22a
+    172            P3SEL1 |= OA2P; //
+   \   00002C   F2D22C02     BIS.B   #0x8, &0x22c
+    173          
+    174            //4   GPIO ( SEL0=0, SEL1=1 ) , SMCLK ( SEL0=1, SEL1=0 ) Lecture 7 Slides are not correct SEL bits fpr SMCLK
+    175            P3SEL0 |= SMCLK_OUT; //
+   \   000030   F2D010002A02 BIS.B   #0x10, &0x22a
+    176            P3SEL1 &= ~SMCLK_OUT; //
+   \   000036   F2C010002C02 BIC.B   #0x10, &0x22c
+    177            P3DIR |= SMCLK_OUT;  //
+   \   00003C   F2D010002402 BIS.B   #0x10, &0x224
+    178          
+    179            //5
+    180            P3SEL0 |= DAC_CNTL; //
+   \   000042   F2D020002A02 BIS.B   #0x20, &0x22a
+    181            P3SEL1 |= DAC_CNTL; //
+   \   000048   F2D020002C02 BIS.B   #0x20, &0x22c
+    182          
+    183            //6
+    184            P3SEL0 &= ~IOT_LINK; //
+   \   00004E   F2C040002A02 BIC.B   #0x40, &0x22a
+    185            P3SEL1 &= ~IOT_LINK; //
+   \   000054   F2C040002C02 BIC.B   #0x40, &0x22c
+    186            P3DIR &= ~IOT_LINK;
+   \   00005A   F2C040002402 BIC.B   #0x40, &0x224
+    187          
+    188            //7
+    189            P3SEL0 &= ~IOT_RESET; //
+   \   000060   F2C080002A02 BIC.B   #0x80, &0x22a
+    190            P3SEL1 &=~IOT_RESET; //
+   \   000066   F2C080002C02 BIC.B   #0x80, &0x22c
+    191            P3DIR &= ~IOT_RESET; //
+   \   00006C   F2C080002402 BIC.B   #0x80, &0x224
+    192          }
+   \   000072   1001         RETA
+   \   000074                REQUIRE _A_PBOUT_L
+   \   000074                REQUIRE _A_PBDIR_L
+   \   000074                REQUIRE _A_PBSEL0_L
+   \   000074                REQUIRE _A_PBSEL1_L
+    193          
+
+   \                                 In  segment CODE, align 2
+    194          void init_port_4(void){
+   \                     init_port_4:
+    195            // RESET_LCD   (0x01) // 0 LCD Reset
+    196            // SW1         (0x02) // 1 SW1
+    197            // UCA1RXD     (0x04) // 2 Back Channel UCA1RXD
+    198            // UCA1TXD     (0x08) // 3 Back Channel UCA1TXD
+    199            // UCB1_CS_LCD (0x10) // 4 Chip Select
+    200            // UCB1CLK     (0x20) // 5 SPI modeclock output UCB1CLK
+    201            // UCB1SIMO    (0x40) // 6 UCB1SIMO
+    202            // UCB1SOMI    (0x80) // 7 UCB1SOMI
+    203          
+    204            P4OUT = 0x00; // P4 set Low
+   \   000000   C2432302     MOV.B   #0x0, &0x223
+    205            P4DIR = 0x00; // Set P4 direction to input
+   \   000004   C2432502     MOV.B   #0x0, &0x225
+    206          
+    207            // P4 PIN 0
+    208            P4SEL0 &= ~RESET_LCD; // RESET_LCD GPIO operation
+   \   000008   D2C32B02     BIC.B   #0x1, &0x22b
+    209            P4SEL1 &= ~RESET_LCD; // RESET_LCD GPIO operation
+   \   00000C   D2C32D02     BIC.B   #0x1, &0x22d
+    210            P4OUT &= ~RESET_LCD; // Set RESET_LCD On [Low]
+   \   000010   D2C32302     BIC.B   #0x1, &0x223
+    211            P4DIR |= RESET_LCD; // Set RESET_LCD direction to output
+   \   000014   D2D32502     BIS.B   #0x1, &0x225
+    212          
+    213            // P4 PIN 1
+    214            P4SEL0 &= ~SW1; // SW1 GPIO operation
+   \   000018   E2C32B02     BIC.B   #0x2, &0x22b
+    215            P4SEL1 &= ~SW1; // SW1 GPIO operation
+   \   00001C   E2C32D02     BIC.B   #0x2, &0x22d
+    216            P4DIR &= ~SW1; // Direction = input
+   \   000020   E2C32502     BIC.B   #0x2, &0x225
+    217            P4OUT |= SW1; // Configure pullup resistor
+   \   000024   E2D32302     BIS.B   #0x2, &0x223
+    218            P4REN |= SW1 ; // Enable pullup resistor
+   \   000028   E2D32702     BIS.B   #0x2, &0x227
+    219            P4IES |= SW1;
+   \   00002C   E2D33902     BIS.B   #0x2, &0x239
+    220            // P2.0 Hi/Lo edge interrupt
+    221            P4IFG &= ~SW1;
+   \   000030   E2C33D02     BIC.B   #0x2, &0x23d
+    222            // Clear all P2.6 interrupt flags
+    223            P4IE |= SW1;
+   \   000034   E2D33B02     BIS.B   #0x2, &0x23b
+    224            // P2.6 interrupt enabled
+    225          
+    226            // P4 PIN 2
+    227            P4SEL0 |= UCA1TXD; // USCI_A1 UART operation
+   \   000038   F2D22B02     BIS.B   #0x8, &0x22b
+    228            P4SEL1 &= ~UCA1TXD; // USCI_A1 UART operation
+   \   00003C   F2C22D02     BIC.B   #0x8, &0x22d
+    229          
+    230            // P4 PIN 3
+    231            P4SEL0 |= UCA1RXD; // USCI_A1 UART operation
+   \   000040   E2D22B02     BIS.B   #0x4, &0x22b
+    232            P4SEL1 &= ~UCA1RXD; // USCI_A1 UART operation
+   \   000044   E2C22D02     BIC.B   #0x4, &0x22d
+    233          
+    234            // P4 PIN 4
+    235            P4SEL0 &= ~UCB1_CS_LCD; // UCB1_CS_LCD GPIO operation
+   \   000048   F2C010002B02 BIC.B   #0x10, &0x22b
+    236            P4SEL1 &= ~UCB1_CS_LCD; // UCB1_CS_LCD GPIO operation
+   \   00004E   F2C010002D02 BIC.B   #0x10, &0x22d
+    237            P4OUT |= UCB1_CS_LCD; // Set SPI_CS_LCD Off [High]
+   \   000054   F2D010002302 BIS.B   #0x10, &0x223
+    238            P4DIR |= UCB1_CS_LCD; // Set SPI_CS_LCD direction to output
+   \   00005A   F2D010002502 BIS.B   #0x10, &0x225
+    239          
+    240            // P4 PIN 5
+    241            P4SEL0 |= UCB1CLK ; // UCB1CLK SPI BUS operation
+   \   000060   F2D020002B02 BIS.B   #0x20, &0x22b
+    242            P4SEL1 &= ~UCB1CLK; // UCB1CLK SPI BUS operation
+   \   000066   F2C020002D02 BIC.B   #0x20, &0x22d
+    243          
+    244            // P4 PIN 6
+    245            P4SEL0 |= UCB1SIMO ; // UCB1SIMO SPI BUS operation
+   \   00006C   F2D040002B02 BIS.B   #0x40, &0x22b
+    246            P4SEL1 &= ~UCB1SIMO; // UCB1SIMO SPI BUS operation
+   \   000072   F2C040002D02 BIC.B   #0x40, &0x22d
+    247          
+    248            // P4 PIN 7
+    249            P4SEL0 |= UCB1SOMI ; // UCB1SOMI SPI BUS operation
+   \   000078   F2D080002B02 BIS.B   #0x80, &0x22b
+    250            P4SEL1 &= ~UCB1SOMI; // UCB1SOMI SPI BUS operation
+   \   00007E   F2C080002D02 BIC.B   #0x80, &0x22d
+    251          
+    252          }
+   \   000084   1001         RETA
+   \   000086                REQUIRE _A_PBOUT_L
+   \   000086                REQUIRE _A_PBDIR_L
+   \   000086                REQUIRE _A_PBSEL0_L
+   \   000086                REQUIRE _A_PBSEL1_L
+   \   000086                REQUIRE _A_PBREN_L
+   \   000086                REQUIRE _A_PBIES_L
+   \   000086                REQUIRE _A_PBIFG_L
+   \   000086                REQUIRE _A_PBIE_L
+    253          
+
+   \                                 In  segment CODE, align 2
+    254          void init_port_5(void){
+   \                     init_port_5:
+    255          // CHECK_BAT     (0x01) // 0
+    256          // V_BAT         (0x02) // 1
+    257          // V_DAC         (0x04) // 2
+    258          // V_3_3         (0x08) // 3
+    259          // IOT_PROG_MODE (0x10) // 4
+    260          
+    261            P5OUT = 0x00; // P2 set Low
+   \   000000   C2434202     MOV.B   #0x0, &0x242
+    262            P5DIR = 0x00; // Set P5 direction to input
+   \   000004   C2434402     MOV.B   #0x0, &0x244
+    263          
+    264            //0
+    265            P5SEL0 &= ~CHECK_BAT; //  Note: GPIO for manually checking
+   \   000008   D2C34A02     BIC.B   #0x1, &0x24a
+    266            P5SEL1 &= ~CHECK_BAT; //
+   \   00000C   D2C34C02     BIC.B   #0x1, &0x24c
+    267            P5DIR &= ~CHECK_BAT; //
+   \   000010   D2C34402     BIC.B   #0x1, &0x244
+    268          
+    269            //1
+    270            P5SEL0 |= V_BAT; // ADC configuration
+   \   000014   E2D34A02     BIS.B   #0x2, &0x24a
+    271            P5SEL1 |= V_BAT; // ADC configuration
+   \   000018   E2D34C02     BIS.B   #0x2, &0x24c
+    272          
+    273            //2
+    274            P5SEL0 |= V_DAC; //
+   \   00001C   E2D24A02     BIS.B   #0x4, &0x24a
+    275            P5SEL1 |= V_DAC; //
+   \   000020   E2D24C02     BIS.B   #0x4, &0x24c
+    276          
+    277            //3
+    278            P5SEL0 |= V_3_3; //
+   \   000024   F2D24A02     BIS.B   #0x8, &0x24a
+    279            P5SEL1 |= V_3_3; //
+   \   000028   F2D24C02     BIS.B   #0x8, &0x24c
+    280          
+    281            //4
+    282            P5SEL0 &= ~IOT_PROG_MODE; //
+   \   00002C   F2C010004A02 BIC.B   #0x10, &0x24a
+    283            P5SEL1 &= ~IOT_PROG_MODE; //
+   \   000032   F2C010004C02 BIC.B   #0x10, &0x24c
+    284            P5DIR &= ~IOT_PROG_MODE;
+   \   000038   F2C010004402 BIC.B   #0x10, &0x244
+    285          
+    286          }
+   \   00003E   1001         RETA
+   \   000040                REQUIRE _A_PCOUT_L
+   \   000040                REQUIRE _A_PCDIR_L
+   \   000040                REQUIRE _A_PCSEL0_L
+   \   000040                REQUIRE _A_PCSEL1_L
+    287          
+
+   \                                 In  segment CODE, align 2
+    288          void init_port_6(void){ //ALL PINS ARE GPIO OUT
+   \                     init_port_6:
+    289          // R_FORWARD     (0x01) // 0
+    290          // L_FORWARD     (0x02) // 1
+    291          // R_REVERSE     (0x04) // 2
+    292          // L_REVERSE     (0x08) // 3
+    293          // LCD_BACKLITE  (0x10) // 4
+    294          // P6_5          (0x20) // 5
+    295          // GRN_LED       (0x40) // 6
+    296          
+    297            P6OUT = 0x00; // P6 set Low
+   \   000000   C2434302     MOV.B   #0x0, &0x243
+    298            P6DIR = 0x00; // Set P6 direction to input
+   \   000004   C2434502     MOV.B   #0x0, &0x245
+    299          
+    300            //These are TB3 CCR_0-3
+    301            RIGHT_FORWARD_SPEED = OFF;
+   \   000008   82435404     MOV.W   #0x0, &0x454
+    302            LEFT_FORWARD_SPEED = OFF;
+   \   00000C   82435604     MOV.W   #0x0, &0x456
+    303            RIGHT_REVERSE_SPEED = OFF;
+   \   000010   82435804     MOV.W   #0x0, &0x458
+    304            LEFT_REVERSE_SPEED = OFF;
+   \   000014   82435A04     MOV.W   #0x0, &0x45a
+    305          
+    306            // Configured as TimerB3.1
+    307            P6SEL0 |= R_FORWARD; //
+   \   000018   D2D34B02     BIS.B   #0x1, &0x24b
+    308            P6SEL1 &= ~R_FORWARD; //
+   \   00001C   D2C34D02     BIC.B   #0x1, &0x24d
+    309            //P6OUT &= ~R_FORWARD; //
+    310            P6DIR |= R_FORWARD; //
+   \   000020   D2D34502     BIS.B   #0x1, &0x245
+    311          
+    312            // TimerB3.2
+    313            P6SEL0 |= L_FORWARD; //
+   \   000024   E2D34B02     BIS.B   #0x2, &0x24b
+    314            P6SEL1 &= ~L_FORWARD; //
+   \   000028   E2C34D02     BIC.B   #0x2, &0x24d
+    315            //P6OUT &= ~L_FORWARD; //
+    316            P6DIR |= L_FORWARD; //
+   \   00002C   E2D34502     BIS.B   #0x2, &0x245
+    317          
+    318            // TimerB3.3
+    319            P6SEL0 |= ~R_REVERSE; //
+   \   000030   F2D0FB004B02 BIS.B   #0xfb, &0x24b
+    320            P6SEL1 &= ~R_REVERSE; //
+   \   000036   E2C24D02     BIC.B   #0x4, &0x24d
+    321            //P6OUT &= ~R_REVERSE; //
+    322            P6DIR |= R_REVERSE; //
+   \   00003A   E2D24502     BIS.B   #0x4, &0x245
+    323          
+    324            // TimerB3.4
+    325            P6SEL0 |= ~L_REVERSE; //
+   \   00003E   F2D0F7004B02 BIS.B   #0xf7, &0x24b
+    326            P6SEL1 &= ~L_REVERSE; //
+   \   000044   F2C24D02     BIC.B   #0x8, &0x24d
+    327            //P6OUT &= ~L_REVERSE; //
+    328            P6DIR |= L_REVERSE; //
+   \   000048   F2D24502     BIS.B   #0x8, &0x245
+    329          
+    330            //4
+    331            P6SEL0 &= ~LCD_BACKLITE; //
+   \   00004C   F2C010004B02 BIC.B   #0x10, &0x24b
+    332            P6SEL1 &= ~LCD_BACKLITE; //
+   \   000052   F2C010004D02 BIC.B   #0x10, &0x24d
+    333            P6OUT |= LCD_BACKLITE; //
+   \   000058   F2D010004302 BIS.B   #0x10, &0x243
+    334            P6DIR |= LCD_BACKLITE;  // LCD backlight is an output
+   \   00005E   F2D010004502 BIS.B   #0x10, &0x245
+    335          
+    336            //5
+    337            P6SEL0 &= ~P6_5; //
+   \   000064   F2C020004B02 BIC.B   #0x20, &0x24b
+    338            P6SEL1 &= ~P6_5; //
+   \   00006A   F2C020004D02 BIC.B   #0x20, &0x24d
+    339            P6DIR &= ~P6_5;
+   \   000070   F2C020004502 BIC.B   #0x20, &0x245
+    340          
+    341            //6
+    342            P6SEL0 &= ~GRN_LED; //
+   \   000076   F2C040004B02 BIC.B   #0x40, &0x24b
+    343            P6SEL1 &= ~GRN_LED; //
+   \   00007C   F2C040004D02 BIC.B   #0x40, &0x24d
+    344            P6OUT &= ~GRN_LED; // Keep LED low until needed
+   \   000082   F2C040004302 BIC.B   #0x40, &0x243
+    345            P6DIR |= GRN_LED; //LED is an output
+   \   000088   F2D040004502 BIS.B   #0x40, &0x245
+    346          
+    347          }
+   \   00008E   1001         RETA
+   \   000090                REQUIRE _A_PCOUT_L
+   \   000090                REQUIRE _A_PCDIR_L
+   \   000090                REQUIRE _A_TB3CCR1_L
+   \   000090                REQUIRE _A_TB3CCR2_L
+   \   000090                REQUIRE _A_TB3CCR3_L
+   \   000090                REQUIRE _A_TB3CCR4_L
+   \   000090                REQUIRE _A_PCSEL0_L
+   \   000090                REQUIRE _A_PCSEL1_L
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Init_Ports
+        4   -> init_port_1
+        4   -> init_port_2
+        4   -> init_port_3
+        4   -> init_port_4
+        4   -> init_port_5
+        4   -> init_port_6
+      4   init_port_1
+      4   init_port_2
+      4   init_port_3
+      4   init_port_4
+      4   init_port_5
+      4   init_port_6
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      26  Init_Ports
+       2  _A_PADIR_L
+       2  _A_PAIES_L
+       2  _A_PAIE_L
+       2  _A_PAIFG_L
+       2  _A_PAOUT_L
+       2  _A_PAREN_L
+       2  _A_PASEL0_L
+       2  _A_PASEL1_L
+       2  _A_PASELC_L
+       2  _A_PBDIR_L
+       2  _A_PBIES_L
+       2  _A_PBIE_L
+       2  _A_PBIFG_L
+       2  _A_PBOUT_L
+       2  _A_PBREN_L
+       2  _A_PBSEL0_L
+       2  _A_PBSEL1_L
+       2  _A_PCDIR_L
+       2  _A_PCOUT_L
+       2  _A_PCSEL0_L
+       2  _A_PCSEL1_L
+       2  _A_TB3CCR1_L
+       2  _A_TB3CCR2_L
+       2  _A_TB3CCR3_L
+       2  _A_TB3CCR4_L
+      74  init_port_1
+     148  init_port_2
+     116  init_port_3
+     134  init_port_4
+      64  init_port_5
+     144  init_port_6
+
+ 
+ 706 bytes in segment CODE
+  50 bytes in segment DATA16_AN
+ 
+ 706 bytes of CODE memory
+   0 bytes of DATA memory (+ 50 bytes shared)
+
+Errors: none
+Warnings: none

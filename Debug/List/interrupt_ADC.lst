@@ -1,0 +1,641 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           03/Jun/2021  15:25:44
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_ADC.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW2C32.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_ADC.c" -lC
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\interrupt_ADC.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\interrupt_ADC.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_ADC.c
+      1          //ADC conversions and timers suggestions: take a reading about every 10 mSec,
+      2          //and obtain running average every 80 Sec
+      3          #include  "functions.h"
+      4          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x700
+   \   union <unnamed> _A_ADCCTL0_L
+   \                     _A_ADCCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x70a
+   \   union <unnamed> _A_ADCMCTL0_L
+   \                     _A_ADCMCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x712
+   \   union <unnamed> _A_ADCMEM0_L
+   \                     _A_ADCMEM0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x71e
+   \   union <unnamed> _A_ADCIV_L
+   \                     _A_ADCIV_L:
+   \   000000                DS8 2
+      5          #include <string.h>
+      6          #include "macros.h"
+      7          #include <math.h>
+      8          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+      9          extern volatile unsigned int ADC_Left_Sensor = 0;
+   \                     ADC_Left_Sensor:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     10          extern volatile unsigned int ADC_Right_Sensor = 0;
+   \                     ADC_Right_Sensor:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     11          extern volatile unsigned int ADC_Bat = 0;
+   \                     ADC_Bat:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     12          extern volatile unsigned int ADC_Thumb = 0;
+   \                     ADC_Thumb:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     13          extern volatile unsigned int ADC_Channel = 0;
+   \                     ADC_Channel:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     14          extern volatile char adc_char[12] = "";
+   \                     adc_char:
+   \   000000                DS8 12
+     15          
+     16          //A variable defined and only used inside the interrupt tree need not be defined as a volatile.
+     17          //32 bit array?
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     18          volatile unsigned int Left_Sensor_Mov_Values[8];
+   \                     Left_Sensor_Mov_Values:
+   \   000000                DS8 16
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     19          volatile unsigned int Right_Sensor_Mov_Values[8];
+   \                     Right_Sensor_Mov_Values:
+   \   000000                DS8 16
+     20          //volatile unsigned int Left_Sensor_Watch[32], Right_Sensor_Watch[32];  //for debug
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     21          volatile unsigned int left_sensor_mov_average, right_sensor_mov_average;
+   \                     left_sensor_mov_average:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+   \                     right_sensor_mov_average:
+   \   000000                DS8 2
+     22          
+     23          extern char display_line[4][11];
+     24          
+     25          
+     26          
+     27          #pragma vector=ADC_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+     28          __interrupt void ADC_ISR(void){
+   \                     ADC_ISR:
+   \   000000   3F15         PUSHM.W #0x4, R15
+     29            switch(__even_in_range(ADCIV,ADCIV_ADCIFG)){
+   \   000002   1F421E07     MOV.W   &0x71e, R15
+   \   000006   E00F         ADDA    R15, PC
+   \                     `?<Jumptable for ADC_ISR>_0`:
+   \   000008   5A3C         JMP     ??ADC_ISR_1
+   \   00000A   593C         JMP     ??ADC_ISR_1
+   \   00000C   583C         JMP     ??ADC_ISR_1
+   \   00000E   573C         JMP     ??ADC_ISR_1
+   \   000010   563C         JMP     ??ADC_ISR_1
+   \   000012   553C         JMP     ??ADC_ISR_1
+   \   000014   003C         JMP     ??ADC_ISR_6
+     30              case ADCIV_NONE:
+     31              break;
+     32              case ADCIV_ADCOVIFG: // When a conversion result is written to the ADCMEM0
+     33              // before its previous conversion result was read.
+     34              break;
+     35              case ADCIV_ADCTOVIFG: // ADC conversion time overflow
+     36              break;
+     37              case ADCIV_ADCHIIFG: // Window comparator interrupt flags
+     38              break;
+     39              case ADCIV_ADCLOIFG: // Window comparator interrupt flag
+     40              break;
+     41              case ADCIV_ADCINIFG: // Window comparator interrupt flag
+     42              break;
+     43              case ADCIV_ADCIFG: // ADCMEM0 memory register with the conversion result
+     44              //this case statement is where code for how and what I want to sample occurs
+     45          
+     46              ADC_CONVERSION_DISABLE();
+   \                     ??ADC_ISR_6:
+   \   000016   A2C30007     BIC.W   #0x2, &0x700
+     47          //    ADCCTL0 &= ~ADCENC; //disable the ENC bit to be able to change which port to read next
+     48          
+     49              switch (ADC_Channel++){  // post incrementing occurs after conditional statement uses original value to evaluate
+   \   00001A   1F42....     MOV.W   &ADC_Channel, R15
+   \   00001E   0E4F         MOV.W   R15, R14
+   \   000020   1E53         ADD.W   #0x1, R14
+   \   000022   824E....     MOV.W   R14, &ADC_Channel
+   \   000026   0F83         SUB.W   #0x0, R15
+   \   000028   0724         JEQ     ??ADC_ISR_2
+   \   00002A   1F83         SUB.W   #0x1, R15
+   \   00002C   1A24         JEQ     ??ADC_ISR_3
+   \   00002E   1F83         SUB.W   #0x1, R15
+   \   000030   2D24         JEQ     ??ADC_ISR_4
+   \   000032   1F83         SUB.W   #0x1, R15
+   \   000034   3624         JEQ     ??ADC_ISR_5
+   \   000036   413C         JMP     ??ADC_ISR_0
+     50                case ADC_LEFT_SENSOR: // Channel A3 Interrupt
+     51                ADCMCTL0 &= ~ADCINCH_2; // Disable Last channel A2
+   \                     ??ADC_ISR_2:
+   \   000038   A2C30A07     BIC.W   #0x2, &0x70a
+     52                ADCMCTL0 |= ADCINCH_3; // Enable Next channel A3
+   \   00003C   B2D003000A07 BIS.W   #0x3, &0x70a
+     53                ADC_Left_Sensor = ADCMEM0; // Move result into Global
+   \   000042   92421207.... MOV.W   &0x712, &ADC_Left_Sensor
+     54                // Old carlson code: ADC_Left_Sensor = ADC_Left_Detect >> 2; // Divide the result by 4 for 12 bit ADC
+     55          
+     56                ADC_Left_Sensor -= 10; // correction factor to position car in the center of black line
+   \   000048   B250F6FF.... ADD.W   #0xfff6, &ADC_Left_Sensor
+     57          
+     58                //averaging function call goes here
+     59                left_sensor_mov_average = 0;
+   \   00004E   8243....     MOV.W   #0x0, &left_sensor_mov_average
+     60                ADC_perform_moving_average(ADC_Left_Sensor, ADC_LEFT_SENSOR);
+   \   000052   4D43         MOV.B   #0x0, R13
+   \   000054   1C42....     MOV.W   &ADC_Left_Sensor, R12
+   \   000058   ........     CALLA   #ADC_perform_moving_average
+     61          
+     62                //calls for hex conversions and updating display are in TB1 interrupt ISR
+     63          
+     64                ADCCTL0 |= ADCSC; // Start next sample. Kicks off the next ADC_ISR() interrupt
+   \   00005C   92D30007     BIS.W   #0x1, &0x700
+     65          
+     66                //TODO: add re-enable ENC, hit the top of the switch, do calculations of next case
+     67                // don't do this on last case, just start a timer, and the timer interrupt re-enables the ENC bit
+     68          
+     69                break;
+   \   000060   2C3C         JMP     ??ADC_ISR_0
+     70          
+     71                case ADC_RIGHT_SENSOR: // Channel A4 Interrupt
+     72                ADCMCTL0 &= ~ADCINCH_3; // Disable Last channel A3
+   \                     ??ADC_ISR_3:
+   \   000062   B2F0FCFF0A07 AND.W   #0xfffc, &0x70a
+     73                ADCMCTL0 |= ADCINCH_4; // Enable Next channel A4
+   \   000068   A2D20A07     BIS.W   #0x4, &0x70a
+     74                ADC_Right_Sensor = ADCMEM0; // Move result into Global
+   \   00006C   92421207.... MOV.W   &0x712, &ADC_Right_Sensor
+     75                // Old carlson code: ADC_Right_Sensor = ADC_Left_Detect >> 2; // Divide the result by 4 12 bit ADC
+     76                ADC_Right_Sensor += 10; // correction factor to position car in the center of black line
+   \   000072   B2500A00.... ADD.W   #0xa, &ADC_Right_Sensor
+     77          
+     78                //averaging function goes here
+     79                right_sensor_mov_average = 0;
+   \   000078   8243....     MOV.W   #0x0, &right_sensor_mov_average
+     80                ADC_perform_moving_average(ADC_Right_Sensor, ADC_RIGHT_SENSOR);
+   \   00007C   5D43         MOV.B   #0x1, R13
+   \   00007E   1C42....     MOV.W   &ADC_Right_Sensor, R12
+   \   000082   ........     CALLA   #ADC_perform_moving_average
+     81          
+     82                //calls for hex conversions and updating display are in TB1 interrupt ISR
+     83          
+     84                ADCCTL0 |= ADCSC; // Start next sample. Kicks off the next ADC_ISR() interrupt
+   \   000086   92D30007     BIS.W   #0x1, &0x700
+     85                break;
+   \   00008A   173C         JMP     ??ADC_ISR_0
+     86          
+     87                case ADC_V_BAT: // Channel A5 Interrupt
+     88                ADCMCTL0 &= ~ADCINCH_4; // Disable Last channel A4
+   \                     ??ADC_ISR_4:
+   \   00008C   A2C20A07     BIC.W   #0x4, &0x70a
+     89                ADCMCTL0 |= ADCINCH_5; // Enable Next channel A5
+   \   000090   B2D005000A07 BIS.W   #0x5, &0x70a
+     90                ADC_Bat = ADCMEM0; // Move result into Global
+   \   000096   92421207.... MOV.W   &0x712, &ADC_Bat
+     91          
+     92                ADCCTL0 |= ADCSC; // Start next sample. Kicks off the next ADC_ISR() interrupt
+   \   00009C   92D30007     BIS.W   #0x1, &0x700
+     93                break;
+   \   0000A0   0C3C         JMP     ??ADC_ISR_0
+     94          
+     95                case ADC_V_THUMB: //Channel A2 Interrupt
+     96                ADCMCTL0 &= ~ADCINCH_5; // Disable Last channel A5
+   \                     ??ADC_ISR_5:
+   \   0000A2   B2F0FAFF0A07 AND.W   #0xfffa, &0x70a
+     97                ADCMCTL0 |= ADCINCH_2; // Enable Next channel A2
+   \   0000A8   A2D30A07     BIS.W   #0x2, &0x70a
+     98                ADC_Thumb = ADCMEM0; // Move result into Global
+   \   0000AC   92421207.... MOV.W   &0x712, &ADC_Thumb
+     99          
+    100          
+    101                //ENABLE THE 25 mSec TIMER ON LAST CASE
+    102                // when timer is done, enable the ADC converstions again:
+    103                //              ADCCTL0 |= ADCENC; // Enable Conversions
+    104                //              ADCCTL0 |= ADCSC; // Start next sample. Kicks off the next ADC_ISR() interrupt
+    105          
+    106                ADC_Channel = 0;  //reset the channel to start from the first in series of desired reads
+   \   0000B2   8243....     MOV.W   #0x0, &ADC_Channel
+    107          
+    108                ADCCTL0 |= ADCSC; // Start next sample. Kicks off the next ADC_ISR() interrupt
+   \   0000B6   92D30007     BIS.W   #0x1, &0x700
+    109          //      ADCCTL0 &= ~ADCSC; // disable until 25 mSec timer re-enables it?????
+    110                break;
+    111          
+    112                default:
+    113                break;
+    114              }
+    115          
+    116              //lines below are part of case /* case ADCIV_ADCIFG: // ADCMEM0 memory register with the conversion result  */
+    117              // they execute for every case statement above
+    118              // Enable Conversions //TODO: move this line to 25 mSec Timer
+    119          
+    120              //disable ISR, leave it to a timer to re-enable 30 mSec later
+    121              ADC_CONVERSION_DISABLE();
+   \                     ??ADC_ISR_0:
+   \   0000BA   A2C30007     BIC.W   #0x2, &0x700
+    122          
+    123          //    ADCCTL0 &= ~ADCENC;
+    124          
+    125          
+    126              // Switch case replaces the 2 following lines, which was  repeatedly reading the
+    127              //thumb wheel with no timer involved
+    128              //    ADC_Thumb = ADCMEM0; // Channel A5
+    129              //    ADCCTL0 |= ADCSC; // Start next sample. Kicks off the next ADC_ISR() interrupt
+    130          
+    131          
+    132              //TODO: since it will take < 25 mSec to take a reading, you can disable the timer while readings occur
+    133              // the next timer interrupt will kick off the next reading on its own
+    134              break;
+    135              default:
+    136              break;
+    137            }
+    138          }
+   \                     ??ADC_ISR_1:
+   \   0000BE   3C17         POPM.W  #0x4, R15
+   \   0000C0   0013         RETI
+   \   0000C2                REQUIRE _A_ADCCTL0_L
+   \   0000C2                REQUIRE _A_ADCMCTL0_L
+   \   0000C2                REQUIRE _A_ADCMEM0_L
+   \   0000C2                REQUIRE _A_ADCIV_L
+    139          
+    140          /*helper function for ADC converstion ISR: This is simply moving what would have
+    141            been inside each case statement of the ISR
+    142           takes result from ADC and performs operations on the relevant mov average array
+    143          */
+
+   \                                 In  segment CODE, align 2
+    144          void ADC_perform_moving_average(unsigned int volatile ADC_result, char specific_sensor){
+   \                     ADC_perform_moving_average:
+   \   000000   1B15         PUSHM.W #0x2, R11
+   \   000002   0C12         PUSH.W  R12
+    145            //TODO: opportunity to implement a queue data structure from scratch
+    146            //TODO: less logic if implemented with pointer to specific array
+    147            unsigned int ADC_result_temp = ADC_result;
+   \   000004   2E41         MOV.W   @SP, R14
+    148          
+    149            switch(specific_sensor){
+   \   000006   4F4D         MOV.B   R13, R15
+   \   000008   4F83         SUB.B   #0x0, R15
+   \   00000A   0324         JEQ     ??ADC_perform_moving_average_5
+   \   00000C   5F83         SUB.B   #0x1, R15
+   \   00000E   2124         JEQ     ??ADC_perform_moving_average_6
+   \   000010   3F3C         JMP     ??ADC_perform_moving_average_2
+    150            case ADC_LEFT_SENSOR:
+    151              //shift array, add new value, and take the average (sum values and divide by 8)
+    152              for(int i = 7; i >= 0; i--){
+   \                     ??ADC_perform_moving_average_5:
+   \   000012   3C400700     MOV.W   #0x7, R12
+   \                     ??ADC_perform_moving_average_0:
+   \   000016   0C93         CMP.W   #0x0, R12
+   \   000018   1638         JL      ??ADC_perform_moving_average_7
+    153                if(i == 0){
+   \   00001A   0C93         CMP.W   #0x0, R12
+   \   00001C   0520         JNE     ??ADC_perform_moving_average_8
+    154                  Left_Sensor_Mov_Values[0] = ADC_result_temp;
+   \   00001E   824E....     MOV.W   R14, &Left_Sensor_Mov_Values
+    155                  left_sensor_mov_average += ADC_result_temp;
+   \   000022   825E....     ADD.W   R14, &left_sensor_mov_average
+   \   000026   0D3C         JMP     ??ADC_perform_moving_average_3
+    156                }else{
+    157                  Left_Sensor_Mov_Values[i] = Left_Sensor_Mov_Values[i-1];
+   \                     ??ADC_perform_moving_average_8:
+   \   000028   0A4C         MOV.W   R12, R10
+   \   00002A   0A5A         RLA.W   R10
+   \   00002C   0F4C         MOV.W   R12, R15
+   \   00002E   0F5F         RLA.W   R15
+   \   000030   9F4A........ MOV.W   LWRD(Left_Sensor_Mov_Values + 65534)(R10), Left_Sensor_Mov_Values(R15)
+    158                  left_sensor_mov_average += Left_Sensor_Mov_Values[i];
+                         ^
+Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined
+          in this statement
+   \   000036   0F4C         MOV.W   R12, R15
+   \   000038   0F5F         RLA.W   R15
+   \   00003A   1F4F....     MOV.W   Left_Sensor_Mov_Values(R15), R15
+   \   00003E   825F....     ADD.W   R15, &left_sensor_mov_average
+    159                }
+    160              }
+   \                     ??ADC_perform_moving_average_3:
+   \   000042   3C53         ADD.W   #0xffff, R12
+   \   000044   E83F         JMP     ??ADC_perform_moving_average_0
+    161              left_sensor_mov_average >>= 3;
+   \                     ??ADC_perform_moving_average_7:
+   \   000046   1F42....     MOV.W   &left_sensor_mov_average, R15
+   \   00004A   5F0B         RRUM.W  #0x3, R15
+   \   00004C   824F....     MOV.W   R15, &left_sensor_mov_average
+    162              break;
+   \   000050   1F3C         JMP     ??ADC_perform_moving_average_2
+    163            case ADC_RIGHT_SENSOR:
+    164              for(int i = 7; i >= 0; i--){
+   \                     ??ADC_perform_moving_average_6:
+   \   000052   3C400700     MOV.W   #0x7, R12
+   \                     ??ADC_perform_moving_average_1:
+   \   000056   0C93         CMP.W   #0x0, R12
+   \   000058   1638         JL      ??ADC_perform_moving_average_9
+    165                if(i == 0){
+   \   00005A   0C93         CMP.W   #0x0, R12
+   \   00005C   0520         JNE     ??ADC_perform_moving_average_10
+    166                  Right_Sensor_Mov_Values[0] = ADC_result_temp;
+   \   00005E   824E....     MOV.W   R14, &Right_Sensor_Mov_Values
+    167                  right_sensor_mov_average += ADC_result_temp;
+   \   000062   825E....     ADD.W   R14, &right_sensor_mov_average
+   \   000066   0D3C         JMP     ??ADC_perform_moving_average_4
+    168                }else{
+    169                  Right_Sensor_Mov_Values[i] = Right_Sensor_Mov_Values[i-1];
+   \                     ??ADC_perform_moving_average_10:
+   \   000068   0B4C         MOV.W   R12, R11
+   \   00006A   0B5B         RLA.W   R11
+   \   00006C   0F4C         MOV.W   R12, R15
+   \   00006E   0F5F         RLA.W   R15
+   \   000070   9F4B........ MOV.W   LWRD(Right_Sensor_Mov_Values + 65534)(R11), Right_Sensor_Mov_Values(R15)
+    170                  right_sensor_mov_average += Right_Sensor_Mov_Values[i];
+                         ^
+Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined
+          in this statement
+   \   000076   0F4C         MOV.W   R12, R15
+   \   000078   0F5F         RLA.W   R15
+   \   00007A   1F4F....     MOV.W   Right_Sensor_Mov_Values(R15), R15
+   \   00007E   825F....     ADD.W   R15, &right_sensor_mov_average
+    171                }
+    172              }
+   \                     ??ADC_perform_moving_average_4:
+   \   000082   3C53         ADD.W   #0xffff, R12
+   \   000084   E83F         JMP     ??ADC_perform_moving_average_1
+    173              right_sensor_mov_average >>= 3;
+   \                     ??ADC_perform_moving_average_9:
+   \   000086   1F42....     MOV.W   &right_sensor_mov_average, R15
+   \   00008A   5F0B         RRUM.W  #0x3, R15
+   \   00008C   824F....     MOV.W   R15, &right_sensor_mov_average
+    174              break;
+    175            }
+    176          
+    177          //  //debug / watch array
+    178          //  for(int i = 31; i >= 0; i--){
+    179          //    if(i == 0){
+    180          //      Left_Sensor_Watch[0] = left_sensor_mov_average;
+    181          //      Right_Sensor_Watch[0] = right_sensor_mov_average;
+    182          //    }else{
+    183          //      Left_Sensor_Watch[i] = Left_Sensor_Watch[i-1];
+    184          //      Right_Sensor_Watch[i] = Right_Sensor_Watch[i-1];
+    185          //    }
+    186          //  }
+    187          }
+   \                     ??ADC_perform_moving_average_2:
+   \   000090   E103         ADDA    #0x2, SP
+   \   000092   1A17         POPM.W  #0x2, R11
+   \   000094   1001         RETA
+    188          
+    189          
+    190          /*helper function for conversion to characters for display:
+    191          
+    192          */
+
+   \                                 In  segment CODE, align 2
+    193          void HEXtoBCD(int hex_value_left, int hex_value_right){
+   \                     HEXtoBCD:
+   \   000000   3B15         PUSHM.W #0x4, R11
+   \   000002   0A4C         MOV.W   R12, R10
+   \   000004   0B4D         MOV.W   R13, R11
+    194            int divisor = 1;
+   \   000006   1843         MOV.W   #0x1, R8
+    195          
+    196            for(int i = 3; i>=0; i--){
+   \   000008   39400300     MOV.W   #0x3, R9
+   \                     ??HEXtoBCD_0:
+   \   00000C   0993         CMP.W   #0x0, R9
+   \   00000E   1638         JL      ??HEXtoBCD_2
+    197              //    = ascii offset plus each decimal digit of the hex value
+    198              //    example: 1123
+    199              //    1234 % 10 = 4, 4/1 = 4 -> one's place = 4
+    200              //    1234 % 100 = 34, 34/10 = 3 -> one's place = 3
+    201              //    1234 % 1000 = 234, 234/100 = 2 -> one's place = 2
+    202              //    1234 % 10000 = 1234, 1234/1000 = 1 -> one's place = 1
+    203              
+    204              //adc_char[i] = 0x30 + (hex_value % (divisor*10) / (divisor) );
+    205              adc_char[i] = 0x30 + (hex_value_left % (divisor*10) / (divisor) );
+   \   000010   0E48         MOV.W   R8, R14
+   \   000012   0E5E         RLA.W   R14
+   \   000014   0F4E         MOV.W   R14, R15
+   \   000016   5E06         RLAM.W  #0x2, R14
+   \   000018   0E5F         ADD.W   R15, R14
+   \   00001A   0C4A         MOV.W   R10, R12
+   \   00001C   ........     CALLA   #?DivMod16s
+   \   000020   0C4E         MOV.W   R14, R12
+   \   000022   0E48         MOV.W   R8, R14
+   \   000024   ........     CALLA   #?DivMod16s
+   \   000028   7C503000     ADD.B   #0x30, R12
+   \   00002C   C94C....     MOV.B   R12, adc_char(R9)
+    206              divisor = divisor * 10;
+   \   000030   0858         RLA.W   R8
+   \   000032   0F48         MOV.W   R8, R15
+   \   000034   5806         RLAM.W  #0x2, R8
+   \   000036   085F         ADD.W   R15, R8
+    207            }
+   \   000038   3953         ADD.W   #0xffff, R9
+   \   00003A   E83F         JMP     ??HEXtoBCD_0
+    208            
+    209            adc_char[4] = ' ';
+   \                     ??HEXtoBCD_2:
+   \   00003C   F2402000.... MOV.B   #0x20, &adc_char + 4
+    210            adc_char[5] = ' ';
+   \   000042   F2402000.... MOV.B   #0x20, &adc_char + 5
+    211            
+    212            divisor = 1;
+   \   000048   1843         MOV.W   #0x1, R8
+    213            
+    214            for(int i = 9; i>5; i--){
+   \   00004A   39400900     MOV.W   #0x9, R9
+   \                     ??HEXtoBCD_1:
+   \   00004E   39900600     CMP.W   #0x6, R9
+   \   000052   1638         JL      ??HEXtoBCD_3
+    215              //    = ascii offset plus each decimal digit of the hex value
+    216              //    example: 1123
+    217              //    1234 % 10 = 4, 4/1 = 4 -> one's place = 4
+    218              //    1234 % 100 = 34, 34/10 = 3 -> one's place = 3
+    219              //    1234 % 1000 = 234, 234/100 = 2 -> one's place = 2
+    220              //    1234 % 10000 = 1234, 1234/1000 = 1 -> one's place = 1
+    221              
+    222              //adc_char[i] = 0x30 + (hex_value % (divisor*10) / (divisor) );
+    223              adc_char[i] = 0x30 + (hex_value_right % (divisor*10) / (divisor) );
+   \   000054   0E48         MOV.W   R8, R14
+   \   000056   0E5E         RLA.W   R14
+   \   000058   0F4E         MOV.W   R14, R15
+   \   00005A   5E06         RLAM.W  #0x2, R14
+   \   00005C   0E5F         ADD.W   R15, R14
+   \   00005E   0C4B         MOV.W   R11, R12
+   \   000060   ........     CALLA   #?DivMod16s
+   \   000064   0C4E         MOV.W   R14, R12
+   \   000066   0E48         MOV.W   R8, R14
+   \   000068   ........     CALLA   #?DivMod16s
+   \   00006C   7C503000     ADD.B   #0x30, R12
+   \   000070   C94C....     MOV.B   R12, adc_char(R9)
+    224              divisor = divisor * 10;
+   \   000074   0858         RLA.W   R8
+   \   000076   0F48         MOV.W   R8, R15
+   \   000078   5806         RLAM.W  #0x2, R8
+   \   00007A   085F         ADD.W   R15, R8
+    225            }
+   \   00007C   3953         ADD.W   #0xffff, R9
+   \   00007E   E73F         JMP     ??HEXtoBCD_1
+    226            
+    227            adc_char[10] = CARRIAGE_RETURN;
+   \                     ??HEXtoBCD_3:
+   \   000080   F2400D00.... MOV.B   #0xd, &adc_char + 10
+    228            adc_char[11] = LINE_FEED;
+   \   000086   F2400A00.... MOV.B   #0xa, &adc_char + 11
+    229          }
+   \   00008C   3817         POPM.W  #0x4, R11
+   \   00008E   1001         RETA
+
+   \                                 In  segment INTVEC, offset 0x3a, root
+   \                     `??ADC_ISR::??INTVEC 58`:
+   \   00003A   ....         DC16    ADC_ISR
+    230          
+    231          //void adc_line(char display_line_position, char display_character_position){
+    232          //
+    233          //  for(char i=3, j=display_character_position; j < (display_character_position+4); i--, j++){
+    234          //    //note: pointless comparison warning broke refresh of entire display
+    235          //    display_line[display_line_position][j] = adc_char[i];
+    236          //  }
+    237          //  display_line[display_line_position][4] = ' '; //fill the next element with a space
+    238          //  display_line[display_line_position][5] = ' '; //fill the next element with a space
+    239          //}
+    240          
+    241          /* Carlson's bloated function for hex -> BCD conversion
+    242          void HEXtoBCD(int hex_value){
+    243          
+    244            if(hex_value >= 1000){
+    245              hex_value = hex_value - 1000;
+    246              thousands = 1;
+    247            }
+    248          
+    249            adc_char[0] = '0';
+    250            while (hex_value > 999){
+    251              hex_value = hex_value - 1000;
+    252              value = value + 1;
+    253              adc_char[0] = 0x30 + value;
+    254              hundreds_place = 1;
+    255            }
+    256            if((adc_char[0] == '1') && !hundreds_place){
+    257              adc_char[1] = '0';
+    258            }
+    259            value = 0;
+    260            while (hex_value > 99){
+    261              hex_value = hex_value - 100;
+    262              value = value + 1;
+    263              adc_char[1] = 0x30 + value;
+    264            }
+    265            value = 0;
+    266            while (hex_value > 9){
+    267              hex_value = hex_value - 10;
+    268              value = value + 1;
+    269              adc_char[2] = 0x30 + value;
+    270            }
+    271            adc_char[3] = 0x30 + hex_value;
+    272          }
+    273          */
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+     12   ADC_ISR
+       12   -> ADC_perform_moving_average
+     10   ADC_perform_moving_average
+     12   HEXtoBCD
+       12 ?DivMod16s
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  ADC_Bat
+       2  ADC_Channel
+     194  ADC_ISR
+       2  ADC_ISR::??INTVEC 58
+       2  ADC_Left_Sensor
+       2  ADC_Right_Sensor
+       2  ADC_Thumb
+     150  ADC_perform_moving_average
+     144  HEXtoBCD
+      16  Left_Sensor_Mov_Values
+      16  Right_Sensor_Mov_Values
+       2  _A_ADCCTL0_L
+       2  _A_ADCIV_L
+       2  _A_ADCMCTL0_L
+       2  _A_ADCMEM0_L
+      12  adc_char
+       2  left_sensor_mov_average
+       2  right_sensor_mov_average
+
+ 
+ 294 bytes in segment CODE
+   8 bytes in segment DATA16_AN
+  58 bytes in segment DATA16_Z
+   2 bytes in segment INTVEC
+ 194 bytes in segment ISR_CODE
+ 
+ 488 bytes of CODE  memory
+   0 bytes of CONST memory (+ 2 bytes shared)
+  58 bytes of DATA  memory (+ 8 bytes shared)
+
+Errors: none
+Warnings: 2

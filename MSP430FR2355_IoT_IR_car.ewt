@@ -2162,22 +2162,25 @@
         </file>
     </group>
     <file>
-        <name>$PROJ_DIR$\carlson_starter_code.c</name>
+        <name>$PROJ_DIR$\init_ADC.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\clocks.c</name>
+        <name>$PROJ_DIR$\init_clocks.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\display_menu.c</name>
+        <name>$PROJ_DIR$\init_display.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\FET_Operation_Verification.c</name>
+        <name>$PROJ_DIR$\init_ports.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\init.c</name>
+        <name>$PROJ_DIR$\init_serial.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\interfaces.c</name>
+        <name>$PROJ_DIR$\init_system.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\init_timers.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\interrupt_ADC.c</name>
@@ -2192,27 +2195,18 @@
         <name>$PROJ_DIR$\interrupt_timers.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\led.c</name>
-    </file>
-    <file>
         <name>$PROJ_DIR$\main.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\motor_control.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\notes.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\PID.c</name>
+        <name>$PROJ_DIR$\operation_display_menu.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\ports.c</name>
+        <name>$PROJ_DIR$\operation_motor_control.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\system.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\timers.c</name>
+        <name>$PROJ_DIR$\operation_PID_controler.c</name>
     </file>
 </project>

@@ -62,7 +62,7 @@ void Init_Timer_B0(void){
   TB0CCTL2 &= ~CCIFG;  //clear any possible pending interrupt flags
   TB0CCTL2 |= CCIE; // CCR2 enable interrupt
 
-  TB0CTL &= ~TBIE ; // Disable Overflow Interrupt
+  TB0CTL |= TBIE ; // Enable Overflow Interrupt (used for IoT module reset release on startup)
   TB0CTL &= ~TBIFG ; // Clear Overflow Interrupt flag
   //When the TB0R = TB0CCR# rolls over from 65535 to 0,
   // a hardware generated interrupt happens, the TBIFG (Timer B0 Overflow Interrupt Flag)
@@ -90,7 +90,7 @@ void Init_Timer_B1(void){
   TB1CCTL0 &= ~CCIFG;
   TB1CCTL0 |= CCIE;
 
-  TB1CCR1 = TB1_SEC_0_030; // 30 msec
+  TB1CCR1 = TB1_SEC_0_040; // 40 msec
   TB1CCTL1 &= ~CCIFG;
   TB1CCTL1 |= CCIE;
 
@@ -130,7 +130,7 @@ void Init_Timer_B2(void){
 
   TB2CCR2 = TB2_MIN_1_000;   // Minute
   TB2CCTL2 &= ~CCIFG;
-  TB2CCTL2 &= ~CCIE;
+  TB2CCTL2 |= CCIE;
 
   TB2CTL &= ~TBIE ;
   TB2CTL &= ~TBIFG ;

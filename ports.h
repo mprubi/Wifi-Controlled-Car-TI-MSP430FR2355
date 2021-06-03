@@ -54,6 +54,9 @@
 #define V_DAC         (0x04) // 2
 #define V_3_3         (0x08) // 3
 #define IOT_PROG_MODE (0x10) // 4
+#define P5_5          (0x20) // 5
+#define P5_6          (0x40) // 6
+#define P5_7          (0x80) // 7
 
 // Port 6 Pins
 #define R_FORWARD     (0x01) // 0
@@ -63,5 +66,6 @@
 #define LCD_BACKLITE  (0x10) // 4
 #define P6_5          (0x20) // 5
 #define GRN_LED       (0x40) // 6
+#define P6_7          (0x80) // 7
 
 

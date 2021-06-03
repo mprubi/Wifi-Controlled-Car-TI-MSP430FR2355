@@ -1,0 +1,1030 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.20.1.997/W32 for MSP430           29/May/2021  20:59:51
+# Copyright 1996-2020 IAR Systems AB.
+# PC-locked license - IAR Embedded Workbench for MSP430, 8K KickStart Edition 7.20
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_timers.c
+#    Command line  =  
+#        -f C:\Users\NOPASS~1\AppData\Local\Temp\EW89E4.tmp
+#        ("C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_timers.c"
+#        -lC "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\List" -o
+#        "C:\Users\nopassword\Desktop\ECE_306\Project 06\Debug\Obj" --no_cse
+#        --no_unroll --no_inline --no_code_motion --no_tbaa --debug
+#        -D__MSP430FR2355__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.4\430\lib\dlib\dl430xlsfn.h" -I
+#        ./ --core=430X --data_model=small -On --multiplier=32
+#        --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\List\interrupt_timers.lst
+#    Object file   =  
+#        C:\Users\nopassword\Desktop\ECE_306\Project
+#        06\Debug\Obj\interrupt_timers.r43
+#
+###############################################################################
+
+C:\Users\nopassword\Desktop\ECE_306\Project 06\interrupt_timers.c
+      1          // This file is for timer operation
+      2          #include  "functions.h"
+      3          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x700
+   \   union <unnamed> _A_ADCCTL0_L
+   \                     _A_ADCCTL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x21a
+   \   union <unnamed> _A_PAIE_L
+   \                     _A_PAIE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x21c
+   \   union <unnamed> _A_PAIFG_L
+   \                     _A_PAIFG_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x222
+   \   union <unnamed> _A_PBOUT_L
+   \                     _A_PBOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x23a
+   \   union <unnamed> _A_PBIE_L
+   \                     _A_PBIE_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x23c
+   \   union <unnamed> _A_PBIFG_L
+   \                     _A_PBIFG_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x244
+   \   union <unnamed> _A_PCDIR_L
+   \                     _A_PCDIR_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x384
+   \   union <unnamed> _A_TB0CCTL1_L
+   \                     _A_TB0CCTL1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x386
+   \   union <unnamed> _A_TB0CCTL2_L
+   \                     _A_TB0CCTL2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x392
+   \   union <unnamed> _A_TB0CCR0_L
+   \                     _A_TB0CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x394
+   \   union <unnamed> _A_TB0CCR1_L
+   \                     _A_TB0CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x396
+   \   union <unnamed> _A_TB0CCR2_L
+   \                     _A_TB0CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3ae
+   \   union <unnamed> _A_TB0IV_L
+   \                     _A_TB0IV_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3d2
+   \   union <unnamed> _A_TB1CCR0_L
+   \                     _A_TB1CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3d4
+   \   union <unnamed> _A_TB1CCR1_L
+   \                     _A_TB1CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x3ee
+   \   union <unnamed> _A_TB1IV_L
+   \                     _A_TB1IV_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x412
+   \   union <unnamed> _A_TB2CCR0_L
+   \                     _A_TB2CCR0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x414
+   \   union <unnamed> _A_TB2CCR1_L
+   \                     _A_TB2CCR1_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x416
+   \   union <unnamed> _A_TB2CCR2_L
+   \                     _A_TB2CCR2_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x42e
+   \   union <unnamed> _A_TB2IV_L
+   \                     _A_TB2IV_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x58e
+   \   union <unnamed> _A_UCA1TXBUF_L
+   \                     _A_UCA1TXBUF_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x59a
+   \   union <unnamed> _A_UCA1IE_L
+   \                     _A_UCA1IE_L:
+   \   000000                DS8 2
+      4          #include <string.h>
+      5          #include "macros.h"
+      6          
+      7          //extern volatile int Time_Seq_Reset_Count = 0;
+      8          //extern volatile unsigned char update_display;
+      9          //extern volatile unsigned char update_display_timer = 0;
+     10          //extern volatile unsigned int Time_Sequence = 0;
+     11          
+     12          //proving my adc setup
+     13          extern volatile unsigned int ADC_Thumb,
+     14                                       ADC_Left_Sensor,
+     15                                       ADC_Right_Sensor,
+     16                                       left_sensor_mov_average,
+     17                                       right_sensor_mov_average;
+     18          extern char display_line[4][11];
+     19          extern char *display[4];
+     20          //extern unsigned char display_mode;
+     21          extern volatile unsigned char display_changed;
+     22          extern volatile char adc_char[12],
+     23                               bang;
+     24          //extern volatile unsigned char start_process = 0;
+     25          extern unsigned int speed_global,
+     26                              travel_time_seconds;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     27          volatile char from_forward,
+   \                     from_forward:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     28                        from_reverse,
+   \                     from_reverse:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     29                        activate_travel_time = FALSE,
+   \                     activate_travel_time:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     30                        activate_adc_readings = FALSE;
+   \                     activate_adc_readings:
+   \   000000                DS8 1
+     31          
+     32          extern int black_line_edge_threshold ;
+     33          extern unsigned int speed_global;
+     34          
+     35          extern unsigned int speed_correction;
+     36          
+     37          
+     38          //volatile char one_second_from_fifty_msec_count = 0;
+     39          //volatile char one_second_delay = FALSE;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     40          volatile char time_seconds = 0,
+   \                     time_seconds:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     41                       time_half_seconds = 0,
+   \                     time_half_seconds:
+   \   000000                DS8 1
+     42          //             Tx_message_timer = 0,
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     43                       FET_delay_timer = 0,
+   \                     FET_delay_timer:
+   \   000000                DS8 1
+     44          //             PID_enable_timer = 0,
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     45                       open_TCP_port_timer = 0,
+   \                     open_TCP_port_timer:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     46                       travel_time_inrementer = 0,
+   \                     travel_time_inrementer:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     47                       activate_open_TCP_port_timer = FALSE,
+   \                     activate_open_TCP_port_timer:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     48                       activate_pivot_timer = FALSE,
+   \                     activate_pivot_timer:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     49                       pivot_timer = 0,
+   \                     pivot_timer:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     50                       IoT_reset_timer = 0;
+   \                     IoT_reset_timer:
+   \   000000                DS8 1
+     51          extern volatile char observe_control_system;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     52          volatile char PID_control_enabled = FALSE;
+   \                     PID_control_enabled:
+   \   000000                DS8 1
+     53          extern char current_state,
+     54                      previous_state;
+     55          extern volatile char startup_okay_to_TX;
+     56          volatile extern char USB_Tx_Outgoing_Buff[LARGE_RING_SIZE_32];
+     57          
+     58          //extern long debug_follow_black_line_counter, 
+     59          //      debug_observe_control_system_counter,
+     60          //      debug_control_signal_calc_counter;
+     61          
+     62          
+     63          extern int debug_L_BLACK[DEBUG_ARR_SIZE],
+     64                     debug_R_BLACK[DEBUG_ARR_SIZE],
+     65                     debug_L_SPEED[DEBUG_ARR_SIZE],
+     66                     debug_R_SPEED[DEBUG_ARR_SIZE],
+     67                     debug_Control[DEBUG_ARR_SIZE];
+     68          extern int debug_scroller;
+     69          extern volatile char UCA1_index;
+     70          
+     71          //extern const char *Tx_queue_USB[6],
+     72          //                  *Tx_queue_IoT[6];
+     73          //extern char usb_msg_queue_incrementer,
+     74          //            iot_msg_queue_incrementer;
+     75          
+     76          
+     77          /* Various Timer related notes
+     78          Two interrupt vectors are associated with the 16 bit
+     79          Timer _B module:
+     80          – TBxCCR0 interrupt vector for TBxCCR0 CCIFG
+     81          – TBxIV interrupt vector for all other CCIFG flags and TBIFG
+     82          
+     83          -In capture mode, any CCIFG flag is set when a timer
+     84          value is captured in the associated TBxCCRn register
+     85          
+     86          -In compare mode, any CCIFG flag is set if TBxR counts
+     87          to the associated TBxCCRn value Software may also
+     88          set or clear any CCIFG flag All CCIFG flags request an
+     89          interrupt when their corresponding CCIE bit and the
+     90          GIE bit are set
+     91          
+     92          (reason why each Timer_Bx has two ISR's associated with them)
+     93          The TBxCCR0 CCIFG flag has the highest Timer _B
+     94          interrupt priority and has a dedicated interrupt vector.The TBxCCR0 CCIFG flag is automatically reset when
+     95          the TBxCCR0 interrupt request is serviced.
+     96          
+     97          These functions determine what I'm going to do when
+     98          the timers expire, triggering an interrupt
+     99          
+    100          Rule of thumb: don't have a faster timer than what you need and use it to count
+    101          up to slower times if the fast timer is completely unused
+    102          
+    103          */
+    104          
+    105          
+    106          //TODO: TB0 CC0 is for the update display and other similar order timers
+    107          // TB0 CCR1 and CCR 2 could be for debouncing SW1 and SW2
+    108          // TB1 can be used for the order of 50 miliseconds (going forward and reverse?)
+    109          //     CCR0 using SMCLK again
+    110          //TB2 can be on the order of seconds, using ACLCK as the source
+    111          // use this clock with 5 or 10 seconds to avoid having to send IoT commands
+    112          // every 1 second to go across atrium floor
+    113          
+    114          // ACLK will be good for obtaining minutes to turn on LED on wifi module to indicate
+    115          //whether it's received a command in the last minute or not
+    116          
+    117          #pragma vector = TIMER_B0_CCR_0_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    118          __interrupt void TIMER_B0_CCR_0_ISR(void){
+   \                     TIMER_B0_CCR_0_ISR:
+    119            // IV (Interrupt Vector) for TimerB0 CCRO
+    120            //Usage of these vectors is to derive any number of
+    121            // additional timing elements (variables) for different applications in the program
+    122            TB0CCR0 += CCR0_16_MSEC_INTERVAL; // Add Offset to TBCCR0
+   \   000000   B250401F9203 ADD.W   #0x1f40, &0x392
+    123          
+    124              //GREEN_LED_TOGGLE();
+    125          }
+   \   000006   0013         RETI
+   \   000008                REQUIRE _A_TB0CCR0_L
+    126          
+    127          #pragma vector= TIMER_B0_CCR_1_2_OVFL_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    128          __interrupt void TIMER_B0_CCR_1_2_OVFL_ISR(void){
+   \                     TIMER_B0_CCR_1_2_OVFL_ISR:
+   \   000000   0F12         PUSH.W  R15
+    129          
+    130            // IV (Interrupt Vector) for TimerB0 CCR1, CCR2, and OFVL
+    131          
+    132            switch(__even_in_range(TB0IV, 14)){
+   \   000002   1F42AE03     MOV.W   &0x3ae, R15
+   \   000006   E00F         ADDA    R15, PC
+   \                     `?<Jumptable for TIMER_B0_CCR_1_2_OVFL_ISR>_0`:
+   \   000008   203C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+   \   00000A   063C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_1
+   \   00000C   103C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_2
+   \   00000E   1D3C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+   \   000010   1C3C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+   \   000012   1B3C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+   \   000014   1A3C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+   \   000016   163C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_3
+    133            case 0:
+    134              break; // No interrupt
+    135            case 2:
+    136              TB0CCR1 += TB0_SEC_0_100; //increment timer
+   \                     ??TIMER_B0_CCR_1_2_OVFL_ISR_1:
+   \   000018   B25050C39403 ADD.W   #0xc350, &0x394
+    137              TB0CCTL1 &= ~CCIE; //disable timer
+   \   00001E   B2C010008403 BIC.W   #0x10, &0x384
+    138          
+    139              //debug actions
+    140              //BACKLIGHT_TOGGLE();
+    141              //GREEN_LED_TOGGLE();
+    142          
+    143              P4IE |= SW1;  // re-enable SW1 via "Interrupt Enable" bit
+   \   000024   E2D33B02     BIS.B   #0x2, &0x23b
+    144              P4IFG &= ~SW1; // 2) clear SW1 associated flags
+   \   000028   E2C33D02     BIC.B   #0x2, &0x23d
+    145          
+    146              break;
+   \   00002C   0E3C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+    147            case 4:
+    148              TB0CCR2 += TB0_SEC_0_100; //increment timer
+   \                     ??TIMER_B0_CCR_1_2_OVFL_ISR_2:
+   \   00002E   B25050C39603 ADD.W   #0xc350, &0x396
+    149          
+    150              TB0CCTL2 &= ~CCIE; //disable timer
+   \   000034   B2C010008603 BIC.W   #0x10, &0x386
+    151          
+    152              //debug actions
+    153              //BACKLIGHT_TOGGLE();
+    154              //RED_LED_TOGGLE();
+    155          
+    156              //after this timer interrupt triggers (TB0_SEC_1_250 later),
+    157              // re-enable switch interrupts so they can be reused
+    158          
+    159              P2IE |= SW2;  // 1) "Interrupt Enable" bit
+   \   00003A   F2D21B02     BIS.B   #0x8, &0x21b
+    160              P2IFG &= ~SW2; // 2) IFG SW1 cleared
+   \   00003E   F2C21D02     BIC.B   #0x8, &0x21d
+    161          
+    162              break;
+   \   000042   033C         JMP     ??TIMER_B0_CCR_1_2_OVFL_ISR_0
+    163            case 14: // overflow
+    164              P3OUT |= IOT_RESET;  // Set IOT_RESET Inactive [high]  (release IOT module from reset mode on startup)
+   \                     ??TIMER_B0_CCR_1_2_OVFL_ISR_3:
+   \   000044   F2D080002202 BIS.B   #0x80, &0x222
+    165              //TB0CTL &= ~TBIE;      // Timer B0 overflow interrupt disable
+    166              break;
+    167            default:
+    168              break;
+    169            }
+    170            //
+    171          }
+   \                     ??TIMER_B0_CCR_1_2_OVFL_ISR_0:
+   \   00004A   3F41         POP.W   R15
+   \   00004C   0013         RETI
+   \   00004E                REQUIRE _A_TB0CCR1_L
+   \   00004E                REQUIRE _A_TB0CCTL1_L
+   \   00004E                REQUIRE _A_PBIE_L
+   \   00004E                REQUIRE _A_PBIFG_L
+   \   00004E                REQUIRE _A_TB0CCR2_L
+   \   00004E                REQUIRE _A_TB0CCTL2_L
+   \   00004E                REQUIRE _A_PAIE_L
+   \   00004E                REQUIRE _A_PAIFG_L
+   \   00004E                REQUIRE _A_PBOUT_L
+   \   00004E                REQUIRE _A_TB0IV_L
+    172          
+    173          #pragma vector = TIMER_B1_CCR_0_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    174          __interrupt void TIMER_B1_CCR_0_ISR(void){
+   \                     TIMER_B1_CCR_0_ISR:
+   \   000000   3F15         PUSHM.W #0x4, R15
+    175            // TimerB1 0 Interrupt handler
+    176          
+    177            TB1CCR0 += TB1_SEC_0_200; // Add Offset to TBCCR0
+   \   000002   B250A861D203 ADD.W   #0x61a8, &0x3d2
+    178          
+    179            IoT_reset_timer++;
+   \   000008   D253....     ADD.B   #0x1, &IoT_reset_timer
+    180            //BACKLIGHT_TOGGLE();  //debug
+    181          
+    182          
+    183           // IoT Reset
+    184            if(IoT_reset_timer > 2){
+   \   00000C   F2900300.... CMP.B   #0x3, &IoT_reset_timer
+   \   000012   0328         JNC     ??TIMER_B1_CCR_0_ISR_0
+    185              P3OUT |= IOT_RESET;
+   \   000014   F2D080002202 BIS.B   #0x80, &0x222
+    186            }
+    187          
+    188            if(activate_pivot_timer == TRUE){
+   \                     ??TIMER_B1_CCR_0_ISR_0:
+   \   00001A   D293....     CMP.B   #0x1, &activate_pivot_timer
+   \   00001E   0B20         JNE     ??TIMER_B1_CCR_0_ISR_1
+    189                pivot_timer++;
+   \   000020   D253....     ADD.B   #0x1, &pivot_timer
+    190                if(pivot_timer == 2){
+   \   000024   E293....     CMP.B   #0x2, &pivot_timer
+   \   000028   0620         JNE     ??TIMER_B1_CCR_0_ISR_1
+    191                  pivot_timer  = 0;
+   \   00002A   C243....     MOV.B   #0x0, &pivot_timer
+    192                  activate_pivot_timer = FALSE;
+   \   00002E   C243....     MOV.B   #0x0, &activate_pivot_timer
+    193                  stop_car();
+   \   000032   ........     CALLA   #stop_car
+    194                }
+    195              }
+    196          
+    197            if(activate_adc_readings == TRUE){
+   \                     ??TIMER_B1_CCR_0_ISR_1:
+   \   000036   D293....     CMP.B   #0x1, &activate_adc_readings
+   \   00003A   0520         JNE     ??TIMER_B1_CCR_0_ISR_2
+    198              GREEN_LED_TOGGLE();
+   \   00003C   F2E040004302 XOR.B   #0x40, &0x243
+    199              // update display with hex values from ADC
+    200              //ADCCTL0 |= ADCENC;
+    201              //  HEXtoBCD(ADC_Left_Sensor);
+    202          //    HEXtoBCD(left_sensor_mov_average);
+    203          //    adc_line(0,6);
+    204          //
+    205          //    //  HEXtoBCD(ADC_Right_Sensor);
+    206          //    HEXtoBCD(right_sensor_mov_average);
+    207          //    adc_line(0,0);
+    208          //
+    209          ////  HEXtoBCD(black_line_edge_threshold);
+    210          //    HEXtoBCD(black_line_edge_threshold);
+    211          //    adc_line(1,0);
+    212          ////  HEXtoBCD(speed_global);
+    213          //    HEXtoBCD(speed_global);
+    214          //    adc_line(2,0);
+    215          ////  HEXtoBCD(speed_correction);
+    216          //    HEXtoBCD(speed_correction);
+    217          //    adc_line(3,0);
+    218              
+    219              // --------------------------
+    220              //Lost display functionality, writing values to terminal instead
+    221              
+    222          //    HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
+    223          //    
+    224          //    TX_message_USB_UCA1(adc_char);
+    225          
+    226          
+    227          //    HEXtoBCD(ADC_Thumb);
+    228          //    adc_line(2,6);
+    229          //
+    230          //    strcpy(display_line[3], "Thumb:");
+    231          //    update_string(display_line[2], 3);
+    232          
+    233              display_changed = 1;
+   \   000042   D243....     MOV.B   #0x1, &display_changed
+    234            }
+    235          }
+   \                     ??TIMER_B1_CCR_0_ISR_2:
+   \   000046   3C17         POPM.W  #0x4, R15
+   \   000048   0013         RETI
+   \   00004A                REQUIRE _A_TB1CCR0_L
+   \   00004A                REQUIRE _A_PBOUT_L
+   \   00004A                REQUIRE _A_PCOUT_L
+    236          
+    237          #pragma vector = TIMER_B1_CCR_1_2_OVFL_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    238          __interrupt void TIMER_B1_CCR_1_2_OVFL_ISR(void){
+   \                     TIMER_B1_CCR_1_2_OVFL_ISR:
+   \   000000   0F12         PUSH.W  R15
+    239            switch(__even_in_range(TB1IV, 14)){
+   \   000002   1F42EE03     MOV.W   &0x3ee, R15
+   \   000006   E00F         ADDA    R15, PC
+   \                     `?<Jumptable for TIMER_B1_CCR_1_2_OVFL_ISR>_0`:
+   \   000008   173C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+   \   00000A   063C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_3
+   \   00000C   123C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_4
+   \   00000E   143C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+   \   000010   133C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+   \   000012   123C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+   \   000014   113C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+   \   000016   103C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+    240            case 0:
+    241              break; // No interrupt
+    242            case 2:
+    243              //30 msec timer here (for ADC measurements)
+    244              TB1CCR1 += TB1_SEC_0_040;
+   \                     ??TIMER_B1_CCR_1_2_OVFL_ISR_3:
+   \   000018   B2508813D403 ADD.W   #0x1388, &0x3d4
+    245              //RED_LED_TOGGLE();
+    246          
+    247              //BACKLIGHT_TOGGLE();  //debug
+    248              
+    249          //    if (debug_scroller++ > DEBUG_ARR_SIZE){
+    250          //      debug_scroller = 0;
+    251          //    }
+    252          //    
+    253          //    
+    254          //    debug_L_BLACK[debug_scroller] = ;
+    255          //    debug_R_BLACK[debug_scroller] = ;
+    256          //    debug_L_SPEED[debug_scroller] = ;
+    257          //    debug_R_SPEED[debug_scroller] = ;
+    258          //    debug_Control[debug_scroller] = ;
+    259          //    
+    260          //  
+    261                    
+    262              if(activate_adc_readings == TRUE){
+   \   00001E   D293....     CMP.B   #0x1, &activate_adc_readings
+   \   000022   0A20         JNE     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+    263                ADC_CONVERSION_ENABLE();
+   \   000024   A2D30007     BIS.W   #0x2, &0x700
+    264          //      ADCCTL0 |= ADCENC;
+    265                observe_control_system = TRUE;
+   \   000028   D243....     MOV.B   #0x1, &observe_control_system
+    266                RED_LED_TOGGLE();
+   \   00002C   D2E30202     XOR.B   #0x1, &0x202
+    267              }
+    268          
+    269              break;
+   \   000030   033C         JMP     ??TIMER_B1_CCR_1_2_OVFL_ISR_2
+    270            case 4:
+    271              //50 msec timer here
+    272              TB1CCR1 += TB1_SEC_0_050;
+   \                     ??TIMER_B1_CCR_1_2_OVFL_ISR_4:
+   \   000032   B2506A18D403 ADD.W   #0x186a, &0x3d4
+    273              //GREEN_LED_TOGGLE();
+    274          
+    275              break;
+    276            case 14: // overflow
+    277              break;
+    278            default:
+    279              break;
+    280            }
+    281          }
+   \                     ??TIMER_B1_CCR_1_2_OVFL_ISR_2:
+   \   000038   3F41         POP.W   R15
+   \   00003A   0013         RETI
+   \   00003C                REQUIRE _A_TB1CCR1_L
+   \   00003C                REQUIRE _A_ADCCTL0_L
+   \   00003C                REQUIRE _A_PAOUT_L
+   \   00003C                REQUIRE _A_TB1IV_L
+    282          
+    283          #pragma vector = TIMER_B2_CCR_0_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    284          __interrupt void TIMER_B2_CCR_0_ISR(void){
+   \                     TIMER_B2_CCR_0_ISR:
+   \   000000   3F15         PUSHM.W #0x4, R15
+    285            // TimerB2 0 Interrupt handler
+    286          
+    287            TB2CCR0 += TB2_MIN_0_005; // Half second offset
+   \   000002   B25000011204 ADD.W   #0x100, &0x412
+    288            time_half_seconds++;
+   \   000008   D253....     ADD.B   #0x1, &time_half_seconds
+    289            
+    290            HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
+                   ^
+Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined
+          in this statement
+   \   00000C   1D42....     MOV.W   &right_sensor_mov_average, R13
+   \   000010   1C42....     MOV.W   &left_sensor_mov_average, R12
+   \   000014   ........     CALLA   #HEXtoBCD
+    291            
+    292            UCA1_index = 0;
+   \   000018   C243....     MOV.B   #0x0, &UCA1_index
+    293            
+    294            for(int i = 0; i < sizeof(adc_char); i++){
+   \   00001C   0F43         MOV.W   #0x0, R15
+   \                     ??TIMER_B2_CCR_0_ISR_0:
+   \   00001E   3F900C00     CMP.W   #0xc, R15
+   \   000022   052C         JC      ??TIMER_B2_CCR_0_ISR_2
+    295              USB_Tx_Outgoing_Buff[i] = adc_char[i];
+   \   000024   DF4F........ MOV.B   adc_char(R15), USB_Tx_Outgoing_Buff(R15)
+    296            }
+   \   00002A   1F53         ADD.W   #0x1, R15
+   \   00002C   F83F         JMP     ??TIMER_B2_CCR_0_ISR_0
+    297            
+    298            for(int i = sizeof(adc_char); i < sizeof(USB_Tx_Outgoing_Buff); i++){
+   \                     ??TIMER_B2_CCR_0_ISR_2:
+   \   00002E   3F400C00     MOV.W   #0xc, R15
+   \                     ??TIMER_B2_CCR_0_ISR_1:
+   \   000032   3F902000     CMP.W   #0x20, R15
+   \   000036   042C         JC      ??TIMER_B2_CCR_0_ISR_3
+    299              USB_Tx_Outgoing_Buff[i] = NULL_CHAR;
+   \   000038   CF43....     MOV.B   #0x0, USB_Tx_Outgoing_Buff(R15)
+    300            }
+   \   00003C   1F53         ADD.W   #0x1, R15
+   \   00003E   F93F         JMP     ??TIMER_B2_CCR_0_ISR_1
+    301            
+    302            //    strncpy(USB_Tx_Outgoing_Buff, message, 10);
+    303            UCA1IE |= UCTXIE; // enable the Tx interupt
+   \                     ??TIMER_B2_CCR_0_ISR_3:
+   \   000040   A2D39A05     BIS.W   #0x2, &0x59a
+    304            UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
+   \   000044   5F42....     MOV.B   &UCA1_index, R15
+   \   000048   4E4F         MOV.B   R15, R14
+   \   00004A   5E53         ADD.B   #0x1, R14
+   \   00004C   C24E....     MOV.B   R14, &UCA1_index
+   \   000050   4F4F         MOV.B   R15, R15
+   \   000052   5F4F....     MOV.B   USB_Tx_Outgoing_Buff(R15), R15
+   \   000056   4F4F         MOV.B   R15, R15
+   \   000058   824F8E05     MOV.W   R15, &0x58e
+    305            
+    306            //  TX_message_USB_UCA1(adc_char);
+    307          
+    308            //RED_LED_TOGGLE();
+    309          }
+   \   00005C   3C17         POPM.W  #0x4, R15
+   \   00005E   0013         RETI
+   \   000060                REQUIRE _A_TB2CCR0_L
+   \   000060                REQUIRE _A_UCA1IE_L
+   \   000060                REQUIRE _A_UCA1TXBUF_L
+    310          
+    311          #pragma vector = TIMER_B2_CCR_1_2_OVFL_VECTOR
+
+   \                                 In  segment ISR_CODE, align 2
+    312          __interrupt void TIMER_B2_CCR_1_2_OVFL_ISR(void){
+   \                     TIMER_B2_CCR_1_2_OVFL_ISR:
+   \   000000   3F15         PUSHM.W #0x4, R15
+    313            switch(__even_in_range(TB2IV, 14)){
+   \   000002   1F422E04     MOV.W   &0x42e, R15
+   \   000006   E00F         ADDA    R15, PC
+   \                     `?<Jumptable for TIMER_B2_CCR_1_2_OVFL_ISR>_0`:
+   \   000008   6D3C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+   \   00000A   063C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_8
+   \   00000C   663C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_9
+   \   00000E   6A3C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+   \   000010   693C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+   \   000012   683C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+   \   000014   673C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+   \   000016   663C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+    314            case 0:
+    315              break; // No interrupt
+    316            case 2: // CCR1
+    317              TB2CCR1 += 512; // one second offset
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_8:
+   \   000018   B25000021404 ADD.W   #0x200, &0x414
+    318              //TB2CCTL1 &= ~CCIFG; // 3) clear any possible pending interrupt flags
+    319              //TB2CCTL1 &= ~CCIE; // disable timer until I need it again
+    320              //(inside a counter for multiple seconds)
+    321          
+    322              //NOTE: MISTAKE: TB2CCR2 in case 4 was incorrectly named TB2CCR1,
+    323              //and set to different interval, effectively halting CCR1 interrupt periodically
+    324              time_seconds++;
+   \   00001E   D253....     ADD.B   #0x1, &time_seconds
+    325              FET_delay_timer++;
+   \   000022   D253....     ADD.B   #0x1, &FET_delay_timer
+    326          //    PID_enable_timer++;
+    327          
+    328          //    Tx_message_timer++;
+    329              //RED_LED_TOGGLE();
+    330          
+    331              // this timer is to delay switching of wheel directions
+    332              if(time_seconds != FET_delay_timer){ // Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined in this statement
+                     ^
+Warning[Pa082]: undefined behavior: the order of volatile accesses is undefined
+          in this statement
+   \   000026   5E42....     MOV.B   &time_seconds, R14
+   \   00002A   5E92....     CMP.B   &FET_delay_timer, R14
+   \   00002E   1A24         JEQ     ??TIMER_B2_CCR_1_2_OVFL_ISR_3
+    333          
+    334                if(from_forward == TRUE){
+   \   000030   D293....     CMP.B   #0x1, &from_forward
+   \   000034   0B20         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_4
+    335                  FET_delay_timer = time_seconds; //turn timer back off
+   \   000036   D242........ MOV.B   &time_seconds, &FET_delay_timer
+    336                  from_forward = FALSE;
+   \   00003C   C243....     MOV.B   #0x0, &from_forward
+    337                  forward(speed_global, STRAIGHT, 0);
+   \   000040   4E43         MOV.B   #0x0, R14
+   \   000042   4D43         MOV.B   #0x0, R13
+   \   000044   1C42....     MOV.W   &speed_global, R12
+   \   000048   ........     CALLA   #forward
+    338                }
+    339                if(from_reverse == TRUE){
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_4:
+   \   00004C   D293....     CMP.B   #0x1, &from_reverse
+   \   000050   0920         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_3
+    340                  FET_delay_timer = time_seconds; //turn timer back off
+   \   000052   D242........ MOV.B   &time_seconds, &FET_delay_timer
+    341                  from_reverse = FALSE;
+   \   000058   C243....     MOV.B   #0x0, &from_reverse
+    342                  reverse(speed_global);
+   \   00005C   1C42....     MOV.W   &speed_global, R12
+   \   000060   ........     CALLA   #reverse
+    343                }
+    344              }
+    345          
+    346              // timer to start PID selection
+    347          //    if(PID_enable_timer != time_seconds){
+    348          //      PID_enable_timer = time_seconds; // reset counter after 1 second
+    349          //      if(PID_control_enabled){
+    350          //        PID_control_enabled = FALSE;
+    351          //        stop_car();
+    352          //
+    353          //      }else PID_control_enabled = TRUE;
+    354          //    }
+    355          
+    356              //this timer is to send a message queue periodically
+    357          //    if(Tx_message_timer == time_seconds){
+    358          //      Tx_message_timer = time_seconds + 2;
+    359          //      TX_message_USB_UCA1(Tx_queue_USB[usb_msg_queue_incrementer++]);
+    360          //
+    361          //      if(usb_msg_queue_incrementer > 5){
+    362          //        usb_msg_queue_incrementer  = 0;
+    363          //      }
+    364          //    }
+    365          
+    366              //this timer is to open a TCP port after Wifi module has connected
+    367              if(activate_open_TCP_port_timer == TRUE){
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_3:
+   \   000064   D293....     CMP.B   #0x1, &activate_open_TCP_port_timer
+   \   000068   2420         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_5
+    368                open_TCP_port_timer++;
+   \   00006A   D253....     ADD.B   #0x1, &open_TCP_port_timer
+    369                GREEN_LED_TOGGLE();
+   \   00006E   F2E040004302 XOR.B   #0x40, &0x243
+    370                if(open_TCP_port_timer == 4){
+   \   000074   E292....     CMP.B   #0x4, &open_TCP_port_timer
+   \   000078   0220         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_6
+    371                  startup_okay_to_TX = TRUE;
+   \   00007A   D243....     MOV.B   #0x1, &startup_okay_to_TX
+    372                }
+    373                if(open_TCP_port_timer == 10){
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_6:
+   \   00007E   F2900A00.... CMP.B   #0xa, &open_TCP_port_timer
+   \   000084   0720         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_7
+    374                  BACKLIGHT_TOGGLE();
+   \   000086   F2E010004502 XOR.B   #0x10, &0x245
+    375                  TX_message_IoT_UCA0("AT+NSTCP=3167,1\r"); // open port 1030
+   \   00008C   3C40....     MOV.W   #`?<Constant "AT+NSTCP=3167,1\\r">`, R12
+   \   000090   ........     CALLA   #TX_message_IoT_UCA0
+    376                }
+    377                if(open_TCP_port_timer == 14){
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_7:
+   \   000094   F2900E00.... CMP.B   #0xe, &open_TCP_port_timer
+   \   00009A   0B20         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_5
+    378                  BACKLIGHT_TOGGLE();
+   \   00009C   F2E010004502 XOR.B   #0x10, &0x245
+    379                  open_TCP_port_timer  = 0;
+   \   0000A2   C243....     MOV.B   #0x0, &open_TCP_port_timer
+    380                  activate_open_TCP_port_timer = FALSE;
+   \   0000A6   C243....     MOV.B   #0x0, &activate_open_TCP_port_timer
+    381                  TX_message_IoT_UCA0("AT+WSYNCINTRL=65535\r");
+   \   0000AA   3C40....     MOV.W   #`?<Constant "AT+WSYNCINTRL=65535\\r">`, R12
+   \   0000AE   ........     CALLA   #TX_message_IoT_UCA0
+    382                }// when idle, keep TCP port open for as long as possible
+    383              }
+    384          
+    385              //this timer is for motor travel for a specified amount of time
+    386              if(activate_travel_time == TRUE){
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_5:
+   \   0000B2   D293....     CMP.B   #0x1, &activate_travel_time
+   \   0000B6   1620         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+    387                travel_time_inrementer++;
+   \   0000B8   D253....     ADD.B   #0x1, &travel_time_inrementer
+    388                if(travel_time_inrementer == travel_time_seconds){
+   \   0000BC   5F42....     MOV.B   &travel_time_inrementer, R15
+   \   0000C0   4F4F         MOV.B   R15, R15
+   \   0000C2   1F92....     CMP.W   &travel_time_seconds, R15
+   \   0000C6   0E20         JNE     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+    389                  travel_time_inrementer  = 0;
+   \   0000C8   C243....     MOV.B   #0x0, &travel_time_inrementer
+    390                  travel_time_seconds = 0;
+   \   0000CC   8243....     MOV.W   #0x0, &travel_time_seconds
+    391                  activate_travel_time = FALSE;
+   \   0000D0   C243....     MOV.B   #0x0, &activate_travel_time
+    392                  stop_car();
+   \   0000D4   ........     CALLA   #stop_car
+    393                }
+    394              }
+    395              break;
+   \   0000D8   053C         JMP     ??TIMER_B2_CCR_1_2_OVFL_ISR_2
+    396            case 4: //CCR2
+    397              TB2CCR2 += TB2_MIN_1_000; // one minute
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_9:
+   \   0000DA   B25000781604 ADD.W   #0x7800, &0x416
+    398          
+    399          // periodically ping google to force use of ncsu network before they kick me off for inactivity
+    400              //BACKLIGHT_TOGGLE();
+    401              if(time_seconds >= 15){
+   \   0000E0   5E42....     MOV.B   &time_seconds, R14
+    402              //TX_message_IoT_UCA0("AT+PING=www.google.com,2\r");  // Home network does not require ping
+    403              }
+    404          
+    405              break;
+    406            case 14: // overflow
+    407              break;
+    408            default:
+    409              break;
+    410            }
+    411          }
+   \                     ??TIMER_B2_CCR_1_2_OVFL_ISR_2:
+   \   0000E4   3C17         POPM.W  #0x4, R15
+   \   0000E6   0013         RETI
+   \   0000E8                REQUIRE _A_TB2CCR1_L
+   \   0000E8                REQUIRE _A_PCOUT_L
+   \   0000E8                REQUIRE _A_PCDIR_L
+   \   0000E8                REQUIRE _A_TB2CCR2_L
+   \   0000E8                REQUIRE _A_TB2IV_L
+
+   \                                 In  segment INTVEC, offset 0x4c, root
+   \                     `??TIMER_B2_CCR_1_2_OVFL_ISR::??INTVEC 76`:
+   \   00004C   ....         DC16    TIMER_B2_CCR_1_2_OVFL_ISR
+
+   \                                 In  segment INTVEC, offset 0x4e, root
+   \                     `??TIMER_B2_CCR_0_ISR::??INTVEC 78`:
+   \   00004E   ....         DC16    TIMER_B2_CCR_0_ISR
+
+   \                                 In  segment INTVEC, offset 0x50, root
+   \                     `??TIMER_B1_CCR_1_2_OVFL_ISR::??INTVEC 80`:
+   \   000050   ....         DC16    TIMER_B1_CCR_1_2_OVFL_ISR
+
+   \                                 In  segment INTVEC, offset 0x52, root
+   \                     `??TIMER_B1_CCR_0_ISR::??INTVEC 82`:
+   \   000052   ....         DC16    TIMER_B1_CCR_0_ISR
+
+   \                                 In  segment INTVEC, offset 0x54, root
+   \                     `??TIMER_B0_CCR_1_2_OVFL_ISR::??INTVEC 84`:
+   \   000054   ....         DC16    TIMER_B0_CCR_1_2_OVFL_ISR
+
+   \                                 In  segment INTVEC, offset 0x56, root
+   \                     `??TIMER_B0_CCR_0_ISR::??INTVEC 86`:
+   \   000056   ....         DC16    TIMER_B0_CCR_0_ISR
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "AT+NSTCP=3167,1\\r">`:
+   \   000000   41542B4E5354 DC8 "AT+NSTCP=3167,1\015"
+   \            43503D333136
+   \            372C310D00  
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "AT+WSYNCINTRL=65535\\r">`:
+   \   000000   41542B575359 DC8 "AT+WSYNCINTRL=65535\015"
+   \            4E43494E5452
+   \            4C3D36353533
+   \            350D00      
+    412          
+    413          //Prcessor won't see this ISR because TB3 is a special purpose timer for PWM
+    414          // which operates on sepparate hardware, therefore, main won't even see the ISR
+    415          
+    416          
+    417          // Used to reside in TB0 CCR0 with 16 msec interrupt
+    418          //  Time_Seq_Reset_Count++;
+    419          //  Time_Sequence++;
+    420          //  if(Time_Seq_Reset_Count == 250){
+    421          //    Time_Sequence = 0;
+    422          //    Time_Seq_Reset_Count = 0;
+    423          //  }
+    424          
+    425          //  // Use for reference on how to derive other time intervals from a timer
+    426          //  project_5_timer++;
+    427          //  update_display_timer++;
+    428          //  if(project_5_timer == 30){
+    429          //    P6OUT ^= LCD_BACKLITE;
+    430          //    project_5_timer = 0;
+    431          //    project_5_Seconds++;  //this incrementation gave me seconds
+    432          //  }
+    433          
+    434          //  //keep for reference on how to refresh display variable. Used to reside in TB0 CCR1 with 10 mSec interrupt
+    435          //    update_display_timer++;
+    436          //    if(update_display_timer == 20){  // equates to every 200 msec WHEN interrupt occurs every 10 msec
+    437          //      update_display_timer = 0;
+    438          //      update_display = 1;
+    439          //    }
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   TIMER_B0_CCR_0_ISR
+      6   TIMER_B0_CCR_1_2_OVFL_ISR
+     12   TIMER_B1_CCR_0_ISR
+       12   -> stop_car
+      6   TIMER_B1_CCR_1_2_OVFL_ISR
+     12   TIMER_B2_CCR_0_ISR
+       12   -> HEXtoBCD
+     12   TIMER_B2_CCR_1_2_OVFL_ISR
+       12   -> TX_message_IoT_UCA0
+       12   -> forward
+       12   -> reverse
+       12   -> stop_car
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      17  ?<Constant "AT+NSTCP=3167,1\r">
+      21  ?<Constant "AT+WSYNCINTRL=65535\r">
+       1  FET_delay_timer
+       1  IoT_reset_timer
+       1  PID_control_enabled
+       8  TIMER_B0_CCR_0_ISR
+       2  TIMER_B0_CCR_0_ISR::??INTVEC 86
+      78  TIMER_B0_CCR_1_2_OVFL_ISR
+       2  TIMER_B0_CCR_1_2_OVFL_ISR::??INTVEC 84
+      74  TIMER_B1_CCR_0_ISR
+       2  TIMER_B1_CCR_0_ISR::??INTVEC 82
+      60  TIMER_B1_CCR_1_2_OVFL_ISR
+       2  TIMER_B1_CCR_1_2_OVFL_ISR::??INTVEC 80
+      96  TIMER_B2_CCR_0_ISR
+       2  TIMER_B2_CCR_0_ISR::??INTVEC 78
+     232  TIMER_B2_CCR_1_2_OVFL_ISR
+       2  TIMER_B2_CCR_1_2_OVFL_ISR::??INTVEC 76
+       2  _A_ADCCTL0_L
+       2  _A_PAIE_L
+       2  _A_PAIFG_L
+       2  _A_PAOUT_L
+       2  _A_PBIE_L
+       2  _A_PBIFG_L
+       2  _A_PBOUT_L
+       2  _A_PCDIR_L
+       2  _A_PCOUT_L
+       2  _A_TB0CCR0_L
+       2  _A_TB0CCR1_L
+       2  _A_TB0CCR2_L
+       2  _A_TB0CCTL1_L
+       2  _A_TB0CCTL2_L
+       2  _A_TB0IV_L
+       2  _A_TB1CCR0_L
+       2  _A_TB1CCR1_L
+       2  _A_TB1IV_L
+       2  _A_TB2CCR0_L
+       2  _A_TB2CCR1_L
+       2  _A_TB2CCR2_L
+       2  _A_TB2IV_L
+       2  _A_UCA1IE_L
+       2  _A_UCA1TXBUF_L
+       1  activate_adc_readings
+       1  activate_open_TCP_port_timer
+       1  activate_pivot_timer
+       1  activate_travel_time
+       1  from_forward
+       1  from_reverse
+       1  open_TCP_port_timer
+       1  pivot_timer
+       1  time_half_seconds
+       1  time_seconds
+       1  travel_time_inrementer
+
+ 
+  48 bytes in segment DATA16_AN
+  38 bytes in segment DATA16_C
+  14 bytes in segment DATA16_Z
+  12 bytes in segment INTVEC
+ 548 bytes in segment ISR_CODE
+ 
+ 548 bytes of CODE  memory
+  38 bytes of CONST memory (+ 12 bytes shared)
+  14 bytes of DATA  memory (+ 48 bytes shared)
+
+Errors: none
+Warnings: 2

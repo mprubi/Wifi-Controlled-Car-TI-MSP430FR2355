@@ -11,13 +11,13 @@ extern volatile unsigned int ADC_Right_Sensor = 0;
 extern volatile unsigned int ADC_Bat = 0;
 extern volatile unsigned int ADC_Thumb = 0;
 extern volatile unsigned int ADC_Channel = 0;
-extern volatile char adc_char[4] = "";
+extern volatile char adc_char[12] = "";
 
 //A variable defined and only used inside the interrupt tree need not be defined as a volatile.
 //32 bit array?
 volatile unsigned int Left_Sensor_Mov_Values[8];
 volatile unsigned int Right_Sensor_Mov_Values[8];
-volatile unsigned int Left_Sensor_Watch[32], Right_Sensor_Watch[32];  //for debug
+//volatile unsigned int Left_Sensor_Watch[32], Right_Sensor_Watch[32];  //for debug
 volatile unsigned int left_sensor_mov_average, right_sensor_mov_average;
 
 extern char display_line[4][11];
@@ -43,7 +43,8 @@ __interrupt void ADC_ISR(void){
     case ADCIV_ADCIFG: // ADCMEM0 memory register with the conversion result
     //this case statement is where code for how and what I want to sample occurs
 
-    ADCCTL0 &= ~ADCENC; //disable the ENC bit to be able to change which port to read next
+    ADC_CONVERSION_DISABLE();
+//    ADCCTL0 &= ~ADCENC; //disable the ENC bit to be able to change which port to read next
 
     switch (ADC_Channel++){  // post incrementing occurs after conditional statement uses original value to evaluate
       case ADC_LEFT_SENSOR: // Channel A3 Interrupt
@@ -52,7 +53,7 @@ __interrupt void ADC_ISR(void){
       ADC_Left_Sensor = ADCMEM0; // Move result into Global
       // Old carlson code: ADC_Left_Sensor = ADC_Left_Detect >> 2; // Divide the result by 4 for 12 bit ADC
 
-      ADC_Left_Sensor -= 6; // correction factor to position car in the center of black line
+      ADC_Left_Sensor -= 10; // correction factor to position car in the center of black line
 
       //averaging function call goes here
       left_sensor_mov_average = 0;
@@ -72,7 +73,7 @@ __interrupt void ADC_ISR(void){
       ADCMCTL0 |= ADCINCH_4; // Enable Next channel A4
       ADC_Right_Sensor = ADCMEM0; // Move result into Global
       // Old carlson code: ADC_Right_Sensor = ADC_Left_Detect >> 2; // Divide the result by 4 12 bit ADC
-      ADC_Right_Sensor += 6; // correction factor to position car in the center of black line
+      ADC_Right_Sensor += 10; // correction factor to position car in the center of black line
 
       //averaging function goes here
       right_sensor_mov_average = 0;
@@ -117,7 +118,10 @@ __interrupt void ADC_ISR(void){
     // Enable Conversions //TODO: move this line to 25 mSec Timer
 
     //disable ISR, leave it to a timer to re-enable 30 mSec later
-    ADCCTL0 &= ~ADCENC;
+    ADC_CONVERSION_DISABLE();
+
+//    ADCCTL0 &= ~ADCENC;
+
 
     // Switch case replaces the 2 following lines, which was  repeatedly reading the
     //thumb wheel with no timer involved
@@ -170,47 +174,69 @@ void ADC_perform_moving_average(unsigned int volatile ADC_result, char specific_
     break;
   }
 
-  //debug / watch array
-  for(int i = 31; i >= 0; i--){
-    if(i == 0){
-      Left_Sensor_Watch[0] = left_sensor_mov_average;
-      Right_Sensor_Watch[0] = right_sensor_mov_average;
-    }else{
-      Left_Sensor_Watch[i] = Left_Sensor_Watch[i-1];
-      Right_Sensor_Watch[i] = Right_Sensor_Watch[i-1];
-    }
-  }
+//  //debug / watch array
+//  for(int i = 31; i >= 0; i--){
+//    if(i == 0){
+//      Left_Sensor_Watch[0] = left_sensor_mov_average;
+//      Right_Sensor_Watch[0] = right_sensor_mov_average;
+//    }else{
+//      Left_Sensor_Watch[i] = Left_Sensor_Watch[i-1];
+//      Right_Sensor_Watch[i] = Right_Sensor_Watch[i-1];
+//    }
+//  }
 }
 
 
 /*helper function for conversion to characters for display:
 
 */
-void HEXtoBCD(int hex_value){
+void HEXtoBCD(int hex_value_left, int hex_value_right){
   int divisor = 1;
 
-  for(int i=0; i<4; i++){
-//    = ascii offset plus each decimal digit of the hex value
-//    example: 1123
-//    1234 % 10 = 4, 4/1 = 4 -> one's place = 4
-//    1234 % 100 = 34, 34/10 = 3 -> one's place = 3
-//    1234 % 1000 = 234, 234/100 = 2 -> one's place = 2
-//    1234 % 10000 = 1234, 1234/1000 = 1 -> one's place = 1
-
-    adc_char[i] = 0x30 + (hex_value % (divisor*10) / (divisor) );
+  for(int i = 3; i>=0; i--){
+    //    = ascii offset plus each decimal digit of the hex value
+    //    example: 1123
+    //    1234 % 10 = 4, 4/1 = 4 -> one's place = 4
+    //    1234 % 100 = 34, 34/10 = 3 -> one's place = 3
+    //    1234 % 1000 = 234, 234/100 = 2 -> one's place = 2
+    //    1234 % 10000 = 1234, 1234/1000 = 1 -> one's place = 1
+    
+    //adc_char[i] = 0x30 + (hex_value % (divisor*10) / (divisor) );
+    adc_char[i] = 0x30 + (hex_value_left % (divisor*10) / (divisor) );
     divisor = divisor * 10;
   }
-}
-
-void adc_line(char display_line_position, char display_character_position){
-
-  for(char i=3, j=display_character_position; j < (display_character_position+4); i--, j++){
-    //note: pointless comparison warning broke refresh of entire display
-    display_line[display_line_position][j] = adc_char[i];
+  
+  adc_char[4] = ' ';
+  adc_char[5] = ' ';
+  
+  divisor = 1;
+  
+  for(int i = 9; i>5; i--){
+    //    = ascii offset plus each decimal digit of the hex value
+    //    example: 1123
+    //    1234 % 10 = 4, 4/1 = 4 -> one's place = 4
+    //    1234 % 100 = 34, 34/10 = 3 -> one's place = 3
+    //    1234 % 1000 = 234, 234/100 = 2 -> one's place = 2
+    //    1234 % 10000 = 1234, 1234/1000 = 1 -> one's place = 1
+    
+    //adc_char[i] = 0x30 + (hex_value % (divisor*10) / (divisor) );
+    adc_char[i] = 0x30 + (hex_value_right % (divisor*10) / (divisor) );
+    divisor = divisor * 10;
   }
-  display_line[display_line_position][4] = ' '; //fill the next element with a space
-  display_line[display_line_position][5] = ' '; //fill the next element with a space
+  
+  adc_char[10] = CARRIAGE_RETURN;
+  adc_char[11] = LINE_FEED;
 }
+
+//void adc_line(char display_line_position, char display_character_position){
+//
+//  for(char i=3, j=display_character_position; j < (display_character_position+4); i--, j++){
+//    //note: pointless comparison warning broke refresh of entire display
+//    display_line[display_line_position][j] = adc_char[i];
+//  }
+//  display_line[display_line_position][4] = ' '; //fill the next element with a space
+//  display_line[display_line_position][5] = ' '; //fill the next element with a space
+//}
 
 /* Carlson's bloated function for hex -> BCD conversion
 void HEXtoBCD(int hex_value){
