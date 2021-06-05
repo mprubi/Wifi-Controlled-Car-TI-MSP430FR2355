@@ -55,6 +55,9 @@ extern char current_state,
 extern volatile char startup_okay_to_TX;
 volatile extern char USB_Tx_Outgoing_Buff[LARGE_RING_SIZE_32];
 
+extern char current_state,
+            previous_state;
+
 //extern long debug_follow_black_line_counter, 
 //      debug_observe_control_system_counter,
 //      debug_control_signal_calc_counter;
@@ -230,7 +233,7 @@ __interrupt void TIMER_B1_CCR_0_ISR(void){
 //    strcpy(display_line[3], "Thumb:");
 //    update_string(display_line[2], 3);
 
-    display_changed = 1;
+//    display_changed = 1;
   }
 }
 
@@ -241,7 +244,7 @@ __interrupt void TIMER_B1_CCR_1_2_OVFL_ISR(void){
     break; // No interrupt
   case 2:
     //30 msec timer here (for ADC measurements)
-    TB1CCR1 += TB1_SEC_0_040;
+    TB1CCR1 += TB1_SEC_0_030;
     //RED_LED_TOGGLE();
 
     //BACKLIGHT_TOGGLE();  //debug
@@ -264,8 +267,82 @@ __interrupt void TIMER_B1_CCR_1_2_OVFL_ISR(void){
 //      ADCCTL0 |= ADCENC;
       observe_control_system = TRUE;
       RED_LED_TOGGLE();
+      
+      //---- Display ADC mov average readings (previous)
+      HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
+      
+      UCA1_index = 0;
+      
+      // 0 to 11
+      for(int i = 0; i < sizeof(adc_char); i++){
+        USB_Tx_Outgoing_Buff[i] = adc_char[i];
+      }
+      
+     
+      //---- Display wheel speeds 
+      int convert_left = LEFT_FORWARD_SPEED, 
+          convert_right = RIGHT_FORWARD_SPEED;
+      char display_current_state_array[6],
+           display_previous_state_array[6];
+      
+      HEXtoBCD(convert_left, convert_right);
+      
+      // 12 to 22
+      for(int i = 12, j = 0; i < 24; i++, j++){
+        USB_Tx_Outgoing_Buff[i] = adc_char[j];
+      }
+      
+       //---- State information
+      switch(previous_state){
+      case OFF_LINE:
+        strcpy(display_previous_state_array, "OFF  ");
+        break;
+      case ON_LINE:
+        strcpy(display_previous_state_array, "ON  ");
+        break;
+      case LEFT_OF_LINE:
+        strcpy(display_previous_state_array, "LEFT");
+        break;
+      case RIGHT_OF_LINE:
+        strcpy(display_previous_state_array, "RIGHT");
+        break;
+      }
+      
+      switch(current_state){
+      case OFF_LINE:
+        strcpy(display_current_state_array, "OFF  ");
+        break;
+      case ON_LINE:
+        strcpy(display_current_state_array, "ON  ");
+        break;
+      case LEFT_OF_LINE:
+        strcpy(display_current_state_array, "LEFT");
+        break;
+      case RIGHT_OF_LINE:
+        strcpy(display_current_state_array, "RIGHT");
+        break;
+      }
+      
+      // 24 to 32
+      for(int i = 24, j = 0; i < 28; i++, j++){
+        USB_Tx_Outgoing_Buff[i] = display_current_state_array[j];
+      }
+      
+      USB_Tx_Outgoing_Buff[28] = CARRIAGE_RETURN;
+      USB_Tx_Outgoing_Buff[29] = LINE_FEED;
+      
+      
+      // Null the rest of Buffer 
+      for(int i = 30; i < sizeof(USB_Tx_Outgoing_Buff); i++){
+        USB_Tx_Outgoing_Buff[i] = NULL_CHAR;
+      }
+      
+      
+      //    strncpy(USB_Tx_Outgoing_Buff, message, 10);
+      UCA1IE |= UCTXIE; // enable the Tx interupt
+      UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
     }
-
+    
     break;
   case 4:
     //50 msec timer here
@@ -287,21 +364,21 @@ __interrupt void TIMER_B2_CCR_0_ISR(void){
   TB2CCR0 += TB2_MIN_0_005; // Half second offset
   time_half_seconds++;
   
-  HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
-  
-  UCA1_index = 0;
-  
-  for(int i = 0; i < sizeof(adc_char); i++){
-    USB_Tx_Outgoing_Buff[i] = adc_char[i];
-  }
-  
-  for(int i = sizeof(adc_char); i < sizeof(USB_Tx_Outgoing_Buff); i++){
-    USB_Tx_Outgoing_Buff[i] = NULL_CHAR;
-  }
-  
-  //    strncpy(USB_Tx_Outgoing_Buff, message, 10);
-  UCA1IE |= UCTXIE; // enable the Tx interupt
-  UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
+//  HEXtoBCD(left_sensor_mov_average, right_sensor_mov_average);
+//  
+//  UCA1_index = 0;
+//  
+//  for(int i = 0; i < sizeof(adc_char); i++){
+//    USB_Tx_Outgoing_Buff[i] = adc_char[i];
+//  }
+//  
+//  for(int i = sizeof(adc_char); i < sizeof(USB_Tx_Outgoing_Buff); i++){
+//    USB_Tx_Outgoing_Buff[i] = NULL_CHAR;
+//  }
+//  
+//  //    strncpy(USB_Tx_Outgoing_Buff, message, 10);
+//  UCA1IE |= UCTXIE; // enable the Tx interupt
+//  UCA1TXBUF = USB_Tx_Outgoing_Buff[UCA1_index++];
   
   //  TX_message_USB_UCA1(adc_char);
 
